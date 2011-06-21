@@ -1,0 +1,24 @@
+//
+//  NSDate+SML.h
+//  PhotoFeed
+//
+//  Created by Peter Shih on 6/21/11.
+//  Copyright 2011 __MyCompanyName__. All rights reserved.
+//
+
+#import <Foundation/Foundation.h>
+
+
+@interface NSDate (SML)
+
+#pragma mark - Facebook
++ (NSDate *)dateFromFacebookTimestamp:(NSString *)timestamp;
+
+#pragma mark - AWS
+- (NSString *)stringWithAWSRequestFormat;
+
+#pragma mark - Milliseconds
++ (NSDate *)dateWithMillisecondsSince1970:(NSTimeInterval)millisecondsSince1970;
+- (NSTimeInterval)millisecondsSince1970;
+
+@end
