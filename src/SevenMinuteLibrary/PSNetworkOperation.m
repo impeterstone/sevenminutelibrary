@@ -1,9 +1,9 @@
 //
 //  PSNetworkOperation.m
-//  PSNetworkStack
+//  SevenMinuteLibrary
 //
 //  Created by Peter Shih on 1/27/11.
-//  Copyright 2011 Seven Minute Apps. All rights reserved.
+//  Copyright 2011 Peter Shih. All rights reserved.
 //
 
 #import "PSNetworkOperation.h"

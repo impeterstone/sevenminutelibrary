@@ -1,9 +1,9 @@
 //
 //  NSData+SML.h
-//  Orca
+//  SevenMinuteLibrary
 //
 //  Created by Peter Shih on 6/21/11.
-//  Copyright 2011 __MyCompanyName__. All rights reserved.
+//  Copyright 2011 Peter Shih. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>

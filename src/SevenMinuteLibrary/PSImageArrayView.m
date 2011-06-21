@@ -1,9 +1,9 @@
 //
 //  PSImageArrayView.m
-//  PhotoFeed
+//  SevenMinuteLibrary
 //
 //  Created by Peter Shih on 5/17/11.
-//  Copyright 2011 __MyCompanyName__. All rights reserved.
+//  Copyright 2011 Peter Shih. All rights reserved.
 //
 
 #import "PSImageArrayView.h"
