@@ -8,7 +8,10 @@
 
 #import <Foundation/Foundation.h>
 #import "Constants.h"
-#import "NSObject+ConvenienceMethods.h"
+#import "NSObject+SML.h"
+#import "NSString+SML.h"
+#import "NSDate+SML.h"
+#import "NSDate+Helper.h"
 
 @interface PSObject : NSObject {
 

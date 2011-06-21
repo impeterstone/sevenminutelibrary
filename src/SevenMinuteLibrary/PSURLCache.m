@@ -126,7 +126,7 @@
   }
 }
 
-- (NSString *)encodedURLParameterString {
+- (NSString *)stringByURLEncoding {
   NSString *result = (NSString *)CFURLCreateStringByAddingPercentEscapes(kCFAllocatorDefault,
                                                                          (CFStringRef)self,
                                                                          NULL,

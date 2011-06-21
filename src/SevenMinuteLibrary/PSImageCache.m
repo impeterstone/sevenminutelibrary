@@ -7,7 +7,7 @@
 //
 
 #import "PSImageCache.h"
-#import "NSString+URLEncoding+PS.h"
+#import "NSString+SML.h"
 #import "ASIHTTPRequest.h"
 
 @implementation PSImageCache
@@ -72,10 +72,10 @@
     UIImage *image = [UIImage imageWithData:imageData];
     if (image) {
       // First put it in the NSCache buffer
-      [_buffer setObject:[UIImage imageWithData:imageData] forKey:[urlPath encodedURLParameterString]];
+      [_buffer setObject:[UIImage imageWithData:imageData] forKey:[urlPath stringByURLEncoding]];
       
       // Also write it to file
-      [imageData writeToFile:[_cachePath stringByAppendingPathComponent:[urlPath encodedURLParameterString]] atomically:YES];
+      [imageData writeToFile:[_cachePath stringByAppendingPathComponent:[urlPath stringByURLEncoding]] atomically:YES];
     }
     
     VLog(@"PSImageCache CACHE: %@", urlPath);
@@ -85,8 +85,8 @@
 // Read Cached Image
 - (UIImage *)imageForURLPath:(NSString *)urlPath shouldDownload:(BOOL)shouldDownload withDelegate:(id)delegate {
   // First check NSCache buffer
-  //  NSData *imageData = [_buffer objectForKey:[urlPath encodedURLParameterString]];
-  UIImage *image = [_buffer objectForKey:[urlPath encodedURLParameterString]];
+  //  NSData *imageData = [_buffer objectForKey:[urlPath stringByURLEncoding]];
+  UIImage *image = [_buffer objectForKey:[urlPath stringByURLEncoding]];
   if (image) {
     // Image exists in buffer
     VLog(@"PSImageCache CACHE HIT: %@", urlPath);
@@ -94,13 +94,13 @@
   } else {
     // Image not in buffer, read from disk instead
     VLog(@"PSImageCache CACHE MISS: %@", urlPath);
-    image = [UIImage imageWithContentsOfFile:[_cachePath stringByAppendingPathComponent:[urlPath encodedURLParameterString]]];
+    image = [UIImage imageWithContentsOfFile:[_cachePath stringByAppendingPathComponent:[urlPath stringByURLEncoding]]];
     
     // If Image is in disk, read it
     if (image) {
       VLog(@"PSImageCache DISK HIT: %@", urlPath);
       // Put this image into the buffer also
-      [_buffer setObject:image forKey:[urlPath encodedURLParameterString]];
+      [_buffer setObject:image forKey:[urlPath stringByURLEncoding]];
       return image;
     } else {
       VLog(@"PSImageCache DISK MISS: %@", urlPath);
@@ -114,12 +114,12 @@
 }
 
 - (BOOL)hasImageForURLPath:(NSString *)urlPath {
-  if ([_buffer objectForKey:[urlPath encodedURLParameterString]]) {
+  if ([_buffer objectForKey:[urlPath stringByURLEncoding]]) {
     // Image exists in memcache
     return YES;
   } else {
     // Check disk for image
-    return [[NSFileManager defaultManager] fileExistsAtPath:[_cachePath stringByAppendingPathComponent:[urlPath encodedURLString]]];
+    return [[NSFileManager defaultManager] fileExistsAtPath:[_cachePath stringByAppendingPathComponent:[urlPath stringByURLEncoding]]];
   }
 }
 

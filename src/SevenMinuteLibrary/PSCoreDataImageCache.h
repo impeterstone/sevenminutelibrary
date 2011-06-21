@@ -7,10 +7,10 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "PSObject.h"
 #import "PSCoreDataStack.h"
-#import "Constants.h"
 
-@interface PSCoreDataImageCache : NSObject {
+@interface PSCoreDataImageCache : PSObject {
   NSMutableArray *_pendingRequests;
 }
 

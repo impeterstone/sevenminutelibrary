@@ -7,9 +7,7 @@
 //
 
 #import "PSURLCacheImageView.h"
-#import "PSImageCache.h"
-#import "UIImage+ScalingAndCropping.h"
-#import "NSString+URLEncoding+PS.h"
+#import "NSString+SML.h"
 
 static dispatch_queue_t _urlCacheImageViewQueue = nil;
 

@@ -8,7 +8,7 @@
 
 #import "PSCoreDataImageCache.h"
 #import "ASIHTTPRequest.h"
-#import "UIImage+ScalingAndCropping.h"
+#import "UIImage+SML.h"
 
 @implementation PSCoreDataImageCache
 

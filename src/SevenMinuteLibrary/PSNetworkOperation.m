@@ -7,7 +7,7 @@
 //
 
 #import "PSNetworkOperation.h"
-#import "NSString+URLEncoding+PS.h"
+#import "NSString+SML.h"
 
 #define JSON_REQUEST_HEADER @"application/json"
 
@@ -440,7 +440,7 @@ static NSThread *_opThread = nil;
   NSArray *allValues = [self.requestParams allValues];
   
   for (int i = 0; i < [self.requestParams count]; i++) {
-    [_encodedParameterPairs appendFormat:@"%@=%@", [[allKeys objectAtIndex:i] encodedURLParameterString], [[allValues objectAtIndex:i] encodedURLParameterString]];
+    [_encodedParameterPairs appendFormat:@"%@=%@", [[allKeys objectAtIndex:i] stringByURLEncoding], [[allValues objectAtIndex:i] stringByURLEncoding]];
     if (i < [self.requestParams count] - 1) {
       [_encodedParameterPairs appendString:@"&"];
     }

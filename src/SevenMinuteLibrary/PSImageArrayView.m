@@ -8,8 +8,7 @@
 
 #import "PSImageArrayView.h"
 #import "PSImageCache.h"
-#import "UIImage+ScalingAndCropping.h"
-#import <QuartzCore/QuartzCore.h>
+#import "UIImage+SML.h"
 
 @implementation PSImageArrayView
 
