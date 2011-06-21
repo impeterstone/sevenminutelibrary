@@ -7,7 +7,7 @@
 //
 
 #import "PSImageView.h"
-#import "UIImage+ScalingAndCropping.h"
+#import "UIImage+SML.h"
 
 @implementation PSImageView
 
@@ -44,7 +44,8 @@
   if (image && image != _placeholderImage) {
     // RETINA
     [_loadingIndicator stopAnimating];
-    UIImage *newImage = [UIImage imageWithCGImage:image.CGImage scale:2 orientation:image.imageOrientation];
+//    UIImage *newImage = [UIImage imageWithCGImage:image.CGImage scale:2 orientation:image.imageOrientation];
+    UIImage *newImage = [image imageScaledForScreen];
     if (_shouldAnimate) {
 //      [self animateCrossFade:newImage];
       [self animateImageFade:newImage];
