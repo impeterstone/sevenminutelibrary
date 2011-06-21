@@ -19,7 +19,6 @@
 @synthesize caption = _caption;
 @synthesize oldImageFrame = _oldImageFrame;
 @synthesize oldCaptionFrame = _oldCaptionFrame;
-@synthesize object = _object;
 
 - (id)initWithFrame:(CGRect)frame {
   self = [super initWithFrame:frame];
