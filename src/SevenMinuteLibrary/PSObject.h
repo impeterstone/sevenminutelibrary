@@ -12,6 +12,7 @@
 #import "NSString+SML.h"
 #import "NSDate+SML.h"
 #import "NSDate+Helper.h"
+#import "NSData+SML.h"
 
 @interface PSObject : NSObject {
 

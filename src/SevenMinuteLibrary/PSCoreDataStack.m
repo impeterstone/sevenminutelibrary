@@ -123,7 +123,7 @@ static NSURL *_storeURL = nil;
     return _managedObjectModel;
   }
   
-  NSURL *modelURL = [[NSBundle mainBundle] URLForResource:@"PhotoFeed" withExtension:@"momd"];
+  NSURL *modelURL = [[NSBundle mainBundle] URLForResource:CORE_DATA_MOM withExtension:@"momd"];
   _managedObjectModel = [[NSManagedObjectModel alloc] initWithContentsOfURL:modelURL];    
   
   return _managedObjectModel;

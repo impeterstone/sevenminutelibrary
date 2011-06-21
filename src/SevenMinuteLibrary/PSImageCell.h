@@ -22,4 +22,6 @@
   UIImageView *_psFrameView;
 }
 
+- (void)loadImage;
+
 @end

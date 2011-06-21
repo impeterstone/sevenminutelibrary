@@ -10,9 +10,8 @@
 #import "PSView.h"
 #import "PSImageView.h"
 
-@class Photo;
-
 @interface PSZoomView : PSView <UIScrollViewDelegate> {
+  id _object;
   UIScrollView *_containerView;
   PSImageView *_zoomImageView;
   UIView *_shadeView;
@@ -20,7 +19,6 @@
   NSString *_caption;
   CGRect _oldImageFrame;
   CGRect _oldCaptionFrame;
-  Photo *_photo;
   CGFloat _lastScale;
 }
 
@@ -31,7 +29,7 @@
 @property (nonatomic, retain) NSString *caption;
 @property (nonatomic, assign) CGRect oldImageFrame;
 @property (nonatomic, assign) CGRect oldCaptionFrame;
-@property (nonatomic, assign) Photo *photo;
+@property (nonatomic, assign) id object;
 
 - (void)showZoom;
 - (void)removeZoom;

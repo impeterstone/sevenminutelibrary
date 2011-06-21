@@ -38,6 +38,10 @@ static UIImage *_frameImage = nil;
   _psImageView.image = nil;
 }
 
+- (void)loadImage {
+  [_psImageView loadImageAndDownload:YES];
+}
+
 - (void)dealloc {
   RELEASE_SAFELY(_psImageView);
   RELEASE_SAFELY(_psFrameView);

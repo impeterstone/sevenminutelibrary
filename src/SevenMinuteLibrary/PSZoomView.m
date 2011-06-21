@@ -7,7 +7,6 @@
 //
 
 #import "PSZoomView.h"
-#import "Photo.h"
 
 #define CAPTION_FONT [UIFont fontWithName:@"HelveticaNeue-Bold" size:14.0]
 
@@ -20,12 +19,11 @@
 @synthesize caption = _caption;
 @synthesize oldImageFrame = _oldImageFrame;
 @synthesize oldCaptionFrame = _oldCaptionFrame;
-@synthesize photo = _photo;
+@synthesize object = _object;
 
 - (id)initWithFrame:(CGRect)frame {
   self = [super initWithFrame:frame];
   if (self) {
-    _photo = nil;
     self.backgroundColor = [UIColor clearColor];
     self.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
     self.autoresizesSubviews = YES;
