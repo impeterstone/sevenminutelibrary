@@ -8,8 +8,6 @@
 
 #import "PSZoomView.h"
 
-#define CAPTION_FONT [UIFont fontWithName:@"HelveticaNeue-Bold" size:14.0]
-
 @implementation PSZoomView
 
 @synthesize containerView = _containerView;
@@ -36,10 +34,10 @@
     
     _captionLabel = [[UILabel alloc] initWithFrame:CGRectMake(0, 408, 320, 72)];
     _captionLabel.backgroundColor = [UIColor clearColor];
-    _captionLabel.font = CAPTION_FONT;
+    _captionLabel.font = [UIFont fontWithName:@"HelveticaNeue-Bold" size:14.0];
     _captionLabel.numberOfLines = 4;
     _captionLabel.textAlignment = UITextAlignmentCenter;
-    _captionLabel.textColor = FB_COLOR_VERY_LIGHT_BLUE;
+    _captionLabel.textColor = [UIColor whiteColor];
     _captionLabel.shadowColor = [UIColor blackColor];
     _captionLabel.shadowOffset = CGSizeMake(0, 1);
     _captionLabel.alpha = 0.0;
