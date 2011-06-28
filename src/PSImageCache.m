@@ -84,6 +84,8 @@
 
 // Read Cached Image
 - (UIImage *)imageForURLPath:(NSString *)urlPath shouldDownload:(BOOL)shouldDownload withDelegate:(id)delegate {
+  if (!urlPath) return nil;
+  
   // First check NSCache buffer
   //  NSData *imageData = [_buffer objectForKey:[urlPath stringByURLEncoding]];
   UIImage *image = [_buffer objectForKey:[urlPath stringByURLEncoding]];

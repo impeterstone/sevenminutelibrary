@@ -26,7 +26,7 @@
     
     _headerLabel = [[UILabel alloc] initWithFrame:CGRectZero];
     _headerLabel.backgroundColor = [UIColor clearColor];
-    _headerLabel.font = SUBTITLE_FONT;
+    _headerLabel.font = NORMAL_FONT;
     _headerLabel.textColor = [UIColor whiteColor];
     _headerLabel.numberOfLines = 0;
     _headerLabel.shadowColor = [UIColor blackColor];
