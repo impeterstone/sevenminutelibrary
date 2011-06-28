@@ -34,10 +34,10 @@
     
     _pictureScrollView = [[UIScrollView alloc] initWithFrame:CGRectZero];
     _pictureScrollView.scrollsToTop = NO;
-    _pictureScrollView.scrollEnabled = YES;
-    _pictureScrollView.bounces = YES;
     _pictureScrollView.showsHorizontalScrollIndicator = NO;
     _pictureScrollView.showsVerticalScrollIndicator = NO;
+    _pictureScrollView.bounces = YES;
+    _pictureScrollView.alwaysBounceHorizontal = YES;
     
     _footerLabel = [[UILabel alloc] initWithFrame:CGRectZero];
     _footerLabel.backgroundColor = [UIColor clearColor];
@@ -80,7 +80,11 @@
   
   // Pictures
   if ([_pictureURLArray count] > 0) {
-    _pictureScrollView.frame = CGRectMake(left, top, textWidth, PICTURE_SIZE);
+    // http://openradar.appspot.com/8045239
+    CGRect scrollFrame = CGRectMake(left, top, textWidth, PICTURE_SIZE);
+    if (!CGRectEqualToRect(scrollFrame, _pictureScrollView.frame)) {
+      _pictureScrollView.frame = scrollFrame;
+    } 
     top = _pictureScrollView.bottom + MARGIN;
   }
   
@@ -107,19 +111,19 @@
   _backgroundImage = [backgroundImage retain];
   
   [_backgroundView setImage:_backgroundImage];
-  [self setNeedsLayout];
+//  [self setNeedsLayout];
 }
 
 - (void)setHeaderText:(NSString *)headerText {
   _headerLabel.text = headerText;
   // resize
-  [self setNeedsLayout];
+//  [self setNeedsLayout];
 }
 
 - (void)setFooterText:(NSString *)footerText {
   _footerLabel.text = footerText;
   
-  [self setNeedsLayout];
+//  [self setNeedsLayout];
 }
 
 - (void)setPictureURLArray:(NSArray *)pictureURLArray {
@@ -142,7 +146,7 @@
   NSInteger numPictures = [pictureURLArray count];
   _pictureScrollView.contentSize = CGSizeMake(numPictures * PICTURE_SIZE + numPictures * MARGIN - MARGIN, _pictureScrollView.height);
   
-  [self setNeedsLayout];
+//  [self setNeedsLayout];
 }
 
 - (void)dealloc {
