@@ -12,7 +12,9 @@
 @implementation UIButton (SML)
 
 + (UIButton *)buttonWithFrame:(CGRect)frame {
-	return [UIButton buttonWithType:UIButtonTypeCustom];
+  UIButton *btn = [UIButton buttonWithType:UIButtonTypeCustom];
+  btn.frame = frame;
+	return btn;
 }
 
 @end
