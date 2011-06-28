@@ -29,6 +29,7 @@
 - (void)cacheImage:(NSData *)imageData forURLPath:(NSString *)urlPath;
 - (UIImage *)imageForURLPath:(NSString *)urlPath shouldDownload:(BOOL)shouldDownload withDelegate:(id)delegate;
 - (BOOL)hasImageForURLPath:(NSString *)urlPath;
+- (void)cacheImageForURLPath:(NSString *)urlPath withDelegate:(id)delegate;
 
 // Remote Request
 - (void)downloadImageForURLPath:(NSString *)urlPath withDelegate:(id)delegate;

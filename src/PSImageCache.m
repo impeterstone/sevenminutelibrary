@@ -125,6 +125,12 @@
   }
 }
 
+- (void)cacheImageForURLPath:(NSString *)urlPath withDelegate:(id)delegate {
+  if (![self hasImageForURLPath:urlPath]) {
+    [self downloadImageForURLPath:urlPath withDelegate:delegate];
+  }
+}
+
 #pragma mark Remote Image Load Request
 - (void)downloadImageForURLPath:(NSString *)urlPath withDelegate:(id)delegate {
   // Check to make sure urlPath is not in a pendingRequest already
