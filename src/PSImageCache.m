@@ -9,6 +9,7 @@
 #import "PSImageCache.h"
 #import "NSString+SML.h"
 #import "ASIHTTPRequest.h"
+#import "PSNetworkQueue.h"
 
 @implementation PSImageCache
 
@@ -29,6 +30,7 @@
     [_buffer setName:@"PSImageCache"];
     [_buffer setDelegate:self];
     
+    _requestQueue = [[PSNetworkQueue alloc] init];
     _pendingRequests = [[NSMutableDictionary alloc] init];
     
     // Set to NSDocumentDirectory by default
@@ -63,6 +65,7 @@
   RELEASE_SAFELY(_buffer);
   RELEASE_SAFELY(_cachePath);
   RELEASE_SAFELY(_pendingRequests);
+  RELEASE_SAFELY(_requestQueue);
   [super dealloc];
 }
 
@@ -155,7 +158,7 @@
   
   // Start the Request
   [_pendingRequests setObject:request forKey:urlPath];
-  [request startAsynchronous];
+  [_requestQueue addOperation:request];
 }
 
 - (void)downloadImageRequestFinished:(ASIHTTPRequest *)request withDelegate:(id)delegate {

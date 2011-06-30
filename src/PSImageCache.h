@@ -11,12 +11,14 @@
 #import "PSObject.h"
 
 @class ASIHTTPRequest;
+@class PSNetworkQueue;
 
 @interface PSImageCache : PSObject <NSCacheDelegate> {
   NSCache *_buffer;
   NSString *_cachePath;
   NSSearchPathDirectory _cacheDirectory;
   NSMutableDictionary *_pendingRequests;
+  PSNetworkQueue *_requestQueue;
 }
 
 @property (nonatomic, retain) NSString *cachePath;
