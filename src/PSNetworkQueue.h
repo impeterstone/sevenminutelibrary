@@ -7,15 +7,15 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "ASIHTTPRequest.h"
+#import "ASINetworkQueue.h"
+#import "Constants.h"
 
-
-@interface PSNetworkQueue : NSOperationQueue {
+@interface PSNetworkQueue : ASINetworkQueue {
+  NSMutableDictionary *_pendingRequests;
 }
 
 // Access shared instance
 + (PSNetworkQueue *)sharedQueue;
-
-// This will tell each PSNetworkOperation to clear delegates and cancel operation
-- (void)cancelAllOperations;
 
 @end
