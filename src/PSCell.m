@@ -30,9 +30,17 @@
 
 + (CGFloat)rowWidthForInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
   if (UIInterfaceOrientationIsPortrait(interfaceOrientation)) {
-    return 320.0;
+    if (isDeviceIPad()) {
+      return 768.0;
+    } else {
+      return 320.0;
+    }
   } else {
-    return 480.0;
+    if (isDeviceIPad()) {
+      return 1024.0;
+    } else {
+      return 480.0;
+    }
   }
 }
 
