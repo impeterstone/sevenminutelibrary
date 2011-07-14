@@ -21,9 +21,9 @@
   if (self) {
     [self setDelegate:self];
     [self setQueueDidFinishSelector:@selector(queueDidFinish:)];
-    [self setRequestDidStartSelector:@selector(requestDidStart:)];
-    [self setRequestDidFinishSelector:@selector(requestDidFinish:)];
-    [self setRequestDidFailSelector:@selector(requestDidFail:)];
+//    [self setRequestDidStartSelector:@selector(requestDidStart:)];
+//    [self setRequestDidFinishSelector:@selector(requestDidFinish:)];
+//    [self setRequestDidFailSelector:@selector(requestDidFail:)];
     [self setSuspended:NO]; // Always enable queue
     
     _pendingRequests = [[NSMutableDictionary alloc] initWithCapacity:1];
@@ -47,22 +47,22 @@
 }
 
 #pragma mark - Request Preparation
-- (void)addOperation:(NSOperation *)op {
-  // Override this to check for duplicate requests
-  if (![op isKindOfClass:[ASIHTTPRequest class]]) {
-		[NSException raise:@"AttemptToAddInvalidRequest" format:@"Attempted to add an object that was not an ASIHTTPRequest to an ASINetworkQueue"];
-  }
-  
-  ASIHTTPRequest *newOp = (ASIHTTPRequest *)op;
-  
-  NSString *newUrlPath = [[newOp originalURL] absoluteString];
-  if ([_pendingRequests objectForKey:newUrlPath]) {
-    // request already pending, don't add another one
-  } else {
-    // Pass to ASINetworkQueue 
-    [super addOperation:op];
-  }
-}
+//- (void)addOperation:(NSOperation *)op {
+//  // Override this to check for duplicate requests
+//  if (![op isKindOfClass:[ASIHTTPRequest class]]) {
+//		[NSException raise:@"AttemptToAddInvalidRequest" format:@"Attempted to add an object that was not an ASIHTTPRequest to an ASINetworkQueue"];
+//  }
+//  
+//  ASIHTTPRequest *newOp = (ASIHTTPRequest *)op;
+//  
+//  NSString *newUrlPath = [[newOp originalURL] absoluteString];
+//  if ([_pendingRequests objectForKey:newUrlPath]) {
+//    // request already pending, don't add another one
+//  } else {
+//    // Pass to ASINetworkQueue 
+//    [super addOperation:op];
+//  }
+//}
 
 #pragma mark - Delegate
 - (void)requestDidStart:(ASIHTTPRequest *)request {
