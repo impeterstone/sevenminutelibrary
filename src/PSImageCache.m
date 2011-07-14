@@ -75,7 +75,7 @@
     UIImage *image = [UIImage imageWithData:imageData];
     if (image) {
       // First put it in the NSCache buffer
-      [_buffer setObject:[UIImage imageWithData:imageData] forKey:[urlPath stringByURLEncoding]];
+      [_buffer setObject:image forKey:[urlPath stringByURLEncoding]];
       
       // Also write it to file
       [imageData writeToFile:[_cachePath stringByAppendingPathComponent:[urlPath stringByURLEncoding]] atomically:YES];
@@ -139,29 +139,21 @@
   // Check to make sure urlPath is not in a pendingRequest already
   if ([_pendingRequests objectForKey:urlPath]) return;
   
-  __block ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:urlPath]];
+  ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:urlPath]];
   request.requestMethod = @"GET";
   request.allowCompressedResponse = YES;
   
   // Request Completion Block
-  [request setCompletionBlock:^{
-    [self downloadImageRequestFinished:request withDelegate:delegate];
-    // Remove request from pendingRequests
-    [_pendingRequests removeObjectForKey:[[request originalURL] absoluteString]];
-  }];
-  [request setFailedBlock:^{
-    [self downloadImageRequestFailed:request withDelegate:delegate];
-    
-    // Remove request from pendingRequests
-    [_pendingRequests removeObjectForKey:[[request originalURL] absoluteString]];
-  }];
+  [request setDelegate:self];
+  [request setDidFinishSelector:@selector(downloadImageRequestFinished:)];
+  [request setDidFailSelector:@selector(downloadImageRequestFailed:)];
   
   // Start the Request
   [_pendingRequests setObject:request forKey:urlPath];
   [_requestQueue addOperation:request];
 }
 
-- (void)downloadImageRequestFinished:(ASIHTTPRequest *)request withDelegate:(id)delegate {
+- (void)downloadImageRequestFinished:(ASIHTTPRequest *)request {
   NSString *urlPath = [[request originalURL] absoluteString];
   
   if ([request responseData]) {
@@ -171,6 +163,9 @@
 //      [delegate performSelector:@selector(imageCacheDidLoad:forURLPath:) withObject:[request responseData] withObject:urlPath];
 //    }
     
+    // Remove request from pendingRequests
+    [_pendingRequests removeObjectForKey:[[request originalURL] absoluteString]];
+    
     // fire notification
     [[NSNotificationCenter defaultCenter] postNotificationName:kPSImageCacheDidCacheImage object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[request responseData], @"imageData", urlPath, @"urlPath", nil]];
   } else {
@@ -178,8 +173,9 @@
   }
 }
 
-- (void)downloadImageRequestFailed:(ASIHTTPRequest *)request withDelegate:(id)delegate {
-  // something bad happened
+- (void)downloadImageRequestFailed:(ASIHTTPRequest *)request {
+  // something bad happened, retry
+  [[[request copy] autorelease] startAsynchronous];
 }
 
 #pragma mark NSCacheDelegate

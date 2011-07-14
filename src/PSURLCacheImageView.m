@@ -72,21 +72,21 @@ static dispatch_queue_t _urlCacheImageViewQueue = nil;
 }
 
 #pragma mark - PSImageCacheDelegate
-- (void)imageCacheDidLoad:(NSData *)imageData forURLPath:(NSString *)urlPath {
-  if ([urlPath isEqualToString:_urlPath]) {
-    if (imageData) {
-      dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        UIImage *image = [UIImage imageWithData:imageData];
-        dispatch_async(dispatch_get_main_queue(), ^{
-          if (image && ![image isEqual:self.image]) {
-            [self setImage:image];
-            //            self.image = image;
-          }
-        });
-      });
-    }
-  }
-}
+//- (void)imageCacheDidLoad:(NSData *)imageData forURLPath:(NSString *)urlPath {
+//  if ([urlPath isEqualToString:_urlPath]) {
+//    if (imageData) {
+//      dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+//        UIImage *image = [UIImage imageWithData:imageData];
+//        dispatch_async(dispatch_get_main_queue(), ^{
+//          if (image && ![image isEqual:self.image]) {
+//            [self setImage:image];
+//            //            self.image = image;
+//          }
+//        });
+//      });
+//    }
+//  }
+//}
 
 - (void)dealloc {
   [[NSNotificationCenter defaultCenter] removeObserver:self name:kPSImageCacheDidCacheImage object:nil];

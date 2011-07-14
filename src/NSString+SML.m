@@ -202,13 +202,18 @@
 
 #pragma mark - URL Encoding
 - (NSString *)stringByURLEncoding {
-  NSString *result = (NSString *)CFURLCreateStringByAddingPercentEscapes(kCFAllocatorDefault,
-                                                                         (CFStringRef)self,
-                                                                         NULL,
-                                                                         CFSTR(":/=,!$&'()*+;[]@#?"),
-                                                                         kCFStringEncodingUTF8);
+  NSString* escapedUrlString =
+  [self stringByAddingPercentEscapesUsingEncoding:
+   NSUTF8StringEncoding];
+  return escapedUrlString;
   
-  return [result autorelease];
+//  NSString *result = (NSString *)CFURLCreateStringByAddingPercentEscapes(kCFAllocatorDefault,
+//                                                                         (CFStringRef)self,
+//                                                                         NULL,
+//                                                                         CFSTR(":/=,!$&'()*+;[]@#?"),
+//                                                                         kCFStringEncodingUTF8);
+  
+//  return [result autorelease];
 }
 
 // This is more rarely used

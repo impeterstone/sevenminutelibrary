@@ -35,8 +35,8 @@
 
 // Remote Request
 - (void)downloadImageForURLPath:(NSString *)urlPath withDelegate:(id)delegate;
-- (void)downloadImageRequestFinished:(ASIHTTPRequest *)request withDelegate:(id)delegate;
-- (void)downloadImageRequestFailed:(ASIHTTPRequest *)request withDelegate:(id)delegate;
+- (void)downloadImageRequestFinished:(ASIHTTPRequest *)request;
+- (void)downloadImageRequestFailed:(ASIHTTPRequest *)request;
 
 // Helpers
 + (NSString *)documentDirectory;
