@@ -56,12 +56,8 @@
   
   int i = 0;
   for (UIView *view in viewArray) {
-    view.width -= 20;
-    view.height -= 38;
-    view.layer.cornerRadius = 20;
-    view.layer.masksToBounds = YES;
-    view.left = 10 + i * view.width + (i * 20);
-    view.backgroundColor = [UIColor blueColor];
+//    view.height -= 38;
+    view.left = i * view.width;
     [_scrollView addSubview:view];
     i++;
   }
