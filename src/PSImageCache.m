@@ -75,10 +75,10 @@
     UIImage *image = [UIImage imageWithData:imageData];
     if (image) {
       // First put it in the NSCache buffer
-      [_buffer setObject:image forKey:[urlPath stringByURLEncoding]];
+      [_buffer setObject:image forKey:[urlPath stringFromMD5Hash]];
       
       // Also write it to file
-      [imageData writeToFile:[_cachePath stringByAppendingPathComponent:[urlPath stringByURLEncoding]] atomically:YES];
+      [imageData writeToFile:[_cachePath stringByAppendingPathComponent:[urlPath stringFromMD5Hash]] atomically:YES];
     }
     
     VLog(@"PSImageCache CACHE: %@", urlPath);
@@ -91,7 +91,7 @@
   
   // First check NSCache buffer
   //  NSData *imageData = [_buffer objectForKey:[urlPath stringByURLEncoding]];
-  UIImage *image = [_buffer objectForKey:[urlPath stringByURLEncoding]];
+  UIImage *image = [_buffer objectForKey:[urlPath stringFromMD5Hash]];
   if (image) {
     // Image exists in buffer
     VLog(@"PSImageCache CACHE HIT: %@", urlPath);
@@ -99,13 +99,13 @@
   } else {
     // Image not in buffer, read from disk instead
     VLog(@"PSImageCache CACHE MISS: %@", urlPath);
-    image = [UIImage imageWithContentsOfFile:[_cachePath stringByAppendingPathComponent:[urlPath stringByURLEncoding]]];
+    image = [UIImage imageWithContentsOfFile:[_cachePath stringByAppendingPathComponent:[urlPath stringFromMD5Hash]]];
     
     // If Image is in disk, read it
     if (image) {
       VLog(@"PSImageCache DISK HIT: %@", urlPath);
       // Put this image into the buffer also
-      [_buffer setObject:image forKey:[urlPath stringByURLEncoding]];
+      [_buffer setObject:image forKey:[urlPath stringFromMD5Hash]];
       return image;
     } else {
       VLog(@"PSImageCache DISK MISS: %@", urlPath);
@@ -119,12 +119,12 @@
 }
 
 - (BOOL)hasImageForURLPath:(NSString *)urlPath {
-  if ([_buffer objectForKey:[urlPath stringByURLEncoding]]) {
+  if ([_buffer objectForKey:[urlPath stringFromMD5Hash]]) {
     // Image exists in memcache
     return YES;
   } else {
     // Check disk for image
-    return [[NSFileManager defaultManager] fileExistsAtPath:[_cachePath stringByAppendingPathComponent:[urlPath stringByURLEncoding]]];
+    return [[NSFileManager defaultManager] fileExistsAtPath:[_cachePath stringByAppendingPathComponent:[urlPath stringFromMD5Hash]]];
   }
 }
 
