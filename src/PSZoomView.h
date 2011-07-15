@@ -11,6 +11,7 @@
 #import "PSImageView.h"
 
 @interface PSZoomView : PSView <UIScrollViewDelegate> {
+  
   UIScrollView *_containerView;
   PSImageView *_zoomImageView;
   UIView *_shadeView;

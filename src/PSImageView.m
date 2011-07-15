@@ -59,6 +59,7 @@
     [super setImage:image];
     [_loadingIndicator startAnimating];
   }
+//  [self setFrame:CGRectMake(self.frame.origin.x, self.frame.origin.y, image.size.width, image.size.height)];
 }
 
 - (void)animateImageFade:(UIImage *)image {

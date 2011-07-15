@@ -22,7 +22,7 @@
 }
 
 - (CGRect)placeholderRectForBounds:(CGRect)bounds {
-  return CGRectInset(bounds, _inset.width ,_inset.height+1);
+  return CGRectInset(bounds, _inset.width ,_inset.height);
 }
 
 // text position
