@@ -31,7 +31,4 @@
 - (void)showProgress;
 - (void)hideProgress;
 
-- (void)updateLoginProgress:(NSNotification *)notification;
-- (void)updateLoginProgressOnMainThread:(NSDictionary *)userInfo;
-
 @end

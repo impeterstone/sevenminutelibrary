@@ -27,8 +27,6 @@
   if (self) {
     _isShowing = NO;
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateLoginProgress:) name:kUpdateLoginProgress object:nil];
-    
     // Container View
     UIWindow *window = [UIApplication sharedApplication].keyWindow;
     if (!window) {
@@ -61,7 +59,6 @@
   RELEASE_SAFELY(_progressView);
   RELEASE_SAFELY(_progressLabel);
   RELEASE_SAFELY(_containerView);
-  [[NSNotificationCenter defaultCenter] removeObserver:self name:kUpdateLoginProgress object:nil];
   [super dealloc];
 }
 
@@ -101,16 +98,6 @@
                    completion:^(BOOL finished) {
                      _progressView.progress = 0.0;
                    }];
-}
-
-#pragma mark - Notifications
-- (void)updateLoginProgress:(NSNotification *)notification {
-  [self performSelectorOnMainThread:@selector(updateLoginProgressOnMainThread:) withObject:[notification userInfo] waitUntilDone:NO];
-}
-
-- (void)updateLoginProgressOnMainThread:(NSDictionary *)userInfo {
-  _progressView.progress = [[userInfo objectForKey:@"progress"] floatValue];
-  _progressLabel.text = [NSString stringWithFormat:@"Downloading Albums: %@ of %@", [userInfo objectForKey:@"index"], [userInfo objectForKey:@"total"]];
 }
 
 @end
