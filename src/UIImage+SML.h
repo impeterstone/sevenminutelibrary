@@ -36,5 +36,9 @@
 - (UIImage *)scaledProportionalToSize:(CGSize)desiredSize;
 - (UIImage *)scaledBoundedByWidth:(CGFloat)desiredWidth;
 
+// This one SCALES based on content mode, DOES NOT CROP
+- (UIImage *)resizedImageWithContentMode:(UIViewContentMode)contentMode
+                                  bounds:(CGSize)bounds
+                    interpolationQuality:(CGInterpolationQuality)quality;
 
 @end

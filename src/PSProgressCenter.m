@@ -12,6 +12,8 @@
 
 @implementation PSProgressCenter
 
+@synthesize progressView = _progressView;
+
 + (PSProgressCenter *)defaultCenter {
   static PSProgressCenter *defaultCenter;
   if (!defaultCenter) {
@@ -23,6 +25,8 @@
 - (id)init {
   self = [super init];
   if (self) {
+    _isShowing = NO;
+    
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(updateLoginProgress:) name:kUpdateLoginProgress object:nil];
     
     // Container View
@@ -46,7 +50,6 @@
     _progressLabel.textAlignment = UITextAlignmentCenter;
     _progressLabel.font = SUBTITLE_FONT;
     _progressLabel.textColor = [UIColor whiteColor];
-    _progressLabel.text = @"Downloading Albums...";
     
     [_containerView addSubview:_progressView];
     [_containerView addSubview:_progressLabel];
@@ -62,19 +65,37 @@
   [super dealloc];
 }
 
+#pragma mark - Set Progress
+- (void)setProgress:(float)newProgress {
+  _progressView.progress = newProgress;
+}
+
+- (void)setMessage:(NSString *)message {
+  _progressLabel.text = message;
+}
+
 #pragma mark - Show/Hide
 - (void)showProgress {
+  if (_isShowing) {
+    return;
+  }
+  
   [UIView animateWithDuration:0.4
                    animations:^{
                      _containerView.top -= _containerView.height;
+                     _isShowing = YES;
                    }
                    completion:^(BOOL finished) {
                    }];
 }
 
 - (void)hideProgress {
+  if (!_isShowing) {
+    return;
+  }
   [UIView animateWithDuration:0.4
                    animations:^{
+                     _isShowing = NO;
                      _containerView.top += _containerView.height;
                    }
                    completion:^(BOOL finished) {

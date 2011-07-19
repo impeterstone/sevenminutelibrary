@@ -15,9 +15,18 @@
   UIView *_containerView;
   DDProgressView *_progressView;
   UILabel *_progressLabel;
+  
+  BOOL _isShowing;
 }
 
+@property (nonatomic, readonly) DDProgressView *progressView;
+
 + (PSProgressCenter *)defaultCenter;
+
+// Override UIProgressView's default set
+- (void)setProgress:(float)newProgress;
+
+- (void)setMessage:(NSString *)message;
 
 - (void)showProgress;
 - (void)hideProgress;
