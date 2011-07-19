@@ -8,8 +8,8 @@
 
 #import "PSNullView.h"
 
-static UIImage *_emptyImage = nil;
-static UIImage *_loadingImage = nil;
+//static UIImage *_emptyImage = nil;
+//static UIImage *_loadingImage = nil;
 
 @implementation PSNullView
 
@@ -24,7 +24,7 @@ static UIImage *_loadingImage = nil;
   self = [super initWithFrame:frame];
   if (self) {
     self.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    self.backgroundColor = [UIColor colorWithPatternImage:_emptyImage];
+//    self.backgroundColor = [UIColor colorWithPatternImage:_emptyImage];
     
     _state = PSNullViewStateDisabled;
     
