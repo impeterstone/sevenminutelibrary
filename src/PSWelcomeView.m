@@ -56,8 +56,10 @@
   
   int i = 0;
   for (UIView *view in viewArray) {
-//    view.height -= 38;
-    view.left = i * view.width;
+    view.layer.cornerRadius = 10;
+    view.layer.masksToBounds = YES;
+    view.top = 20;
+    view.left = 20 + (i * view.width) + (i * 40);
     [_scrollView addSubview:view];
     i++;
   }
