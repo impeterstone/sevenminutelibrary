@@ -64,6 +64,7 @@ static UIImage *_loadingImage = nil;
 - (void)setupEmptyView {
   _emptyView = [[UIView alloc] initWithFrame:self.bounds];
   _emptyView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
+  _emptyView.backgroundColor = [UIColor grayColor];
 //  _emptyView.backgroundColor = [UIColor colorWithPatternImage:_emptyImage];
 }
 

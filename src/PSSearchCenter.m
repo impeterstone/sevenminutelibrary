@@ -46,7 +46,7 @@ static NSString *_savedPath = nil;
 
 #pragma mark - Terms
 - (NSArray *)searchResultsForTerm:(NSString *)term {
-  NSPredicate *searchPredicate = [NSPredicate predicateWithFormat:@"SELF CONTAINS[cd] %@", term];
+  NSPredicate *searchPredicate = [NSPredicate predicateWithFormat:@"SELF BEGINSWITH[cd] %@", term];
   NSArray *sortedKeys = [_terms keysSortedByValueUsingComparator:^(id obj1, id obj2) {
     // DESCENDING
     if ([obj1 integerValue] < [obj2 integerValue]) {
