@@ -20,15 +20,20 @@ typedef enum {
   
   // Loading
   UIView *_loadingView;
+  UILabel *_loadingLabel;
   
   // Empty
   UIView *_emptyView;
+  UILabel *_emptyLabel;
 }
 
 @property (nonatomic, assign) PSNullViewState state;
 
 - (void)setupLoadingView;
 - (void)setupEmptyView;
+
+- (void)setLoadingLabel:(NSString *)loadingLabel;
+- (void)setEmptyLabel:(NSString *)emptyLabel;
 
 - (void)showNullView;
 - (void)hideNullView;
