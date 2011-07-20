@@ -76,6 +76,7 @@
   if (_isShowing) {
     return;
   }
+  _progressView.progress = 0.0;
   
   [UIView animateWithDuration:0.4
                    animations:^{
