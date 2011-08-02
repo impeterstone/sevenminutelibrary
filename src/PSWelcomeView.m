@@ -8,27 +8,30 @@
 
 #import "PSWelcomeView.h"
 
+@interface PSWelcomeView (Private)
+
+@end
+
 @implementation PSWelcomeView
 
 @synthesize viewArray = _viewArray;
+@synthesize currentPage = _currentPage;
 
 - (id)initWithFrame:(CGRect)frame {
   self = [super initWithFrame:frame];
   if (self) {
-    _scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, self.width, self.height - 38)];
-    _pageControl = [[UIPageControl alloc] initWithFrame:CGRectMake(0, self.height - 38, self.width, 38)];
+    _currentPage = 0;
+    
+    _scrollView = [[UIScrollView alloc] initWithFrame:CGRectMake(0, 0, self.width, self.height)];
     
     _scrollView.scrollsToTop = NO;
     _scrollView.pagingEnabled = YES;
+    _scrollView.scrollEnabled = NO;
     _scrollView.showsVerticalScrollIndicator = NO;
     _scrollView.showsHorizontalScrollIndicator = NO;
-    _scrollView.delegate = self;
-    
-    _pageControl.numberOfPages = 1;
-    _pageControl.hidesForSinglePage = YES;
+      _scrollView.delegate = self;
     
     [self addSubview:_scrollView];
-    [self addSubview:_pageControl];
   }
   return self;
 }
@@ -36,7 +39,6 @@
 - (void)dealloc {
   RELEASE_SAFELY(_viewArray);
   RELEASE_SAFELY(_scrollView);
-  RELEASE_SAFELY(_pageControl);
   [super dealloc];
 }
 
@@ -44,6 +46,24 @@
 - (void)layoutSubviews {
   [super layoutSubviews];
   
+}
+
+#pragma mark - Scroll
+- (void)scrollToPage:(NSUInteger)page animated:(BOOL)animated {
+  [_scrollView scrollRectToVisible:[[_viewArray objectAtIndex:page] frame] animated:animated];
+  _currentPage = page;
+}
+
+- (void)next {
+  if (_currentPage == [_viewArray count] - 1) return;
+  
+  [self scrollToPage:(_currentPage + 1) animated:YES];
+}
+
+- (void)prev {
+  if (_currentPage == 0) return;
+  
+  [self scrollToPage:(_currentPage - 1) animated:YES];
 }
 
 #pragma mark - Configure
@@ -56,18 +76,20 @@
   
   int i = 0;
   for (UIView *view in viewArray) {
-    view.layer.cornerRadius = 10;
-    view.layer.masksToBounds = YES;
-    view.top = 20;
-    view.left = 20 + (i * view.width) + (i * 40);
+//    view.layer.cornerRadius = 10;
+//    view.layer.masksToBounds = YES;
+    view.top = 0;
+    view.left = (i * view.width);
     [_scrollView addSubview:view];
     i++;
   }
   _scrollView.contentOffset = CGPointZero;
   _scrollView.contentSize = CGSizeMake(_scrollView.width * viewCount, _scrollView.height);
-  _pageControl.numberOfPages = viewCount;
-  _pageControl.currentPage = 0;
   
+}
+
+- (NSUInteger)numPages {
+  return [_viewArray count];
 }
 
 #pragma mark - UIScrollViewDelegate
@@ -75,7 +97,8 @@
   // Switch the indicator when more than 50% of the previous/next page is visible
   CGFloat pageWidth = scrollView.width;
   int page = floor((scrollView.contentOffset.x - pageWidth / 2) / pageWidth) + 1;
-  _pageControl.currentPage = page;
+  
+  _currentPage = page;
 }
 
 @end

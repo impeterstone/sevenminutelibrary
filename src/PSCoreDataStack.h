@@ -21,7 +21,6 @@
 
 // Persistent Store
 + (void)resetPersistentStoreCoordinator;
-+ (void)createPersistentStoreCoordinator;
 + (void)deleteAllObjects:(NSString *)entityDescription inContext:(NSManagedObjectContext *)context;
 + (void)saveMainThreadContext;
 + (void)saveInContext:(NSManagedObjectContext *)context;

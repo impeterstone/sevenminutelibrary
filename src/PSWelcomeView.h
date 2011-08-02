@@ -11,11 +11,17 @@
 
 @interface PSWelcomeView : PSView <UIScrollViewDelegate> {
   UIScrollView *_scrollView;
-  UIPageControl *_pageControl;
-  
+  NSUInteger _currentPage;
   NSArray *_viewArray;
 }
 
 @property (nonatomic, retain) NSArray *viewArray;
+@property (nonatomic, readonly) NSUInteger currentPage;
+
+- (void)scrollToPage:(NSUInteger)page animated:(BOOL)animated;
+- (void)next;
+- (void)prev;
+
+- (NSUInteger)numPages;
 
 @end
