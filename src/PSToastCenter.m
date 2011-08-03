@@ -85,7 +85,7 @@
     // Configure toast button
     [_toastButton setTitle:toastMessage forState:UIControlStateNormal];
     [_toastButton addTarget:toastTarget action:toastAction forControlEvents:UIControlEventTouchUpInside]; // optional
-    [_toastButton setBackgroundImage:[UIImage imageNamed:@"loadmore-bg.png"] forState:UIControlStateNormal];
+    [_toastButton setBackgroundImage:[UIImage imageNamed:@"bg_bar_320x44.png"] forState:UIControlStateNormal];
     
     [UIView animateWithDuration:_toastAnimationDuration
                      animations:^{

@@ -51,7 +51,7 @@
   
   // Styling
   _loadingLabel.backgroundColor = [UIColor clearColor];
-  _loadingLabel.font = TITLE_FONT;
+  _loadingLabel.font = NORMAL_FONT;
   _loadingLabel.textColor = [UIColor whiteColor];
   _loadingLabel.textAlignment = UITextAlignmentCenter;
   _loadingLabel.shadowColor = [UIColor blackColor];

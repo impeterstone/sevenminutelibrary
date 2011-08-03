@@ -34,7 +34,7 @@
     }
     
     _containerView = [[UIView alloc] initWithFrame:CGRectMake(0, window.bounds.size.height, window.bounds.size.width, 44.0)];
-    _containerView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"loadmore-bg.png"]];
+    _containerView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"bg_bar_320x44.png"]];
     
     [window addSubview:_containerView];
     
