@@ -43,7 +43,7 @@
   loadingIndicator.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
   [loadingIndicator startAnimating];
   loadingIndicator.center = _loadingView.center;
-  loadingIndicator.top = 180.0;
+  loadingIndicator.top = 190.0;
   [_loadingView addSubview:loadingIndicator];
   
   _loadingLabel = [[UILabel alloc] initWithFrame:CGRectZero];

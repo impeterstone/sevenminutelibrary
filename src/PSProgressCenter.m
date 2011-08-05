@@ -39,11 +39,11 @@
     [window addSubview:_containerView];
     
     // Progress View
-    _progressView = [[DDProgressView alloc] initWithFrame:CGRectMake(10, 18, 300, 22)];
+    _progressView = [[DDProgressView alloc] initWithFrame:CGRectMake(10, 18, _containerView.width - 20, 22)];
     _progressView.progress = 0.0;
     
     // Progress Label
-    _progressLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 2, 300, 14)];
+    _progressLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 2, _containerView.width - 20, 14)];
     _progressLabel.backgroundColor = [UIColor clearColor];
     _progressLabel.textAlignment = UITextAlignmentCenter;
     _progressLabel.font = SUBTITLE_FONT;
