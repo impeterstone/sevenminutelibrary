@@ -43,7 +43,6 @@
   loadingIndicator.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
   [loadingIndicator startAnimating];
   loadingIndicator.center = _loadingView.center;
-  loadingIndicator.top = 190.0;
   [_loadingView addSubview:loadingIndicator];
   
   _loadingLabel = [[UILabel alloc] initWithFrame:CGRectZero];
@@ -51,16 +50,13 @@
   
   // Styling
   _loadingLabel.backgroundColor = [UIColor clearColor];
-  _loadingLabel.font = NORMAL_FONT;
+  _loadingLabel.font = LARGE_FONT;
   _loadingLabel.textColor = [UIColor whiteColor];
   _loadingLabel.textAlignment = UITextAlignmentCenter;
   _loadingLabel.shadowColor = [UIColor blackColor];
   _loadingLabel.shadowOffset = CGSizeMake(0, 1);
   
-  _loadingLabel.numberOfLines = 5;
-//  _loadingLabel.top = loadingIndicator.bottom + 5.0;
-  _loadingLabel.width = self.bounds.size.width;
-  _loadingLabel.height = self.bounds.size.height;
+  _loadingLabel.numberOfLines = 0;
   [_loadingView addSubview:_loadingLabel];
   
   [loadingIndicator release];
@@ -83,19 +79,22 @@
   _emptyLabel.shadowColor = [UIColor blackColor];
   _emptyLabel.shadowOffset = CGSizeMake(0, 1);
   
-  _emptyLabel.numberOfLines = 5;
-  _emptyLabel.width = self.bounds.size.width;
-  _emptyLabel.height = self.bounds.size.height;
+  _emptyLabel.numberOfLines = 0;
   [_emptyView addSubview:_emptyLabel];
 }
 
 #pragma mark - Labels
 - (void)setLoadingLabel:(NSString *)loadingLabel {
   _loadingLabel.text = loadingLabel;
+  [_loadingLabel sizeToFit];
+  _loadingLabel.center = self.center;
+  _loadingLabel.top += 30;
 }
 
 - (void)setEmptyLabel:(NSString *)emptyLabel {
   _emptyLabel.text = emptyLabel;
+  [_emptyLabel sizeToFit];
+  _emptyLabel.center = self.center;
 }
 
 #pragma mark - State
