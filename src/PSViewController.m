@@ -20,9 +20,7 @@
 
 - (void)loadView {
   [super loadView];
-  self.view.opaque = YES;
   self.view.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
-  self.view.autoresizesSubviews = YES;
 }
 
 - (void)dealloc {

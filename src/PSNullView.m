@@ -24,7 +24,6 @@
   self = [super initWithFrame:frame];
   if (self) {
     self.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-//    self.backgroundColor = [UIColor colorWithPatternImage:_emptyImage];
     
     _state = PSNullViewStateDisabled;
     
@@ -34,8 +33,23 @@
   return self;
 }
 
+- (void)layoutSubviews {
+  [super layoutSubviews];
+  
+  _loadingView.frame = self.bounds;
+  _emptyView.frame = self.bounds;
+  
+  
+  [_loadingLabel sizeToFit];
+  _loadingLabel.center = self.center;
+  _loadingLabel.top += 30;
+  
+  [_emptyLabel sizeToFit];
+  _emptyLabel.center = self.center;
+}
+
 - (void)setupLoadingView {
-  _loadingView = [[UIView alloc] initWithFrame:self.bounds];
+  _loadingView = [[UIView alloc] initWithFrame:CGRectZero];
   _loadingView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 //  _loadingView.backgroundColor = [UIColor colorWithPatternImage:_loadingImage];
   
@@ -46,7 +60,6 @@
   [_loadingView addSubview:loadingIndicator];
   
   _loadingLabel = [[UILabel alloc] initWithFrame:CGRectZero];
-  _loadingLabel.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
   
   // Styling
   _loadingLabel.backgroundColor = [UIColor clearColor];
@@ -63,13 +76,12 @@
 }
 
 - (void)setupEmptyView {
-  _emptyView = [[UIView alloc] initWithFrame:self.bounds];
+  _emptyView = [[UIView alloc] initWithFrame:CGRectZero];
   _emptyView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
 //  _emptyView.backgroundColor = [UIColor lightGrayColor];
 //  _emptyView.backgroundColor = [UIColor colorWithPatternImage:_emptyImage];
   
   _emptyLabel = [[UILabel alloc] initWithFrame:CGRectZero];
-  _emptyLabel.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
   
   // Styling
   _emptyLabel.backgroundColor = [UIColor clearColor];
@@ -86,15 +98,12 @@
 #pragma mark - Labels
 - (void)setLoadingLabel:(NSString *)loadingLabel {
   _loadingLabel.text = loadingLabel;
-  [_loadingLabel sizeToFit];
-  _loadingLabel.center = self.center;
-  _loadingLabel.top += 30;
+  [self setNeedsLayout];
 }
 
 - (void)setEmptyLabel:(NSString *)emptyLabel {
   _emptyLabel.text = emptyLabel;
-  [_emptyLabel sizeToFit];
-  _emptyLabel.center = self.center;
+  [self setNeedsLayout];
 }
 
 #pragma mark - State
