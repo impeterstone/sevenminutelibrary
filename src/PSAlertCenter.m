@@ -3,7 +3,7 @@
 //  SevenMinuteLibrary
 //
 //  Created by Peter Shih on 6/18/11.
-//  Copyright 2011 Seven Minute Labs, Inc.. All rights reserved.
+//  Copyright 2011 Seven Minute Labs. All rights reserved.
 //
 
 #import "PSAlertCenter.h"
