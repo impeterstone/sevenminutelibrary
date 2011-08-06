@@ -3,7 +3,7 @@
 //  SevenMinuteLibrary
 //
 //  Created by Peter Shih on 3/10/11.
-//  Copyright 2011 Peter Shih. All rights reserved.
+//  Copyright 2011 Seven Minute Labs, Inc.. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>

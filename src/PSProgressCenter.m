@@ -1,9 +1,9 @@
 //
 //  PSProgressCenter.m
-//  Moogle
+//  SevenMinuteLibrary
 //
 //  Created by Peter Shih on 7/14/11.
-//  Copyright 2011 __MyCompanyName__. All rights reserved.
+//  Copyright 2011 Seven Minute Labs, Inc.. All rights reserved.
 //
 
 #import "PSProgressCenter.h"

@@ -1,9 +1,9 @@
 //
 //  PSTextField.h
-//  Moogle
+//  SevenMinuteLibrary
 //
 //  Created by Peter Shih on 7/11/11.
-//  Copyright 2011 __MyCompanyName__. All rights reserved.
+//  Copyright 2011 Seven Minute Labs, Inc.. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
