@@ -55,7 +55,7 @@
   }
 }
 
-+ (UIImage*)imageFromView:(UIView*)view {
++ (UIImage *)imageFromView:(UIView*)view {
   [self beginImageContextWithSize:[view bounds].size];
   BOOL hidden = [view isHidden];
   [view setHidden:NO];

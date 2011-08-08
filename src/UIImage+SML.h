@@ -22,9 +22,9 @@
 - (void)encodeWithCoder:(NSCoder *)encoder;
 
 #pragma mark - Screenshot
-+ (UIImage*)imageFromView:(UIView*)view;
-+ (UIImage*)imageFromView:(UIView*)view scaledToSize:(CGSize)newSize;
-+ (UIImage*)imageWithImage:(UIImage*)image scaledToSize:(CGSize)newSize;
++ (UIImage *)imageFromView:(UIView*)view;
++ (UIImage *)imageFromView:(UIView*)view scaledToSize:(CGSize)newSize;
++ (UIImage *)imageWithImage:(UIImage*)image scaledToSize:(CGSize)newSize;
 
 #pragma mark - Scaling and Cropping
 - (CGSize)scaledSizeProportionalToSize:(CGSize)desiredSize;
