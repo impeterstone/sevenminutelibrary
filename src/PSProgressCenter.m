@@ -46,7 +46,7 @@
     _progressLabel = [[UILabel alloc] initWithFrame:CGRectMake(10, 2, _containerView.width - 20, 14)];
     _progressLabel.backgroundColor = [UIColor clearColor];
     _progressLabel.textAlignment = UITextAlignmentCenter;
-    _progressLabel.font = SUBTITLE_FONT;
+    _progressLabel.font = PS_SUBTITLE_FONT;
     _progressLabel.textColor = [UIColor whiteColor];
     
     [_containerView addSubview:_progressView];

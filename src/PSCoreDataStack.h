@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
-#import "Constants.h"
+#import "PSConstants.h"
 
 @interface PSCoreDataStack : NSObject {
 

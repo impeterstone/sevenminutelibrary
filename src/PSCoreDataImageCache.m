@@ -69,7 +69,7 @@
     }
     [entity performSelector:@selector(setImageData:) withObject:imageData];
     [PSCoreDataStack saveInContext:[(NSManagedObject *)entity managedObjectContext]];
-    [[NSNotificationCenter defaultCenter] postNotificationName:kImageCached object:nil userInfo:request.userInfo];
+//    [[NSNotificationCenter defaultCenter] postNotificationName:kImageCached object:nil userInfo:request.userInfo];
   }
   
   [_pendingRequests removeObject:request];

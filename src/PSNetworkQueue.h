@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 #import "ASIHTTPRequest.h"
 #import "ASINetworkQueue.h"
-#import "Constants.h"
+#import "PSConstants.h"
 
 @interface PSNetworkQueue : ASINetworkQueue {
   NSMutableDictionary *_pendingRequests;

@@ -7,7 +7,7 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "Constants.h"
+#import "PSConstants.h"
 #import "NSObject+SML.h"
 #import "NSString+SML.h"
 #import "NSDate+SML.h"

@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import <QuartzCore/QuartzCore.h>
-#import "Constants.h"
+#import "PSConstants.h"
 #import "ASIHTTPRequest.h"
 
 @interface PSImageArrayView : UIImageView {

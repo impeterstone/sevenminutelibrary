@@ -26,7 +26,7 @@
     
     _headerLabel = [[UILabel alloc] initWithFrame:CGRectZero];
     _headerLabel.backgroundColor = [UIColor clearColor];
-    _headerLabel.font = NORMAL_FONT;
+    _headerLabel.font = PS_NORMAL_FONT;
     _headerLabel.textColor = [UIColor whiteColor];
     _headerLabel.numberOfLines = 0;
     _headerLabel.shadowColor = [UIColor blackColor];
@@ -41,7 +41,7 @@
     
     _footerLabel = [[UILabel alloc] initWithFrame:CGRectZero];
     _footerLabel.backgroundColor = [UIColor clearColor];
-    _footerLabel.font = SUBTITLE_FONT;
+    _footerLabel.font = PS_SUBTITLE_FONT;
     _footerLabel.textColor = [UIColor whiteColor];
     _footerLabel.numberOfLines = 1;
     _footerLabel.shadowColor = [UIColor blackColor];

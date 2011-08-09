@@ -10,6 +10,8 @@
 #import "PSObject.h"
 #import "PSCoreDataStack.h"
 
+@class ASIHTTPRequest;
+
 @interface PSCoreDataImageCache : PSObject {
   NSMutableArray *_pendingRequests;
 }
