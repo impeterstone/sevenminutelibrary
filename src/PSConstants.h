@@ -7,7 +7,7 @@
 //
 
 // Import any project-specific constants here
-//#import "Constants.h"
+#import "Constants.h"
 
 #ifdef __APPLE__
 #include "TargetConditionals.h"
@@ -20,10 +20,10 @@
 #define USER_LOCALE [[NSLocale autoupdatingCurrentLocale] localeIdentifier]
 
 /**
- Core Data
+ Core Data (FILL THIS IN LOCAL CONSTANTS)
  */
-#define CORE_DATA_SQL_FILE @"spotlight.sqlite"
-#define CORE_DATA_MOM @"Spotlight"
+//#define CORE_DATA_SQL_FILE
+//#define CORE_DATA_MOM
 
 /**
  Font Defines
