@@ -10,10 +10,12 @@
 
 @implementation PSCell
 
+@synthesize isExpanded = _isExpanded;
+
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
   self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
   if (self) {
-    _separatorStyle = style;
+    _isExpanded = NO;
     self.opaque = YES;
     self.contentMode = UIViewContentModeRedraw;
   }
@@ -42,6 +44,10 @@
       return 480.0;
     }
   }
+}
+
++ (CGFloat)rowHeightForObject:(id)object expanded:(BOOL)expanded forInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
+  return [[self class] rowHeightForObject:object forInterfaceOrientation:interfaceOrientation];
 }
 
 + (CGFloat)rowHeight {

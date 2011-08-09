@@ -27,8 +27,10 @@ typedef uint32_t PSCellType;
 
 
 @interface PSCell : UITableViewCell {
-  UITableViewCellSeparatorStyle _separatorStyle;
+  BOOL _isExpanded;
 }
+
+@property (nonatomic, assign) BOOL isExpanded;
 
 /**
  Reusable Cell Identifier
@@ -51,6 +53,8 @@ typedef uint32_t PSCellType;
  With the object passed
  */
 + (CGFloat)rowHeightForObject:(id)object forInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
+
++ (CGFloat)rowHeightForObject:(id)object expanded:(BOOL)expanded forInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation;
 
 - (void)fillCellWithObject:(id)object;
 - (void)fillCellWithObject:(id)object shouldLoadImages:(BOOL)shouldLoadImages;
