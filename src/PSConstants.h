@@ -13,6 +13,8 @@
 #include "TargetConditionals.h"
 #endif
 
+#define RADIANS(degrees) ((degrees * M_PI) / 180.0)
+
 /**
  Locale/Language
  */
