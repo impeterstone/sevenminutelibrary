@@ -14,15 +14,27 @@
 @required
 
 /**
- If dataIsAvailable and !dataIsLoading and dataSourceIsReady, remove empty/loading screens
- If !dataIsAvailable and !dataIsLoading and dataSourceIsReady, show empty screen
- If dataIsLoading and !dataSourceIsReady, show loading screen
- If !dataIsLoading and !dataSourceIsReady, show empty/error screen
+ Helps determine if a loading/empty screen is shown
+ Or if data has been loaded to display
+ Subclasses should implement
  */
 - (BOOL)dataIsAvailable;
 - (BOOL)dataIsLoading;
-- (BOOL)dataSourceIsReady;
+
+/**
+ Initiates loading of the dataSource
+ */
+- (void)loadDataSource;
+- (void)dataSourceDidLoad;
+
+/**
+ Tell the state machine to either show a loading/empty view or show data
+ */
 - (void)updateState;
+
+/**
+ Used to update the currently active scrollview (for scrollsToTop fix)
+ */
 - (void)updateScrollsToTop:(BOOL)isEnabled;
 
 @end

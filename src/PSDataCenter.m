@@ -22,6 +22,14 @@
 
 @synthesize delegate = _delegate;
 
++ (id)defaultCenter {
+  static id defaultCenter = nil;
+  if (!defaultCenter) {
+    defaultCenter = [[self alloc] init];
+  }
+  return defaultCenter;
+}
+
 - (id)init {
   self = [super init];
   if (self) {

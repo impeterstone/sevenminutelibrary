@@ -18,22 +18,13 @@ typedef enum {
 @interface PSNullView : PSView {
   PSNullViewState _state;
   
-  // Loading
   UIView *_loadingView;
-  UILabel *_loadingLabel;
-  
-  // Empty
   UIView *_emptyView;
-  UILabel *_emptyLabel;
 }
 
 @property (nonatomic, assign) PSNullViewState state;
-
-- (void)setupLoadingView;
-- (void)setupEmptyView;
-
-- (void)setLoadingLabel:(NSString *)loadingLabel;
-- (void)setEmptyLabel:(NSString *)emptyLabel;
+@property (nonatomic, retain) UIView *loadingView;
+@property (nonatomic, retain) UIView *emptyView;
 
 - (void)showNullView;
 - (void)hideNullView;

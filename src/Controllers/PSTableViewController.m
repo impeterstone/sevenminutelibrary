@@ -20,8 +20,9 @@
 @synthesize items = _items;
 @synthesize searchItems = _searchItems;
 
-- (id)init {
-  self = [super init];
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
+{
+  self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
   if (self) {    
     _items = [[NSMutableArray alloc] initWithCapacity:1];
     _sectionTitles = [[NSMutableArray alloc] initWithCapacity:1];
@@ -240,37 +241,6 @@
   _loadingMore = YES;
 }
 
-- (void)updateState {
-  [super updateState];
-}
-
-// Called when the user logs out and we need to clear all cached data
-// Subclasses should override this method
-- (void)clearCachedData {
-  [_items removeAllObjects];
-  [self dataSourceDidLoad];
-}
-
-- (void)reloadCardController {
-  [super reloadCardController];
-  _reloading = YES;
-  if (_refreshHeaderView) {
-    [_refreshHeaderView setState:EGOOPullRefreshLoading];
-  }
-}
-
-- (void)unloadCardController {
-  [super unloadCardController];
-}
-
-- (void)dataSourceDidLoad {
-  [super dataSourceDidLoad];
-  _reloading = NO;
-  if (_refreshHeaderView) {
-    [_refreshHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_tableView];
-  }
-}
-
 #pragma mark PSStateMachine
 - (BOOL)dataIsAvailable {
   if (_tableView == self.searchDisplayController.searchResultsTableView) {
@@ -284,13 +254,30 @@
   }
 }
 
-- (BOOL)dataSourceIsReady {
-  return YES;
-}
-
 - (BOOL)dataIsLoading {
   return _reloading;
 }
+
+- (void)updateState {
+  [super updateState];
+}
+
+- (void)loadDataSource {
+  _reloading = YES;
+  if (_refreshHeaderView) {
+    [_refreshHeaderView setState:EGOOPullRefreshLoading];
+  }
+  [self updateState];
+}
+
+- (void)dataSourceDidLoad {
+  _reloading = NO;
+  if (_refreshHeaderView) {
+    [_refreshHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_tableView];
+  }
+  [self updateState];
+}
+
 
 - (BOOL)cellIsSelected:(NSIndexPath *)indexPath {
 	// Return whether the cell at the specified index path is selected or not
@@ -444,10 +431,9 @@
 //  }
 //}
 
-#pragma mark -
-#pragma mark EGORefreshTableHeaderDelegate Methods
+#pragma mark - EGORefreshTableHeaderDelegate Methods
 - (void)egoRefreshTableHeaderDidTriggerRefresh:(EGORefreshTableHeaderView*)view {
-  [self reloadCardController];
+  [self loadDataSource];
 }
 
 - (BOOL)egoRefreshTableHeaderDataSourceIsLoading:(EGORefreshTableHeaderView*)view {

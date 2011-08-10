@@ -24,6 +24,8 @@
 
 @property (nonatomic, assign) id <PSDataCenterDelegate> delegate;
 
++ (id)defaultCenter;
+
 /**
  Send network operation to server (GET/POST)
  

@@ -8,122 +8,66 @@
 
 #import "PSNullView.h"
 
-//static UIImage *_emptyImage = nil;
-//static UIImage *_loadingImage = nil;
+@interface PSNullView (Private)
+
+- (void)setupLoadingView;
+- (void)setupEmptyView;
+
+@end
 
 @implementation PSNullView
 
 @synthesize state = _state;
-
-+ (void)initialize {
-//  _emptyImage = [[UIImage imageNamed:@"bamboo_bg.png"] retain];
-//  _loadingImage = [[UIImage imageNamed:@"bamboo_bg_alpha.png"] retain];
-}
+@synthesize loadingView = _loadingView;
+@synthesize emptyView = _emptyView;
 
 - (id)initWithFrame:(CGRect)frame {
   self = [super initWithFrame:frame];
-  if (self) {
-    self.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-    
+  if (self) {    
     _state = PSNullViewStateDisabled;
     
-    [self setupEmptyView];
-    [self setupLoadingView];
+    _loadingView = [[UIView alloc] initWithFrame:self.bounds];
+    _loadingView.autoresizingMask = self.autoresizingMask;
+    
+    _emptyView = [[UIView alloc] initWithFrame:self.bounds];
+    _emptyView.autoresizingMask = self.autoresizingMask;
+    
+    [self addSubview:_loadingView];
+    [self addSubview:_emptyView];
   }
   return self;
 }
 
-- (void)layoutSubviews {
+- (void)layoutSubviews
+{
   [super layoutSubviews];
-  
-  _loadingView.frame = self.bounds;
-  _emptyView.frame = self.bounds;
-  
-  
-  [_loadingLabel sizeToFit];
-  _loadingLabel.center = self.center;
-  _loadingLabel.top += 30;
-  
-  [_emptyLabel sizeToFit];
-  _emptyLabel.center = self.center;
-}
-
-- (void)setupLoadingView {
-  _loadingView = [[UIView alloc] initWithFrame:CGRectZero];
-  _loadingView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-//  _loadingView.backgroundColor = [UIColor colorWithPatternImage:_loadingImage];
-  
-  UIActivityIndicatorView *loadingIndicator = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
-  loadingIndicator.autoresizingMask = UIViewAutoresizingFlexibleLeftMargin | UIViewAutoresizingFlexibleRightMargin | UIViewAutoresizingFlexibleTopMargin | UIViewAutoresizingFlexibleBottomMargin;
-  [loadingIndicator startAnimating];
-  loadingIndicator.center = _loadingView.center;
-  [_loadingView addSubview:loadingIndicator];
-  
-  _loadingLabel = [[UILabel alloc] initWithFrame:CGRectZero];
-  
-  // Styling
-  _loadingLabel.backgroundColor = [UIColor clearColor];
-  _loadingLabel.font = PS_LARGE_FONT;
-  _loadingLabel.textColor = [UIColor whiteColor];
-  _loadingLabel.textAlignment = UITextAlignmentCenter;
-  _loadingLabel.shadowColor = [UIColor blackColor];
-  _loadingLabel.shadowOffset = CGSizeMake(0, 1);
-  
-  _loadingLabel.numberOfLines = 0;
-  [_loadingView addSubview:_loadingLabel];
-  
-  [loadingIndicator release];
-}
-
-- (void)setupEmptyView {
-  _emptyView = [[UIView alloc] initWithFrame:CGRectZero];
-  _emptyView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;
-//  _emptyView.backgroundColor = [UIColor lightGrayColor];
-//  _emptyView.backgroundColor = [UIColor colorWithPatternImage:_emptyImage];
-  
-  _emptyLabel = [[UILabel alloc] initWithFrame:CGRectZero];
-  
-  // Styling
-  _emptyLabel.backgroundColor = [UIColor clearColor];
-  _emptyLabel.font = PS_LARGE_FONT;
-  _emptyLabel.textColor = [UIColor whiteColor];
-  _emptyLabel.textAlignment = UITextAlignmentCenter;
-  _emptyLabel.shadowColor = [UIColor blackColor];
-  _emptyLabel.shadowOffset = CGSizeMake(0, 1);
-  
-  _emptyLabel.numberOfLines = 0;
-  [_emptyView addSubview:_emptyLabel];
-}
-
-#pragma mark - Labels
-- (void)setLoadingLabel:(NSString *)loadingLabel {
-  _loadingLabel.text = loadingLabel;
-  [self setNeedsLayout];
-}
-
-- (void)setEmptyLabel:(NSString *)emptyLabel {
-  _emptyLabel.text = emptyLabel;
-  [self setNeedsLayout];
 }
 
 #pragma mark - State
-- (void)setState:(PSNullViewState)state {
+- (void)setState:(PSNullViewState)state
+{
   _state = state;
-  [self removeSubviews];
   
   switch (state) {
     case PSNullViewStateDisabled:
+      _emptyView.alpha = 0.0;
+      _loadingView.alpha = 0.0;
       [self hideNullView];
       break;
     case PSNullViewStateEmpty:
-      [self addSubview:_emptyView];
+      _emptyView.alpha = 1.0;
+      _loadingView.alpha = 0.0;
       [self showNullView];
       break;
     case PSNullViewStateLoading:
-      [self addSubview:_loadingView];
+      _loadingView.alpha = 1.0;
+      _emptyView.alpha = 0.0;
       [self showNullView];
       break;
     default:
+      _emptyView.alpha = 0.0;
+      _loadingView.alpha = 0.0;
+      [self hideNullView];
       break;
   }
 }
@@ -144,8 +88,6 @@
 }
 
 - (void)dealloc {
-  RELEASE_SAFELY(_loadingLabel);
-  RELEASE_SAFELY(_emptyLabel);
   RELEASE_SAFELY(_loadingView);
   RELEASE_SAFELY(_emptyView);
   [super dealloc];

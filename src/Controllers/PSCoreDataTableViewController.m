@@ -22,8 +22,9 @@
 @synthesize sectionNameKeyPathForFetchedResultsController = _sectionNameKeyPathForFetchedResultsController;
 @synthesize searchPredicate = _searchPredicate;
 
-- (id)init {
-  self = [super init];
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
+{
+  self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
   if (self) {
     _context = nil;
     _fetchedResultsController = nil;
@@ -71,14 +72,6 @@
 }
 
 #pragma mark Data Source
-- (void)reloadCardController {
-  [super reloadCardController];
-}
-
-- (void)unloadCardController {
-  [super unloadCardController];
-}
-
 - (void)loadMore {
   [super loadMore];
   
@@ -88,14 +81,14 @@
   [self executeFetch:FetchTypeLoadMore];
 }
 
-- (void)dataSourceDidLoad {
-  [super dataSourceDidLoad];
-  
-  // If we aren't using an FRC delegate, refetch/reload the table
-  if (_frcDelegate == nil) {
-    [self executeFetch:FetchTypeRefresh];
-  }
-}
+//- (void)dataSourceDidLoad {
+//  [super dataSourceDidLoad];
+//  
+//  // If we aren't using an FRC delegate, refetch/reload the table
+//  if (_frcDelegate == nil) {
+//    [self executeFetch:FetchTypeRefresh];
+//  }
+//}
 
 #pragma mark Core Data
 - (void)changesSaved:(NSNotification *)notification {

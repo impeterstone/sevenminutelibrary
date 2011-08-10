@@ -23,17 +23,8 @@
 
 @property (nonatomic, retain) UILabel *navTitleLabel;
 
-- (void)clearCachedData;
-- (void)unloadCardController;
-- (void)reloadCardController;
-- (void)resetCardController;
-- (void)dataSourceDidLoad;
-
-- (void)setupNullView;
-
 // Nav buttons
 - (void)addBackButton;
-
 
 // Orientation
 - (void)orientationChangedFromNotification:(NSNotification *)notification;
