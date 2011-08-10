@@ -12,7 +12,7 @@
 @interface PSURLCache : NSObject {
 }
 
-+ (PSURLCache *)sharedCache;
++ (id)sharedCache;
 
 - (NSDictionary *)cacheResponse:(NSDictionary *)responseDict forURLPath:(NSString *)urlPath shouldMerge:(BOOL)shouldMerge;
 - (NSDictionary *)responseForURLPath:(NSString *)urlPath;

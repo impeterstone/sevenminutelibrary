@@ -22,6 +22,7 @@
 
 @synthesize delegate = _delegate;
 
+// Subclass MUST implement
 + (id)defaultCenter {
   static id defaultCenter = nil;
   if (!defaultCenter) {

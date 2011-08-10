@@ -47,10 +47,10 @@
   _navTitleLabel = [[UILabel alloc] initWithFrame:navTitleView.bounds];
   _navTitleLabel.autoresizingMask = UIViewAutoresizingFlexibleHeight;
   _navTitleLabel.textAlignment = UITextAlignmentCenter;
-  _navTitleLabel.textColor = FB_COLOR_VERY_LIGHT_BLUE;
-  _navTitleLabel.font = [UIFont fontWithName:@"HelveticaNeue-Bold" size:14.0];
   _navTitleLabel.numberOfLines = 3;
-  _navTitleLabel.shadowColor = [UIColor blackColor];
+  _navTitleLabel.font = [PSStyleSheet fontForStyle:@"navigationTitle"];
+  _navTitleLabel.textColor = [PSStyleSheet textColorForStyle:@"navigationTitle"];
+  _navTitleLabel.shadowColor = [PSStyleSheet shadowColorForStyle:@"navigationTitle"];
   _navTitleLabel.shadowOffset = CGSizeMake(0, 1);
   _navTitleLabel.backgroundColor = [UIColor clearColor];
   [navTitleView addSubview:_navTitleLabel];

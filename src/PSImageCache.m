@@ -15,8 +15,8 @@
 
 @synthesize cachePath = _cachePath;
 
-+ (PSImageCache *)sharedCache {
-  static PSImageCache *sharedCache;
++ (id)sharedCache {
+  static id sharedCache;
   if (!sharedCache) {
     sharedCache = [[self alloc] init];
   }

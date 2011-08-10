@@ -6,14 +6,18 @@
 //  Copyright 2011 Seven Minute Labs. All rights reserved.
 //
 
+/**
+ THIS CLASS IS DEPRECATED, DO NOT USE
+ */
+
 #import "PSCoreDataImageCache.h"
 #import "ASIHTTPRequest.h"
 #import "UIImage+SML.h"
 
 @implementation PSCoreDataImageCache
 
-+ (PSCoreDataImageCache *)sharedCache {
-  static PSCoreDataImageCache *sharedCache;
++ (id)sharedCache {
+  static id sharedCache;
   if (!sharedCache) {
     sharedCache = [[self alloc] init];
   }

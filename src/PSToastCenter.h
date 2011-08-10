@@ -24,7 +24,7 @@ typedef enum {
   BOOL _isShowing;
 }
 
-+ (PSToastCenter *)defaultCenter;
++ (id)defaultCenter;
 
 - (void)showToastWithMessage:(NSString *)toastMessage toastType:(PSToastType)toastType toastDuration:(NSTimeInterval)toastDuration;
 - (void)showToastWithMessage:(NSString *)toastMessage toastType:(PSToastType)toastType toastDuration:(NSTimeInterval)toastDuration toastTarget:(id)toastTarget toastAction:(SEL)toastAction;

@@ -16,6 +16,6 @@
 }
 
 // Access shared instance
-+ (PSNetworkQueue *)sharedQueue;
++ (id)sharedQueue;
 
 @end

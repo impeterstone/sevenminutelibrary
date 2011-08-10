@@ -11,8 +11,8 @@
 @implementation PSParserStack
 
 #pragma mark Shared Parser Instance
-+ (PSParserStack *)sharedParser {
-  static PSParserStack *sharedParser = nil;
++ (id)sharedParser {
+  static id sharedParser = nil;
   if (!sharedParser) {
     sharedParser = [[self alloc] init];
   }

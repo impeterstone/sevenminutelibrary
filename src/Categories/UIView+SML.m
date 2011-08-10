@@ -7,7 +7,8 @@
 //
 
 #import "UIView+SML.h"
-
+#import <QuartzCore/QuartzCore.h>
+#import "PSConstants.h"
 
 @implementation UIView (SML)
 
@@ -157,6 +158,18 @@
   while (self.subviews.count) {
     UIView* child = self.subviews.lastObject;
     [child removeFromSuperview];
+  }
+}
+
+#pragma mark - Gradient Layer
+- (void)addGradientLayer {
+  // Only add if a gradient layer hasn't already been added
+  if (![[[self.layer sublayers] lastObject] isKindOfClass:[CAGradientLayer class]]) {
+    CAGradientLayer *gradient = [CAGradientLayer layer];
+    gradient.frame = self.bounds;
+    gradient.colors = [NSArray arrayWithObjects:(id)[[UIColor clearColor] CGColor], (id)[RGBACOLOR(0, 0, 0, 0.9) CGColor], (id)[RGBACOLOR(0, 0, 0, 1.0) CGColor], nil];
+    gradient.locations = [NSArray arrayWithObjects:[NSNumber numberWithFloat:0.6], [NSNumber numberWithFloat:0.99], [NSNumber numberWithFloat:1.0], nil];
+    [self.layer addSublayer:gradient];
   }
 }
 

@@ -21,7 +21,7 @@
 
 @property (nonatomic, readonly) DDProgressView *progressView;
 
-+ (PSProgressCenter *)defaultCenter;
++ (id)defaultCenter;
 
 // Override UIProgressView's default set
 - (void)setProgress:(float)newProgress;

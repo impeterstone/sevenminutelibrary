@@ -35,4 +35,6 @@
 
 - (void)removeSubviews;
 
+- (void)addGradientLayer;
+
 @end

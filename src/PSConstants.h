@@ -8,6 +8,7 @@
 
 // Import any project-specific constants here
 #import "Constants.h"
+#import "PSStyleSheet.h"
 
 #ifdef __APPLE__
 #include "TargetConditionals.h"
@@ -26,6 +27,9 @@
  */
 //#define CORE_DATA_SQL_FILE
 //#define CORE_DATA_MOM
+
+#define RGBCOLOR(R,G,B) [UIColor colorWithRed:R/255.0 green:G/255.0 blue:B/255.0 alpha:1.0]
+#define RGBACOLOR(R,G,B,A) [UIColor colorWithRed:R/255.0 green:G/255.0 blue:B/255.0 alpha:A]
 
 /**
  Font Defines

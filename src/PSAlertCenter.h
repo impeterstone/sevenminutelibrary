@@ -14,7 +14,7 @@
   NSTimer *_alertTimer;
 }
 
-+ (PSAlertCenter *)defaultCenter;
++ (id)defaultCenter;
 
 - (void)postAlertWithTitle:(NSString *)title andMessage:(NSString *)message andDelegate:(id)delegate;
 

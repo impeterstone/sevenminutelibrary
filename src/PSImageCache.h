@@ -24,7 +24,7 @@
 @property (nonatomic, retain) NSString *cachePath;
 @property (nonatomic, assign) NSSearchPathDirectory cacheDirectory;
 
-+ (PSImageCache *)sharedCache;
++ (id)sharedCache;
 - (void)setupCachePathWithCacheDirectory:(NSSearchPathDirectory)cacheDirectory;
 
 // Image Cache

@@ -21,8 +21,8 @@
 
 @implementation PSToastCenter
 
-+ (PSToastCenter *)defaultCenter {
-  static PSToastCenter *defaultCenter;
++ (id)defaultCenter {
+  static id defaultCenter = nil;
   if (!defaultCenter) {
     defaultCenter = [[self alloc] init];
   }

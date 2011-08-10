@@ -14,8 +14,8 @@
 
 @synthesize progressView = _progressView;
 
-+ (PSProgressCenter *)defaultCenter {
-  static PSProgressCenter *defaultCenter;
++ (id)defaultCenter {
+  static id defaultCenter = nil;
   if (!defaultCenter) {
     defaultCenter = [[self alloc] init];
   }

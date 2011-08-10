@@ -12,8 +12,8 @@ static NSString *_savedPath = nil;
 
 @implementation PSSearchCenter
 
-+ (PSSearchCenter *)defaultCenter {
-  static PSSearchCenter *defaultCenter = nil;
++ (id)defaultCenter {
+  static id defaultCenter = nil;
   if (!defaultCenter) {
     defaultCenter = [[self alloc] init];
   }

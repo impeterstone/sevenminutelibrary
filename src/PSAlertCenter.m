@@ -11,8 +11,8 @@
 
 @implementation PSAlertCenter
 
-+ (PSAlertCenter *)defaultCenter {
-  static PSAlertCenter *defaultCenter = nil;
++ (id)defaultCenter {
+  static id defaultCenter = nil;
   if (!defaultCenter) {
     defaultCenter = [[self alloc] init];
   }

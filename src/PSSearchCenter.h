@@ -13,7 +13,7 @@
   NSMutableDictionary *_terms;
 }
 
-+ (PSSearchCenter *)defaultCenter;
++ (id)defaultCenter;
 
 - (NSDictionary *)sessionTerms;
 - (NSDictionary *)savedTerms;

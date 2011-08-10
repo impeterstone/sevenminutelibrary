@@ -12,7 +12,7 @@
   NSOperationQueue *_parserQueue;
 }
 
-+ (PSParserStack *)sharedParser;
++ (id)sharedParser;
 - (void)addOperation:(NSOperation *)op;
 
 @end

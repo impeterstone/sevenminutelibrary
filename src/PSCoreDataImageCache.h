@@ -6,6 +6,10 @@
 //  Copyright 2011 Seven Minute Labs. All rights reserved.
 //
 
+/**
+ THIS CLASS IS DEPRECATED, DO NOT USE
+ */
+
 #import <Foundation/Foundation.h>
 #import "PSObject.h"
 #import "PSCoreDataStack.h"
@@ -16,7 +20,7 @@
   NSMutableArray *_pendingRequests;
 }
 
-+ (PSCoreDataImageCache *)sharedCache;
++ (id)sharedCache;
 
 - (void)cacheImageWithURLPath:(NSString *)URLPath forEntity:(id)entity;
 - (void)cacheImageWithURLPath:(NSString *)URLPath forEntity:(id)entity scaledSize:(CGSize)scaledSize;

@@ -10,8 +10,8 @@
 
 @implementation PSURLCache
 
-+ (PSURLCache *)sharedCache {
-  static PSURLCache *sharedCache;
++ (id)sharedCache {
+  static id sharedCache;
   if (!sharedCache) {
     sharedCache = [[self alloc] init];
   }

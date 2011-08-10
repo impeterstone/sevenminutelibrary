@@ -36,8 +36,8 @@
   [super dealloc];
 }
 
-+ (PSNetworkQueue *)sharedQueue {
-  static PSNetworkQueue *sharedQueue = nil;
++ (id)sharedQueue {
+  static id sharedQueue = nil;
   @synchronized(self) {
     if (sharedQueue == nil) {
       sharedQueue = [[self alloc] init];
