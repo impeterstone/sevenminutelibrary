@@ -128,18 +128,6 @@
     request.postLength = [request.postBody length];
   }
   
-  // Add Headers
-#ifdef SEND_METRICS_HEADERS
-  [request addRequestHeader:@"X-UDID" value:[[UIDevice currentDevice] uniqueIdentifier]];
-  [request addRequestHeader:@"X-Device-Model" value:[[UIDevice currentDevice] model]];
-  [request addRequestHeader:@"X-App-Version" value:[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"]];
-  [request addRequestHeader:@"X-System-Name" value:[[UIDevice currentDevice] systemName]];
-  [request addRequestHeader:@"X-System-Version" value:[[UIDevice currentDevice] systemVersion]];
-  [request addRequestHeader:@"X-User-Language" value:USER_LANGUAGE];
-  [request addRequestHeader:@"X-User-Locale" value:USER_LOCALE];
-  if (APP_DELEGATE.sessionKey) [request addRequestHeader:@"X-Session-Key" value:APP_DELEGATE.sessionKey];
-#endif
-  
   // Build Custom Headers if exists
   if (headers) {
     NSArray *allKeys = [headers allKeys];
@@ -193,17 +181,7 @@
   
   // POST file
   [request setData:[file objectForKey:@"fileData"] withFileName:[file objectForKey:@"fileName"] andContentType:[file objectForKey:@"fileContentType"] forKey:[file objectForKey:@"fileKey"]];
-  
-  // Add Headers
-//  [request addRequestHeader:@"X-UDID" value:[[UIDevice currentDevice] uniqueIdentifier]];
-//  [request addRequestHeader:@"X-Device-Model" value:[[UIDevice currentDevice] model]];
-//  [request addRequestHeader:@"X-App-Version" value:[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"]];
-//  [request addRequestHeader:@"X-System-Name" value:[[UIDevice currentDevice] systemName]];
-//  [request addRequestHeader:@"X-System-Version" value:[[UIDevice currentDevice] systemVersion]];
-//  [request addRequestHeader:@"X-User-Language" value:USER_LANGUAGE];
-//  [request addRequestHeader:@"X-User-Locale" value:USER_LOCALE];
-//  if (APP_DELEGATE.sessionKey) [request addRequestHeader:@"X-Session-Key" value:APP_DELEGATE.sessionKey];
-  
+
   // Build Custom Headers if exists
   if (headers) {
     NSArray *allKeys = [headers allKeys];

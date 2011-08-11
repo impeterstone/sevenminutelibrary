@@ -10,30 +10,41 @@
 
 @interface PSNullView (Private)
 
-- (void)setupLoadingView;
-- (void)setupEmptyView;
-
 @end
 
 @implementation PSNullView
 
 @synthesize state = _state;
-@synthesize loadingView = _loadingView;
-@synthesize emptyView = _emptyView;
+@synthesize titleLabel = _titleLabel;
+@synthesize subtitleLabel = _subtitleLabel;
+@synthesize imageView = _imageView;
 
 - (id)initWithFrame:(CGRect)frame {
   self = [super initWithFrame:frame];
   if (self) {    
     _state = PSNullViewStateDisabled;
     
-    _loadingView = [[UIView alloc] initWithFrame:self.bounds];
-    _loadingView.autoresizingMask = self.autoresizingMask;
+    _imageView = [[UIImageView alloc] initWithFrame:CGRectZero];
     
-    _emptyView = [[UIView alloc] initWithFrame:self.bounds];
-    _emptyView.autoresizingMask = self.autoresizingMask;
+    _titleLabel = [[UILabel alloc] initWithFrame:CGRectZero];
+    _titleLabel.backgroundColor = [UIColor clearColor];
+    _titleLabel.textAlignment = UITextAlignmentCenter;
+    _titleLabel.font = [PSStyleSheet fontForStyle:@"nullTitle"];
+    _titleLabel.textColor = [PSStyleSheet textColorForStyle:@"nullTitle"];
+    _titleLabel.shadowColor = [PSStyleSheet shadowColorForStyle:@"nullTitle"];
+    _titleLabel.shadowOffset = [PSStyleSheet shadowOffsetForStyle:@"nullTitle"];
     
-    [self addSubview:_loadingView];
-    [self addSubview:_emptyView];
+    _subtitleLabel = [[UILabel alloc] initWithFrame:CGRectZero];
+    _subtitleLabel.backgroundColor = [UIColor clearColor];
+    _subtitleLabel.textAlignment = UITextAlignmentCenter;
+    _subtitleLabel.font = [PSStyleSheet fontForStyle:@"nullSubtitle"];
+    _subtitleLabel.textColor = [PSStyleSheet textColorForStyle:@"nullSubtitle"];
+    _subtitleLabel.shadowColor = [PSStyleSheet shadowColorForStyle:@"nullSubtitle"];
+    _subtitleLabel.shadowOffset = [PSStyleSheet shadowOffsetForStyle:@"nullSubtitle"];
+    
+    [self addSubview:_imageView];
+    [self addSubview:_titleLabel];
+    [self addSubview:_subtitleLabel];
   }
   return self;
 }
@@ -41,55 +52,64 @@
 - (void)layoutSubviews
 {
   [super layoutSubviews];
+
+  _titleLabel.width = self.width;
+  _titleLabel.top = (self.height / 2) - floorf(_titleLabel.height / 2);
+  
+  _subtitleLabel.width = self.width;
+  _subtitleLabel.top = (self.height / 2) + floorf(_subtitleLabel.height / 2);
+  
+//  _imageView.center = self.center;
+//  _imageView.top =
 }
 
 #pragma mark - State
+- (void)setLoadingTitle:(NSString *)loadingTitle loadingSubtitle:(NSString *)loadingSubtitle emptyTitle:(NSString *)emptyTitle emptySubtitle:(NSString *)emptySubtitle image:(UIImage *)image {
+  _loadingTitle = [loadingTitle retain];
+  _loadingSubtitle = [loadingSubtitle retain];
+  _emptyTitle = [emptyTitle retain];
+  _emptySubtitle = [emptySubtitle retain];
+  if (image) {
+    [_imageView setImage:image];
+  }
+}
+
 - (void)setState:(PSNullViewState)state
 {
   _state = state;
   
   switch (state) {
     case PSNullViewStateDisabled:
-      _emptyView.alpha = 0.0;
-      _loadingView.alpha = 0.0;
-      [self hideNullView];
+      _titleLabel.text = @"It's a Trap!";
+      _subtitleLabel.text = @"Y U NO USE PHOTOTIME?";
       break;
     case PSNullViewStateEmpty:
-      _emptyView.alpha = 1.0;
-      _loadingView.alpha = 0.0;
-      [self showNullView];
+      _titleLabel.text = _emptyTitle;
+      _subtitleLabel.text = _emptySubtitle;
       break;
     case PSNullViewStateLoading:
-      _loadingView.alpha = 1.0;
-      _emptyView.alpha = 0.0;
-      [self showNullView];
+      _titleLabel.text = _loadingTitle;
+      _subtitleLabel.text = _loadingSubtitle;
       break;
     default:
-      _emptyView.alpha = 0.0;
-      _loadingView.alpha = 0.0;
-      [self hideNullView];
+      _titleLabel.text = @"It's a Trap!";
+      _subtitleLabel.text = @"Y U NO USE PHOTOTIME?";
       break;
   }
+  [_titleLabel sizeToFit];
+  [_subtitleLabel sizeToFit];
+  [_imageView sizeToFit];
+  [self setNeedsLayout];
 }
-
-#pragma mark Loading
-- (void)showNullView {
-  //  [UIView beginAnimations:nil context:NULL];
-  //  [UIView setAnimationDuration:0.3];
-  self.alpha = 1.0;
-  //  [UIView commitAnimations];
-}
-
-- (void)hideNullView {
-  //  [UIView beginAnimations:nil context:NULL];
-  //  [UIView setAnimationDuration:0.3];
-  self.alpha = 0.0;
-  //  [UIView commitAnimations];
-}
-
 - (void)dealloc {
-  RELEASE_SAFELY(_loadingView);
-  RELEASE_SAFELY(_emptyView);
+  RELEASE_SAFELY(_titleLabel);
+  RELEASE_SAFELY(_subtitleLabel);
+  RELEASE_SAFELY(_imageView);
+  RELEASE_SAFELY(_loadingTitle);
+  RELEASE_SAFELY(_loadingSubtitle)
+  RELEASE_SAFELY(_emptyTitle);
+  RELEASE_SAFELY(_emptySubtitle);
+  
   [super dealloc];
 }
 

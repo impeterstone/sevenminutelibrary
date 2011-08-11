@@ -35,7 +35,6 @@
 
 - (void)loadView {
   [super loadView];
-  [self updateState];
 }
 
 // SUBCLASS CAN OPTIONALLY IMPLEMENT IF THEY WANT A SEARCH BAR

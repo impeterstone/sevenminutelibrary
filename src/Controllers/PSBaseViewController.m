@@ -7,7 +7,6 @@
 //
 
 #import "PSBaseViewController.h"
-#import "PSNullView.h"
 
 @interface PSBaseViewController (Private)
 
@@ -22,15 +21,18 @@
   self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
   if (self) {
     _activeScrollView = nil;
-    _loadingLabel = [@"Loading..." retain];
-    _emptyLabel = [@"No Results" retain];
   }
   return self;
 }
 
 - (void)loadView
 {
-  [super loadView];  
+  [super loadView];
+  
+  UIImageView *bg = [[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"bg_weave.png"]] autorelease];
+  bg.frame = self.view.bounds;
+  bg.autoresizingMask = ~UIViewAutoresizingNone;
+  [self.view addSubview:bg];
   
   // NullView
   _nullView = [[PSNullView alloc] initWithFrame:self.view.bounds];
@@ -40,6 +42,7 @@
   
   // Configure Empty View
   // Configure Loading View
+  [_nullView setLoadingTitle:@"Loading" loadingSubtitle:@"Getting photos from Facebook..." emptyTitle:@"No Photos" emptySubtitle:@"Epic Fail Time!" image:[UIImage imageNamed:@"nullview_photos.png"]];
   
   // Setup Nav Bar
   UIView *navTitleView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 150, self.navigationController.navigationBar.height)];
@@ -115,9 +118,11 @@
 - (void)updateState {
   if ([self dataIsAvailable]) {
     // We have data to display
+    [self.view sendSubviewToBack:_nullView];
     _nullView.state = PSNullViewStateDisabled;
   } else {
     // We don't have data available to display
+    [self.view bringSubviewToFront:_nullView];
     if ([self dataIsLoading]) {
       // We are loading for the first time
       _nullView.state = PSNullViewStateLoading;
@@ -137,8 +142,6 @@
 - (void)dealloc {
   RELEASE_SAFELY(_nullView);
   RELEASE_SAFELY(_navTitleLabel);
-  RELEASE_SAFELY(_loadingLabel);
-  RELEASE_SAFELY(_emptyLabel);
   [super dealloc];
 }
 

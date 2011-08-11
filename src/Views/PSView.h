@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import <QuartzCore/QuartzCore.h>
 #import "PSConstants.h"
+#import "PSImageView.h"
 #import "UIView+SML.h"
 #import "UILabel+SML.h"
 #import "NSDate+SML.h"

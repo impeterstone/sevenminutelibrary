@@ -10,15 +10,12 @@
 #import "PSViewController.h"
 #import "PSStateMachine.h"
 #import "PSDataCenterDelegate.h"
-
-@class PSNullView;
+#import "PSNullView.h"
 
 @interface PSBaseViewController : PSViewController <PSStateMachine, PSDataCenterDelegate> {
   UIScrollView *_activeScrollView; // subclasses should set this if they have a scrollView
   UILabel *_navTitleLabel;
   PSNullView *_nullView;
-  NSString *_loadingLabel;
-  NSString *_emptyLabel;
 }
 
 @property (nonatomic, retain) UILabel *navTitleLabel;
