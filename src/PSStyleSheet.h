@@ -10,6 +10,7 @@
 
 @interface PSStyleSheet : NSObject
 
++ (void)setStyleSheet:(NSString *)styleSheet;
 + (UIFont *)fontForStyle:(NSString *)style;
 + (UIColor *)textColorForStyle:(NSString *)style;
 + (UIColor *)shadowColorForStyle:(NSString *)style;

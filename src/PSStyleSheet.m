@@ -17,9 +17,20 @@ static NSDictionary *_styles = nil;
   NSString *styleSheetPath = [[NSBundle mainBundle] pathForResource:@"PSStyleSheet" ofType:@"plist"];
   assert(styleSheetPath != nil);
   
-  NSDictionary *styleSheet = [NSDictionary dictionaryWithContentsOfFile:styleSheetPath];
-  assert(styleSheet != nil);
-  _styles = [styleSheet retain];
+  NSDictionary *styleSheetDict = [NSDictionary dictionaryWithContentsOfFile:styleSheetPath];
+  assert(styleSheetDict != nil);
+  _styles = [styleSheetDict retain];
+}
+
++ (void)setStyleSheet:(NSString *)styleSheet {
+  if (_styles) [_styles release], _styles = nil;
+
+  NSString *styleSheetPath = [[NSBundle mainBundle] pathForResource:styleSheet ofType:@"plist"];
+  assert(styleSheetPath != nil);
+  
+  NSDictionary *styleSheetDict = [NSDictionary dictionaryWithContentsOfFile:styleSheetPath];
+  assert(styleSheetDict != nil);
+  _styles = [styleSheetDict retain];
 }
 
 #pragma mark - Fonts
