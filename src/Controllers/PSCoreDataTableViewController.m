@@ -34,6 +34,8 @@
     _isFetching = NO;
     _frcDelegate = self;
     
+    [self resetFetchedResultsController];
+    
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(changesSaved:) name:NSManagedObjectContextDidSaveNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(coreDataDidReset) name:kCoreDataDidReset object:nil];
   }
