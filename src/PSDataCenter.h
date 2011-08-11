@@ -24,6 +24,9 @@
 
 @property (nonatomic, assign) id <PSDataCenterDelegate> delegate;
 
+/**
+ Shared instance is smart and will automatically allocate for subclasses
+ */
 + (id)defaultCenter;
 
 /**
