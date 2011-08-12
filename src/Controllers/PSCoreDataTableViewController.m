@@ -152,6 +152,10 @@
     NSManagedObjectContext *context = [PSCoreDataStack newManagedObjectContext];
     NSArray *results = [context executeFetchRequest:backgroundFetch error:&error];
     
+//    NSFetchRequest *countFetchRequest = [[NSFetchRequest alloc] init];
+//    [countFetchRequest setEntity:backgroundFetch.entity];
+//    NSUInteger count = [context countForFetchRequest:countFetchRequest error:nil];
+    
     NSMutableDictionary *userInfo = [[NSMutableDictionary alloc] initWithCapacity:2];
     if (error) {
       [userInfo setObject:error forKey:@"error"];
@@ -161,6 +165,8 @@
     }
     dispatch_async(dispatch_get_main_queue(), ^{
       BOOL shouldReloadTable = NO;
+      
+//      NSLog(@"fetch count: %d", count);
     
       NSPredicate *originalPredicate = [[[self.fetchedResultsController.fetchRequest predicate] copy] autorelease];
       NSError *frcError = nil;

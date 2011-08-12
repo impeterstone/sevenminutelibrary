@@ -57,7 +57,7 @@
   
   if (_imageView.image) {
     _imageView.left = floorf(self.width / 2) - floorf(_imageView.width / 2);
-    _imageView.top = top - floorf(_imageView.height / 2) - 20;
+    _imageView.top = top - floorf(_imageView.height / 2) - 30;
     top = _imageView.bottom + 20;
   }
 
@@ -88,20 +88,22 @@
     case PSNullViewStateDisabled:
       _titleLabel.text = nil;
       _subtitleLabel.text = nil;
-      [_imageView setImage:nil];
+      _imageView.hidden = YES;
       break;
     case PSNullViewStateEmpty:
       _titleLabel.text = _emptyTitle;
       _subtitleLabel.text = _emptySubtitle;
+      _imageView.hidden = NO;
       break;
     case PSNullViewStateLoading:
       _titleLabel.text = _loadingTitle;
       _subtitleLabel.text = _loadingSubtitle;
+      _imageView.hidden = NO;
       break;
     default:
       _titleLabel.text = nil;
       _subtitleLabel.text = nil;
-      [_imageView setImage:nil];
+      _imageView.hidden = YES;
       break;
   }
   [_titleLabel sizeToFit];
