@@ -57,8 +57,8 @@
   
   if (_imageView.image) {
     _imageView.left = floorf(self.width / 2) - floorf(_imageView.width / 2);
-    _imageView.top = top - floorf(_imageView.height / 2);
-    top = _imageView.bottom;
+    _imageView.top = top - floorf(_imageView.height / 2) - 20;
+    top = _imageView.bottom + 20;
   }
 
   _titleLabel.width = self.width;
