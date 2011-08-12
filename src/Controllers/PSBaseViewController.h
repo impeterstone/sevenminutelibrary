@@ -20,9 +20,6 @@
 
 @property (nonatomic, retain) UILabel *navTitleLabel;
 
-// Nav buttons
-- (void)addBackButton;
-
 // Orientation
 - (void)orientationChangedFromNotification:(NSNotification *)notification;
 
