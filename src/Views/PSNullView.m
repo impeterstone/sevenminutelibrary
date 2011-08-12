@@ -52,15 +52,21 @@
 - (void)layoutSubviews
 {
   [super layoutSubviews];
+  
+  CGFloat top = floorf(self.height / 2);
+  
+  if (_imageView.image) {
+    _imageView.left = floorf(self.width / 2) - floorf(_imageView.width / 2);
+    _imageView.top = top - floorf(_imageView.height / 2);
+    top = _imageView.bottom;
+  }
 
   _titleLabel.width = self.width;
-  _titleLabel.top = (self.height / 2) - floorf(_titleLabel.height / 2);
+  _titleLabel.top = top;
+  top = _titleLabel.bottom;
   
   _subtitleLabel.width = self.width;
-  _subtitleLabel.top = (self.height / 2) + floorf(_subtitleLabel.height / 2);
-  
-//  _imageView.center = self.center;
-//  _imageView.top =
+  _subtitleLabel.top = top;
 }
 
 #pragma mark - State
@@ -80,8 +86,9 @@
   
   switch (state) {
     case PSNullViewStateDisabled:
-      _titleLabel.text = @"It's a Trap!";
-      _subtitleLabel.text = @"Y U NO USE PHOTOTIME?";
+      _titleLabel.text = nil;
+      _subtitleLabel.text = nil;
+      [_imageView setImage:nil];
       break;
     case PSNullViewStateEmpty:
       _titleLabel.text = _emptyTitle;
@@ -92,8 +99,9 @@
       _subtitleLabel.text = _loadingSubtitle;
       break;
     default:
-      _titleLabel.text = @"It's a Trap!";
-      _subtitleLabel.text = @"Y U NO USE PHOTOTIME?";
+      _titleLabel.text = nil;
+      _subtitleLabel.text = nil;
+      [_imageView setImage:nil];
       break;
   }
   [_titleLabel sizeToFit];

@@ -42,7 +42,6 @@
   
   // Configure Empty View
   // Configure Loading View
-  [_nullView setLoadingTitle:@"Loading" loadingSubtitle:@"Getting photos from Facebook..." emptyTitle:@"No Photos" emptySubtitle:@"Epic Fail Time!" image:[UIImage imageNamed:@"nullview_photos.png"]];
   
   // Setup Nav Bar
   UIView *navTitleView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 150, self.navigationController.navigationBar.height)];
