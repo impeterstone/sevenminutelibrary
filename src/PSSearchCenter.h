@@ -20,5 +20,6 @@
 - (NSArray *)searchResultsForTerm:(NSString *)term;
 
 - (BOOL)addTerm:(NSString *)term;
+- (void)resetTerms;
 
 @end

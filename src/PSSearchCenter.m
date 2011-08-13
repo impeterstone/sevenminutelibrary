@@ -86,4 +86,8 @@ static NSString *_savedPath = nil;
   return [termsData writeToFile:_savedPath atomically:YES];
 }
 
+- (void)resetTerms {
+  [_terms removeAllObjects];
+}
+
 @end
