@@ -37,6 +37,10 @@
   return self;
 }
 
+- (void)dealloc {
+  [super dealloc];
+}
+
 #pragma mark -
 #pragma mark Serialize
 - (id)sanitizeResponse:(NSData *)responseData {
@@ -288,10 +292,6 @@
 
 - (NSMutableData *)buildRequestParamsData:(NSDictionary *)params {
   return [NSMutableData dataWithData:[[self buildRequestParamsString:params] dataUsingEncoding:NSUTF8StringEncoding allowLossyConversion:YES]];
-}
-
-- (void)dealloc {
-  [super dealloc];
 }
 
 @end
