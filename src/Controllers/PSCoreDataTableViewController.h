@@ -42,7 +42,7 @@ typedef enum {
 - (void)executeFetch:(FetchType)fetchType;
 - (void)executeFetchOnMainThread;
 - (void)executeSearchOnMainThread;
-- (NSFetchRequest *)getFetchRequest;
+- (NSFetchRequest *)getFetchRequestInContext:(NSManagedObjectContext *)context;
 - (void)coreDataDidReset;
 
 @end

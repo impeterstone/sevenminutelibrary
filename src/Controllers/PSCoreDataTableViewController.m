@@ -112,8 +112,9 @@
 
 - (NSFetchedResultsController*)fetchedResultsController  {
   if (_fetchedResultsController) return _fetchedResultsController;
+  NSFetchRequest *fr = [self getFetchRequestInContext:_context];
   
-  _fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:[self getFetchRequest] managedObjectContext:_context sectionNameKeyPath:self.sectionNameKeyPathForFetchedResultsController cacheName:nil];
+  _fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:fr managedObjectContext:_context sectionNameKeyPath:self.sectionNameKeyPathForFetchedResultsController cacheName:nil];
   _fetchedResultsController.delegate = _frcDelegate;
   
   return _fetchedResultsController;
@@ -132,8 +133,9 @@
   }
   
   dispatch_async(coreDataFetchQueue, ^{
+    NSManagedObjectContext *context = [PSCoreDataStack newManagedObjectContext];
     NSError *error = nil;
-    NSFetchRequest *backgroundFetch = [[self getFetchRequest] copy];
+    NSFetchRequest *backgroundFetch = [[self getFetchRequestInContext:context] copy];
     
     [backgroundFetch setResultType:NSManagedObjectIDResultType];
     //    [backgroundFetch setSortDescriptors:nil];
@@ -149,7 +151,6 @@
       [backgroundFetch setPredicate:combinedPredicate];
     }
     
-    NSManagedObjectContext *context = [PSCoreDataStack newManagedObjectContext];
     NSArray *results = [context executeFetchRequest:backgroundFetch error:&error];
     
 //    NSFetchRequest *countFetchRequest = [[NSFetchRequest alloc] init];
@@ -214,7 +215,7 @@
 }
 
 - (void)executeFetchOnMainThread {
-  NSFetchRequest *newFetch = [[self getFetchRequest] copy];
+  NSFetchRequest *newFetch = [[self getFetchRequestInContext:self.fetchedResultsController.managedObjectContext] copy];
   
   NSPredicate *predicate = [newFetch predicate];
   [self.fetchedResultsController.fetchRequest setPredicate:predicate];
@@ -249,7 +250,7 @@
   [self updateState];
 }
 
-- (NSFetchRequest *)getFetchRequest {
+- (NSFetchRequest *)getFetchRequestInContext:(NSManagedObjectContext *)context {
   // Subclass MUST implement
   return nil;
 }
