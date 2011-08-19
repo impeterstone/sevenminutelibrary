@@ -8,23 +8,13 @@
 
 #import "PSImageCell.h"
 
-static UIImage *_frameImage = nil;
-
 @implementation PSImageCell
-
-+ (void)initialize {
-  _frameImage = [[[UIImage imageNamed:@"bg_photo_frame.png"] stretchableImageWithLeftCapWidth:21 topCapHeight:5] retain];
-}
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
   self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
   if (self) {
+    _psImageView = [[PSURLCacheImageView alloc] initWithFrame:CGRectZero];
     
-    _psImageView = [[PSURLCacheImageView alloc] initWithFrame:CGRectMake(10 + MARGIN_X, 10, IMAGE_WIDTH_PLAIN, IMAGE_HEIGHT_PLAIN)];
-    _psFrameView = [[UIImageView alloc] initWithImage:_frameImage];
-    _psFrameView.frame = CGRectMake(MARGIN_X, 0, IMAGE_OFFSET, IMAGE_OFFSET);
-    
-    [self.contentView addSubview:_psFrameView];
     [self.contentView addSubview:_psImageView];
     
     // Override default text labels
@@ -38,13 +28,23 @@ static UIImage *_frameImage = nil;
   _psImageView.image = nil;
 }
 
+- (void)layoutSubviews {
+  [super layoutSubviews];
+  _psImageView.left = 0;
+  _psImageView.top = 0;
+  _psImageView.width = self.contentView.height;
+  _psImageView.height = self.contentView.height;
+  
+  self.textLabel.left = _psImageView.right + MARGIN_X;
+  self.textLabel.width = self.contentView.width - _psImageView.width - MARGIN_X * 2;
+}
+
 - (void)loadImage {
   [_psImageView loadImageAndDownload:YES];
 }
 
 - (void)dealloc {
   RELEASE_SAFELY(_psImageView);
-  RELEASE_SAFELY(_psFrameView);
   [super dealloc];
 }
 
