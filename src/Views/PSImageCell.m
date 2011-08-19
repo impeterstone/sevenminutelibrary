@@ -13,7 +13,7 @@ static UIImage *_frameImage = nil;
 @implementation PSImageCell
 
 + (void)initialize {
-  _frameImage = [[[UIImage imageNamed:@"photo_frame.png"] stretchableImageWithLeftCapWidth:16 topCapHeight:16] retain];
+  _frameImage = [[[UIImage imageNamed:@"bg_photo_frame.png"] stretchableImageWithLeftCapWidth:21 topCapHeight:5] retain];
 }
 
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
