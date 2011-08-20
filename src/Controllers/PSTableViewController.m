@@ -292,7 +292,7 @@
 #pragma mark UITableViewDataSource
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
   if (tableView == self.searchDisplayController.searchResultsTableView) {
-    return 1;
+    return [_searchItems count];
   } else {
     return [_items count];
   }
@@ -300,7 +300,7 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
   if (tableView == self.searchDisplayController.searchResultsTableView) {
-    return [_searchItems count];
+    return [[_searchItems objectAtIndex:section] count];
   } else {
     return [[_items objectAtIndex:section] count];
   }
@@ -354,15 +354,15 @@
 }
 
 - (void)searchDisplayController:(UISearchDisplayController *)controller didLoadSearchResultsTableView:(UITableView *)tableView {
-  [tableView addObserver:self forKeyPath:@"contentOffset" options:NSKeyValueObservingOptionNew context:NULL];
-  tableView.rowHeight = 120.0;
-  tableView.backgroundColor = SEPARATOR_COLOR;
-  tableView.separatorColor = SEPARATOR_COLOR;
-  tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+//  [tableView addObserver:self forKeyPath:@"contentOffset" options:NSKeyValueObservingOptionNew context:NULL];
+  tableView.rowHeight = _tableView.rowHeight;
+  tableView.backgroundColor = [UIColor whiteColor];
+  tableView.separatorColor = _tableView.separatorColor;
+  tableView.separatorStyle = _tableView.separatorStyle;
 }
 
 - (void)searchDisplayController:(UISearchDisplayController *)controller willUnloadSearchResultsTableView:(UITableView *)tableView {
-  [tableView removeObserver:self forKeyPath:@"contentOffset"];
+//  [tableView removeObserver:self forKeyPath:@"contentOffset"];
 }
 
 - (void)searchDisplayControllerWillBeginSearch:(UISearchDisplayController *)controller {
