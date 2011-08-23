@@ -28,6 +28,7 @@
 - (void)didReceiveMemoryWarning
 {
   [super didReceiveMemoryWarning];
+  DLog(@"Called by class: %@", [self class]);
 }
 
 #pragma mark - View
@@ -53,6 +54,7 @@
 - (void)viewDidUnload
 {
   [super viewDidUnload];
+  DLog(@"Called by class: %@", [self class]);
 }
 
 #pragma mark - Rotation
