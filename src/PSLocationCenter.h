@@ -23,8 +23,8 @@
 + (id)defaultCenter;
 
 // Public Methods
-- (void)start;
-- (void)stop;
+- (void)startUpdates;
+- (void)stopUpdates;
 
 - (void)startStandardUpdates;
 - (void)stopStandardUpdates;
