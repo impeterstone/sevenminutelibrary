@@ -55,9 +55,12 @@
     if (self.delegate && [self.delegate respondsToSelector:@selector(imageDidLoad:)]) {
       [self.delegate performSelector:@selector(imageDidLoad:) withObject:image];
     }
-  } else {
+  } else if (image == _placeholderImage) {
     [super setImage:image];
     [_loadingIndicator stopAnimating];
+  } else {
+    [super setImage:image];
+    [_loadingIndicator startAnimating];
   }
 //  [self setFrame:CGRectMake(self.frame.origin.x, self.frame.origin.y, image.size.width, image.size.height)];
 }

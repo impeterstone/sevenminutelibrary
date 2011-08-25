@@ -96,7 +96,7 @@
     NSString *phone = [[[element children] lastObject] content];
     
     // Create payload, add to array
-    NSDictionary *placeDict = [NSDictionary dictionaryWithObjectsAndKeys:biz, @"biz", name, @"name", distance, @"distance", price, @"price", phone, @"phone", nil];
+    NSMutableDictionary *placeDict = [NSMutableDictionary dictionaryWithObjectsAndKeys:biz, @"biz", name, @"name", distance, @"distance", price, @"price", phone, @"phone", nil];
     [placeArray addObject:placeDict];
   }
   
