@@ -39,7 +39,7 @@
     if (image) { 
       self.image = image;
     } else {
-      self.image = _placeholderImage;
+      self.image = nil;
     }
     
 //    dispatch_async(_urlCacheImageViewQueue, ^{
