@@ -22,9 +22,10 @@
 
 @synthesize delegate = _delegate;
 
+// SUBCLASSES MUST IMPLEMENT
 + (id)defaultCenter {
   static id defaultCenter = nil;
-  if (!defaultCenter || (defaultCenter && ![defaultCenter isKindOfClass:[self class]])) {
+  if (!defaultCenter) {
     defaultCenter = [[self alloc] init];
   }
   return defaultCenter;
