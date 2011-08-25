@@ -29,8 +29,36 @@
     _selectedIndexes = [[NSMutableDictionary alloc] initWithCapacity:1];
     _loadingMore = NO;
     _hasMore = YES;
+    _adShowing = NO;
   }
   return self;
+}
+
+- (void)viewDidUnload {
+  [super viewDidUnload];
+  _adShowing = NO;
+  _adView.delegate = nil;
+  RELEASE_SAFELY(_adView);
+}
+
+- (void)dealloc {
+  // Remove scrolling observer
+  //  [_tableView removeObserver:self forKeyPath:@"contentOffset"];
+  _adView.delegate = nil;
+  RELEASE_SAFELY(_adView);
+  RELEASE_SAFELY(_tableView);
+  RELEASE_SAFELY(_sectionTitles);
+  RELEASE_SAFELY(_selectedIndexes);
+  RELEASE_SAFELY(_items);
+  RELEASE_SAFELY(_searchItems);
+  RELEASE_SAFELY(_searchBar);
+  RELEASE_SAFELY(_visibleCells);
+  RELEASE_SAFELY(_visibleIndexPaths);
+  RELEASE_SAFELY(_refreshHeaderView);
+  RELEASE_SAFELY(_loadMoreView);
+  RELEASE_SAFELY(_loadMoreButton);
+  RELEASE_SAFELY(_loadMoreActivity);
+  [super dealloc];
 }
 
 - (void)loadView {
@@ -443,6 +471,48 @@
 	return [NSDate date]; // should return date data source was last changed
 }
 
+#pragma mark - ADBannerViewDelegate
+- (void)bannerViewDidLoadAd:(ADBannerView *)banner {
+  if (_adShowing) {
+    return;
+  } else {
+    _adShowing = YES;
+  }
+  
+  banner.top = self.view.bottom;
+  [self.view addSubview:banner];
+  [UIView animateWithDuration:0.4
+                   animations:^{
+                     banner.top -= banner.height;
+                     _tableView.height -= banner.height;
+                   }
+                   completion:^(BOOL finished) {
+                   }];
+}
+
+- (void)bannerView:(ADBannerView *)banner didFailToReceiveAdWithError:(NSError *)error {
+  DLog(@"iAd failed to load with error: %@", error);
+  if (!_adShowing) return;
+  
+  [UIView animateWithDuration:0.4
+                   animations:^{
+                     banner.top += banner.height;
+                     _tableView.height += banner.height;
+                   }
+                   completion:^(BOOL finished) {
+                     _adShowing = NO;
+                     [banner removeFromSuperview];
+                   }];
+}
+
+- (BOOL)bannerViewActionShouldBegin:(ADBannerView *)banner willLeaveApplication:(BOOL)willLeave {
+  return YES;
+}
+
+- (void)bannerViewActionDidFinish:(ADBannerView *)banner {
+  
+}
+
 #pragma mark -
 #pragma mark Image Lazy Loading
 - (void)loadImagesForOnScreenRows {
@@ -467,25 +537,6 @@
 - (void)didReceiveMemoryWarning {
   // Releases the view if it doesn't have a superview.
   [super didReceiveMemoryWarning];
-}
-
-- (void)dealloc {
-  // Remove scrolling observer
-//  [_tableView removeObserver:self forKeyPath:@"contentOffset"];
-  
-  RELEASE_SAFELY(_tableView);
-  RELEASE_SAFELY(_sectionTitles);
-  RELEASE_SAFELY(_selectedIndexes);
-  RELEASE_SAFELY(_items);
-  RELEASE_SAFELY(_searchItems);
-  RELEASE_SAFELY(_searchBar);
-  RELEASE_SAFELY(_visibleCells);
-  RELEASE_SAFELY(_visibleIndexPaths);
-  RELEASE_SAFELY(_refreshHeaderView);
-  RELEASE_SAFELY(_loadMoreView);
-  RELEASE_SAFELY(_loadMoreButton);
-  RELEASE_SAFELY(_loadMoreActivity);
-  [super dealloc];
 }
 
 @end

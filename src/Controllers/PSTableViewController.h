@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "PSBaseViewController.h"
 #import "EGORefreshTableHeaderView.h"
+#import "UIViewController+Ad.h"
 
 @interface PSTableViewController : PSBaseViewController <UITableViewDelegate, UITableViewDataSource, UISearchDisplayDelegate, UISearchBarDelegate, EGORefreshTableHeaderDelegate> {
   UITableView *_tableView;
@@ -18,6 +19,9 @@
   NSMutableDictionary *_selectedIndexes;
   NSArray *_visibleCells;
   NSArray *_visibleIndexPaths;
+  
+  ADBannerView *_adView;
+  BOOL _adShowing;
   
   UISearchBar *_searchBar;
   EGORefreshTableHeaderView *_refreshHeaderView;
