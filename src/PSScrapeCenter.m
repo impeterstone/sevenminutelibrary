@@ -51,7 +51,7 @@
     [photoArray addObject:photoDict];
   }
   
-  NSLog(@"Photos: %@", photoArray);
+  VLog(@"Photos: %@", photoArray);
   
   [xpathParser release];
   
@@ -100,7 +100,7 @@
     [placeArray addObject:placeDict];
   }
   
-  NSLog(@"Places: %@", placeArray);
+  VLog(@"Places: %@", placeArray);
   
   [xpathParser release];
   
