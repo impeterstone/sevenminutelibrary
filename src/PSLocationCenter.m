@@ -39,6 +39,14 @@ static NSInteger _distanceFilter = 1000;
 }
 
 #pragma mark - Location Methods
+- (void)getMyLocation {
+  if ([self hasAcquiredLocation]) {
+    [[NSNotificationCenter defaultCenter] postNotificationName:kLocationAcquired object:nil];
+  } else {
+    [self startUpdates];
+  }
+}
+
 - (void)startUpdates {
 #if TARGET_IPHONE_SIMULATOR
   [[NSNotificationCenter defaultCenter] postNotificationName:kLocationAcquired object:nil];

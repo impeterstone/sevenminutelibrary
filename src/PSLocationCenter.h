@@ -23,6 +23,12 @@
 + (id)defaultCenter;
 
 // Public Methods
+- (void)getMyLocation;
+- (BOOL)hasAcquiredLocation;
+- (CGFloat)latitude;
+- (CGFloat)longitude;
+
+// Private Methods
 - (void)startUpdates;
 - (void)stopUpdates;
 
@@ -30,10 +36,5 @@
 - (void)stopStandardUpdates;
 
 - (void)startSignificantChangeUpdates;
-
-- (BOOL)hasAcquiredLocation;
-
-- (CGFloat)latitude;
-- (CGFloat)longitude;
 
 @end
