@@ -45,6 +45,8 @@ static dispatch_queue_t _urlCacheImageViewQueue = nil;
         }
       });
     });
+  } else {
+    self.image = _placeholderImage;
   }
 }
 

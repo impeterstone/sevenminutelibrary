@@ -57,7 +57,7 @@
     }
   } else {
     [super setImage:image];
-    [_loadingIndicator startAnimating];
+    [_loadingIndicator stopAnimating];
   }
 //  [self setFrame:CGRectMake(self.frame.origin.x, self.frame.origin.y, image.size.width, image.size.height)];
 }
