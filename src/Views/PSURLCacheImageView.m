@@ -9,14 +9,14 @@
 #import "PSURLCacheImageView.h"
 #import "NSString+SML.h"
 
-static dispatch_queue_t _urlCacheImageViewQueue = nil;
+//static dispatch_queue_t _urlCacheImageViewQueue = nil;
 
 @implementation PSURLCacheImageView
 
 @synthesize urlPath = _urlPath;
 
 + (void)initialize {
-  _urlCacheImageViewQueue = dispatch_queue_create("com.sevenminutelabs.urlCacheImageViewQueue", NULL);
+//  _urlCacheImageViewQueue = dispatch_queue_create("com.sevenminutelabs.urlCacheImageViewQueue", NULL);
 }
 
 - (id)initWithFrame:(CGRect)frame {
@@ -35,16 +35,23 @@ static dispatch_queue_t _urlCacheImageViewQueue = nil;
 - (void)loadImageAndDownload:(BOOL)download {
   if (_urlPath) {
     NSString *urlPath = [[_urlPath copy] autorelease];
-    dispatch_async(_urlCacheImageViewQueue, ^{
-      UIImage *image = [[PSImageCache sharedCache] imageForURLPath:urlPath shouldDownload:download withDelegate:nil];
-      dispatch_async(dispatch_get_main_queue(), ^{
-        if (image) { 
-          self.image = image;
-        } else {
-          self.image = _placeholderImage;
-        }
-      });
-    });
+    UIImage *image = [[PSImageCache sharedCache] imageForURLPath:urlPath shouldDownload:download withDelegate:nil];
+    if (image) { 
+      self.image = image;
+    } else {
+      self.image = _placeholderImage;
+    }
+    
+//    dispatch_async(_urlCacheImageViewQueue, ^{
+//      UIImage *image = [[PSImageCache sharedCache] imageForURLPath:urlPath shouldDownload:download withDelegate:nil];
+//      dispatch_async(dispatch_get_main_queue(), ^{
+//        if (image) { 
+//          self.image = image;
+//        } else {
+//          self.image = _placeholderImage;
+//        }
+//      });
+//    });
   } else {
     self.image = _placeholderImage;
   }
