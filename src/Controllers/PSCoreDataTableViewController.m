@@ -116,6 +116,7 @@
   _isFetching = YES;
   
   if (fetchType == FetchTypeCold) {
+    _hasMore = YES;
     _fetchTotal = _fetchLimit;
   }
   
