@@ -88,7 +88,7 @@ static NSInteger _distanceFilter = 1000;
   // Create the location manager if this object does not
   // already have one.
   if (nil == _locationManager)
-    self.locationManager = [[CLLocationManager alloc] init];
+    _locationManager = [[CLLocationManager alloc] init];
   
   self.locationManager.delegate = self;
   [self.locationManager startMonitoringSignificantLocationChanges];

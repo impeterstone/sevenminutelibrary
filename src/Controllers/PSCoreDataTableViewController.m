@@ -42,14 +42,6 @@
   return self;
 }
 
-- (void)loadView {
-  [super loadView];
-}
-
-- (void)viewWillAppear:(BOOL)animated {
-  [super viewWillAppear:animated];
-}
-
 #pragma mark State Machine
 - (BOOL)dataIsAvailable {
   return (_fetchedResultsController && _fetchedResultsController.fetchedObjects.count > 0);

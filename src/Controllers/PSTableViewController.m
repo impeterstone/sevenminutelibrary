@@ -39,25 +39,36 @@
   _adShowing = NO;
   _adView.delegate = nil;
   RELEASE_SAFELY(_adView);
+  RELEASE_SAFELY(_tableView);
+  RELEASE_SAFELY(_searchBar);
+  RELEASE_SAFELY(_refreshHeaderView);
+  RELEASE_SAFELY(_loadMoreView);
+  RELEASE_SAFELY(_loadMoreButton);
+  RELEASE_SAFELY(_loadMoreActivity);
 }
 
 - (void)dealloc {
   // Remove scrolling observer
   //  [_tableView removeObserver:self forKeyPath:@"contentOffset"];
+  
+  // Views
   _adView.delegate = nil;
   RELEASE_SAFELY(_adView);
   RELEASE_SAFELY(_tableView);
-  RELEASE_SAFELY(_sectionTitles);
-  RELEASE_SAFELY(_selectedIndexes);
-  RELEASE_SAFELY(_items);
-  RELEASE_SAFELY(_searchItems);
   RELEASE_SAFELY(_searchBar);
-  RELEASE_SAFELY(_visibleCells);
-  RELEASE_SAFELY(_visibleIndexPaths);
   RELEASE_SAFELY(_refreshHeaderView);
   RELEASE_SAFELY(_loadMoreView);
   RELEASE_SAFELY(_loadMoreButton);
   RELEASE_SAFELY(_loadMoreActivity);
+  
+  // Non-Views
+  RELEASE_SAFELY(_sectionTitles);
+  RELEASE_SAFELY(_selectedIndexes);
+  RELEASE_SAFELY(_items);
+  RELEASE_SAFELY(_searchItems);
+  RELEASE_SAFELY(_visibleCells);
+  RELEASE_SAFELY(_visibleIndexPaths);
+
   [super dealloc];
 }
 
@@ -91,33 +102,6 @@
   
   // SUBCLASSES MUST IMPLEMENT THE DELEGATE METHODS
   _searchItems = [[NSMutableArray alloc] initWithCapacity:1];
-  
-  // UITableViewCellSeparatorStyleNone
-  id searchBarTextField = nil;
-  id segmentedControl = nil;
-  for (UIView *subview in _searchBar.subviews) {
-    if ([subview isMemberOfClass:NSClassFromString(@"UISearchBarBackground")]) {
-    } else if ([subview isMemberOfClass:NSClassFromString(@"UISegmentedControl")]) {
-      segmentedControl = subview;
-    } else if ([subview isMemberOfClass:NSClassFromString(@"UISearchBarTextField")]) {
-      searchBarTextField = subview;
-    }
-  }
-  [_searchBar removeSubviews];
-  
-  //  UIImageView *scopeBackground = [[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"search_background.png"]] autorelease];
-  //  scopeBackground.top -= 1;
-  //  [segmentedControl insertSubview:scopeBackground atIndex:0];
-  //  [segmentedControl setSegmentedControlStyle:UISegmentedControlStyleBar];
-  //  [segmentedControl setTintColor:[UIColor blueColor]];
-  
-  // Add new background
-  UIImageView *searchBackground = [[[UIImageView alloc] initWithImage:[UIImage stretchableImageNamed:@"bg_searchbar.png" withLeftCapWidth:0 topCapWidth:0]] autorelease];
-  searchBackground.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-  searchBackground.top -= 1;
-  searchBackground.width = _searchBar.width;
-  [_searchBar addSubview:searchBackground];
-  [_searchBar addSubview:searchBarTextField];
 }
 
 // SUBCLASS SHOULD CALL THIS

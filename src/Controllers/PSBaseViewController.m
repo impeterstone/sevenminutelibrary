@@ -16,8 +16,7 @@
 
 @synthesize navTitleLabel = _navTitleLabel;
 
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
-{
+- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
   self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
   if (self) {
     _activeScrollView = nil;
@@ -25,14 +24,26 @@
   return self;
 }
 
-- (void)loadView
-{
+- (void)viewDidUnload {
+  RELEASE_SAFELY(_nullView);
+  RELEASE_SAFELY(_navTitleLabel);
+  [super viewDidUnload];
+}
+
+- (void)dealloc {
+  RELEASE_SAFELY(_nullView);
+  RELEASE_SAFELY(_navTitleLabel);
+  [super dealloc];
+}
+
+- (void)loadView {
   [super loadView];
   
-  UIImageView *bg = [[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"bg_weave.png"]] autorelease];
-  bg.frame = self.view.bounds;
-  bg.autoresizingMask = ~UIViewAutoresizingNone;
-  [self.view addSubview:bg];
+  // Background
+  UIView *bgView = [self backgroundView];
+  if (bgView) {
+    [self.view addSubview:bgView];
+  }
   
   // NullView
   _nullView = [[PSNullView alloc] initWithFrame:self.view.bounds];
@@ -81,7 +92,13 @@
   [self.navigationController popViewControllerAnimated:YES];
 }
 
-#pragma mark PSStateMachine
+#pragma mark - View Configuration
+// Subclasses may optionally implement
+- (UIView *)backgroundView {
+  return nil;
+}
+
+#pragma mark - PSStateMachine
 - (BOOL)dataIsAvailable {
   return NO;
 }
@@ -122,12 +139,6 @@
   if (_activeScrollView) {
     _activeScrollView.scrollsToTop = isEnabled;
   }
-}
-
-- (void)dealloc {
-  RELEASE_SAFELY(_nullView);
-  RELEASE_SAFELY(_navTitleLabel);
-  [super dealloc];
 }
 
 @end
