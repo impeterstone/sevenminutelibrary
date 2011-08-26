@@ -31,6 +31,24 @@
 }
 
 #pragma mark - Public Methods
+- (NSString *)scrapeNumberOfPhotosWithHTMLString:(NSString *)htmlString {
+  // HTML Scraping
+  NSString *strippedString = [htmlString stringByReplacingOccurrencesOfString:@"<br>" withString:@""];
+  NSData *strippedData = [strippedString dataUsingEncoding:NSUTF8StringEncoding];
+  
+  TFHpple *xpathParser = [[TFHpple alloc] initWithHTMLData:strippedData];
+  NSArray *numPhotosArray = [xpathParser searchWithXPathQuery:@"//div[@id=\"mainContent\"]//td[@class=\"pager_current\"]"];
+  NSLog(@"asdf: %@", numPhotosArray);
+  if ([numPhotosArray count] > 0) {
+    NSString *numPhotosRaw = [[numPhotosArray objectAtIndex:0] content];
+    NSRange ofRange = [numPhotosRaw rangeOfString:@" of "];
+    NSString *numPhotos = [numPhotosRaw substringFromIndex:(ofRange.location + ofRange.length)];
+    return numPhotos;
+  } else {
+    return @"0";
+  }
+}
+
 - (NSArray *)scrapePhotosWithHTMLString:(NSString *)htmlString {
   // HTML Scraping
   NSString *strippedString = [htmlString stringByReplacingOccurrencesOfString:@"<br>" withString:@""];
