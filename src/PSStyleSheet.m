@@ -1,9 +1,9 @@
 //
 //  PSStyleSheet.m
-//  MealTime
+//  SevenMinuteLibrary
 //
 //  Created by Peter Shih on 8/10/11.
-//  Copyright 2011 __MyCompanyName__. All rights reserved.
+//  Copyright 2011 Seven Minute Labs. All rights reserved.
 //
 
 #import "PSStyleSheet.h"

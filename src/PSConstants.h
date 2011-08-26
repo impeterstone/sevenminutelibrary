@@ -1,9 +1,9 @@
 //
 //  PSConstants.h
-//  MealTime
+//  SevenMinuteLibrary
 //
 //  Created by Peter Shih on 8/9/11.
-//  Copyright 2011 __MyCompanyName__. All rights reserved.
+//  Copyright 2011 Seven Minute Labs. All rights reserved.
 //
 
 // Import any project-specific constants here
