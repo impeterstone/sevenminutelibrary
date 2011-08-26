@@ -29,6 +29,9 @@
  */
 + (id)defaultCenter;
 
+- (NSMutableData *)buildRequestParamsData:(NSDictionary *)params;
+- (NSString *)buildRequestParamsString:(NSDictionary *)params;
+
 /**
  Send network operation to server (GET/POST)
  

@@ -13,8 +13,6 @@
 - (id)sanitizeResponse:(NSData *)responseData;
 - (NSDictionary *)sanitizeDictionary:(NSDictionary *)dictionary forKeys:(NSArray *)keys;
 - (NSArray *)sanitizeArray:(NSArray *)array;
-- (NSString *)buildRequestParamsString:(NSDictionary *)params;
-- (NSMutableData *)buildRequestParamsData:(NSDictionary *)params;
 
 @end
 
