@@ -13,8 +13,6 @@
 - (id)sanitizeResponse:(NSData *)responseData;
 - (NSDictionary *)sanitizeDictionary:(NSDictionary *)dictionary forKeys:(NSArray *)keys;
 - (NSArray *)sanitizeArray:(NSArray *)array;
-- (NSString *)buildRequestParamsString:(NSDictionary *)params;
-- (NSMutableData *)buildRequestParamsData:(NSDictionary *)params;
 
 @end
 
@@ -282,7 +280,9 @@
   NSArray *allValues = [params allValues];
   
   for (int i = 0; i < [params count]; i++) {
-    [encodedParameterPairs appendFormat:@"%@=%@", [[allKeys objectAtIndex:i] stringByURLEncoding], [[allValues objectAtIndex:i] stringByURLEncoding]];
+    NSString *key = [[NSString stringWithFormat:@"%@", [allKeys objectAtIndex:i]] stringByURLEncoding];
+    NSString *value = [[NSString stringWithFormat:@"%@", [allValues objectAtIndex:i]] stringByURLEncoding];
+    [encodedParameterPairs appendFormat:@"%@=%@", key, value];
     if (i < [params count] - 1) {
       [encodedParameterPairs appendString:@"&"];
     }
