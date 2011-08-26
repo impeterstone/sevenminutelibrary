@@ -1,6 +1,6 @@
 //
 //  PSScrapeCenter.m
-//  Spotlight
+//  MealTime
 //
 //  Created by Peter Shih on 8/24/11.
 //  Copyright 2011 __MyCompanyName__. All rights reserved.
@@ -38,7 +38,8 @@
   
   TFHpple *xpathParser = [[TFHpple alloc] initWithHTMLData:strippedData];
   NSArray *numPhotosArray = [xpathParser searchWithXPathQuery:@"//div[@id=\"mainContent\"]//td[@class=\"pager_current\"]"];
-  NSLog(@"asdf: %@", numPhotosArray);
+//  NSLog(@"asdf: %@", numPhotosArray);
+  [xpathParser release];
   if ([numPhotosArray count] > 0) {
     NSString *numPhotosRaw = [[numPhotosArray objectAtIndex:0] content];
     NSRange ofRange = [numPhotosRaw rangeOfString:@" of "];

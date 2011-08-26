@@ -1,6 +1,6 @@
 //
 //  PSScrapeCenter.h
-//  Spotlight
+//  MealTime
 //
 //  Created by Peter Shih on 8/24/11.
 //  Copyright 2011 __MyCompanyName__. All rights reserved.
