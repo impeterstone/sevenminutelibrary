@@ -67,7 +67,11 @@
   NSArray *elements  = [xpathParser searchWithXPathQuery:@"//span[@class=\"address\"]"];
   
   NSMutableArray *placeArray = [NSMutableArray array];
+  int i = 0;
   for (TFHppleElement *element in elements) {
+    // Add an internal autoincrementing index
+    NSNumber *index = [NSNumber numberWithInt:i];
+    
     // Get the business id string that is used to identify this place
     NSString *biz = [[[[[element firstChild] firstChild] attributes] objectForKey:@"href"] stringByReplacingOccurrencesOfString:@"/biz/" withString:@""];
     
@@ -96,8 +100,10 @@
     NSString *phone = [[[element children] lastObject] content];
     
     // Create payload, add to array
-    NSMutableDictionary *placeDict = [NSMutableDictionary dictionaryWithObjectsAndKeys:biz, @"biz", name, @"name", distance, @"distance", price, @"price", phone, @"phone", nil];
+    NSMutableDictionary *placeDict = [NSMutableDictionary dictionaryWithObjectsAndKeys:index, @"index", biz, @"biz", name, @"name", distance, @"distance", price, @"price", phone, @"phone", nil];
     [placeArray addObject:placeDict];
+    
+    i++;
   }
   
   VLog(@"Places: %@", placeArray);

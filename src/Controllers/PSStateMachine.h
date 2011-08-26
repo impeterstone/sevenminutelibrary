@@ -24,6 +24,7 @@
 /**
  Initiates loading of the dataSource
  */
+- (void)setupDataSource;
 - (void)reloadDataSource;
 - (void)loadDataSource;
 - (void)dataSourceDidLoad;

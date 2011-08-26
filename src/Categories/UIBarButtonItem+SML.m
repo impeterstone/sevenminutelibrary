@@ -10,9 +10,9 @@
 
 @implementation UIBarButtonItem (SML)
 
-+ (UIBarButtonItem *)navButtonWithTitle:(NSString *)title withTarget:(id)target action:(SEL)action buttonType:(NavButtonType)buttonType {
++ (UIBarButtonItem *)barButtonWithTitle:(NSString *)title withTarget:(id)target action:(SEL)action width:(CGFloat)width height:(CGFloat)height buttonType:(BarButtonType)buttonType {
   UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
-  button.frame = CGRectMake(0, 0, 60, 30);
+  button.frame = CGRectMake(0, 0, width, height);
   [button setTitle:title forState:UIControlStateNormal];
   button.titleLabel.font = [UIFont fontWithName:@"HelveticaNeue-Bold" size:12.0];
   button.titleLabel.shadowColor = [UIColor blackColor];
@@ -21,23 +21,23 @@
   UIImage *bg = nil;
   UIImage *bgHighlighted = nil;
   switch (buttonType) {
-    case NavButtonTypeNormal:
+    case BarButtonTypeNormal:
       bg = [[UIImage imageNamed:@"navbar_normal_button.png"] stretchableImageWithLeftCapWidth:4 topCapHeight:0];
       bgHighlighted = [[UIImage imageNamed:@"navbar_normal_highlighted_button.png"] stretchableImageWithLeftCapWidth:4 topCapHeight:0];
       break;
-    case NavButtonTypeBlue:
+    case BarButtonTypeBlue:
       bg = [[UIImage imageNamed:@"navbar_blue_button.png"] stretchableImageWithLeftCapWidth:4 topCapHeight:0];
       bgHighlighted = [[UIImage imageNamed:@"navbar_blue_highlighted_button.png"] stretchableImageWithLeftCapWidth:4 topCapHeight:0];
       break;
-    case NavButtonTypeRed:
+    case BarButtonTypeRed:
       bg = [[UIImage imageNamed:@"navbar_red_button.png"] stretchableImageWithLeftCapWidth:4 topCapHeight:0];
       bgHighlighted = [[UIImage imageNamed:@"navbar_red_highlighted_button.png"] stretchableImageWithLeftCapWidth:4 topCapHeight:0];
       break;
-    case NavButtonTypeGreen:
+    case BarButtonTypeGreen:
       bg = [[UIImage imageNamed:@"navbar_green_button.png"] stretchableImageWithLeftCapWidth:4 topCapHeight:0];
       bgHighlighted = [[UIImage imageNamed:@"navbar_green_highlighted_button.png"] stretchableImageWithLeftCapWidth:4 topCapHeight:0];
       break;
-    case NavButtonTypeSilver:
+    case BarButtonTypeSilver:
       bg = [[UIImage imageNamed:@"navbar_focus_button.png"] stretchableImageWithLeftCapWidth:4 topCapHeight:0];
       bgHighlighted = [[UIImage imageNamed:@"navbar_focus_highlighted_button.png"] stretchableImageWithLeftCapWidth:4 topCapHeight:0];
       break;
@@ -54,32 +54,32 @@
   return navButton;
 }
 
-+ (UIBarButtonItem *)navButtonWithImage:(UIImage *)image withTarget:(id)target action:(SEL)action buttonType:(NavButtonType)buttonType {
++ (UIBarButtonItem *)barButtonWithImage:(UIImage *)image withTarget:(id)target action:(SEL)action width:(CGFloat)width height:(CGFloat)height buttonType:(BarButtonType)buttonType {
   UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
-  button.frame = CGRectMake(0, 0, 60, 30);
+  button.frame = CGRectMake(0, 0, width, height);
   [button setImage:image forState:UIControlStateNormal];
   [button setImage:image forState:UIControlStateHighlighted];
   
   UIImage *bg = nil;
   UIImage *bgHighlighted = nil;
   switch (buttonType) {
-    case NavButtonTypeNormal:
+    case BarButtonTypeNormal:
       bg = [[UIImage imageNamed:@"navbar_normal_button.png"] stretchableImageWithLeftCapWidth:4 topCapHeight:0];
       bgHighlighted = [[UIImage imageNamed:@"navbar_normal_highlighted_button.png"] stretchableImageWithLeftCapWidth:4 topCapHeight:0];
       break;
-    case NavButtonTypeBlue:
+    case BarButtonTypeBlue:
       bg = [[UIImage imageNamed:@"navbar_blue_button.png"] stretchableImageWithLeftCapWidth:4 topCapHeight:0];
       bgHighlighted = [[UIImage imageNamed:@"navbar_blue_highlighted_button.png"] stretchableImageWithLeftCapWidth:4 topCapHeight:0];
       break;
-    case NavButtonTypeRed:
+    case BarButtonTypeRed:
       bg = [[UIImage imageNamed:@"navbar_red_button.png"] stretchableImageWithLeftCapWidth:4 topCapHeight:0];
       bgHighlighted = [[UIImage imageNamed:@"navbar_red_highlighted_button.png"] stretchableImageWithLeftCapWidth:4 topCapHeight:0];
       break;
-    case NavButtonTypeGreen:
+    case BarButtonTypeGreen:
       bg = [[UIImage imageNamed:@"navbar_green_button.png"] stretchableImageWithLeftCapWidth:4 topCapHeight:0];
       bgHighlighted = [[UIImage imageNamed:@"navbar_green_highlighted_button.png"] stretchableImageWithLeftCapWidth:4 topCapHeight:0];
       break;
-    case NavButtonTypeSilver:
+    case BarButtonTypeSilver:
       bg = [[UIImage imageNamed:@"navbar_focus_button.png"] stretchableImageWithLeftCapWidth:4 topCapHeight:0];
       bgHighlighted = [[UIImage imageNamed:@"navbar_focus_highlighted_button.png"] stretchableImageWithLeftCapWidth:4 topCapHeight:0];
       break;

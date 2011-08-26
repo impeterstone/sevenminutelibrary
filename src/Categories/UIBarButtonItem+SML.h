@@ -9,18 +9,18 @@
 #import <UIKit/UIKit.h>
 
 enum {
-  NavButtonTypeNormal = 0,
-  NavButtonTypeBlue = 1,
-  NavButtonTypeRed = 2,
-  NavButtonTypeGreen = 3,
-  NavButtonTypeSilver = 4
+  BarButtonTypeNormal = 0,
+  BarButtonTypeBlue = 1,
+  BarButtonTypeRed = 2,
+  BarButtonTypeGreen = 3,
+  BarButtonTypeSilver = 4
 };
-typedef uint32_t NavButtonType;
+typedef uint32_t BarButtonType;
 
 @interface UIBarButtonItem (SML)
 
-+ (UIBarButtonItem *)navButtonWithTitle:(NSString *)title withTarget:(id)target action:(SEL)action buttonType:(NavButtonType)buttonType;
-+ (UIBarButtonItem *)navButtonWithImage:(UIImage *)image withTarget:(id)target action:(SEL)action buttonType:(NavButtonType)buttonType;
++ (UIBarButtonItem *)barButtonWithTitle:(NSString *)title withTarget:(id)target action:(SEL)action width:(CGFloat)width height:(CGFloat)height buttonType:(BarButtonType)buttonType;
++ (UIBarButtonItem *)barButtonWithImage:(UIImage *)image withTarget:(id)target action:(SEL)action width:(CGFloat)width height:(CGFloat)height buttonType:(BarButtonType)buttonType;
 + (UIBarButtonItem *)navBackButtonWithTarget:(id)target action:(SEL)action;
 
 @end

@@ -36,6 +36,7 @@
   [super dealloc];
 }
 
+#pragma mark - View
 - (void)loadView {
   [super loadView];
   
@@ -72,17 +73,15 @@
   [navTitleView release];
 }
 
-//- (void)viewDidAppear:(BOOL)animated {
-//  [super viewDidAppear:animated];
-//  [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
-//  [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(orientationChangedFromNotification:) name:UIDeviceOrientationDidChangeNotification object:nil];
-//}
-//
-//- (void)viewDidDisappear:(BOOL)animated {
-//  [super viewDidDisappear:animated];
-//  [[UIDevice currentDevice] endGeneratingDeviceOrientationNotifications];
-//  [[NSNotificationCenter defaultCenter] removeObserver:self name:UIDeviceOrientationDidChangeNotification object:nil];
-//}
+- (void)viewWillAppear:(BOOL)animated {
+  [super viewWillAppear:animated];
+  [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadDataSource) name:kApplicationResumed object:nil];
+}
+
+- (void)viewWillDisappear:(BOOL)animated {
+  [super viewWillDisappear:animated];
+  [[NSNotificationCenter defaultCenter] removeObserver:self name:kApplicationResumed object:nil];
+}
 
 - (void)orientationChangedFromNotification:(NSNotification *)notification {
   // may should implement
@@ -105,6 +104,11 @@
 
 - (BOOL)dataIsLoading {
   return NO;
+}
+
+// DataSource
+- (void)setupDataSource {
+  
 }
 
 - (void)reloadDataSource {

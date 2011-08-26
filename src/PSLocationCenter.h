@@ -14,6 +14,8 @@
   CLLocationManager *_locationManager;
   CLLocation *_oldLocation;
   CLLocation *_currentLocation;
+  
+  BOOL _isUpdating;
 }
 
 @property (nonatomic, retain) CLLocationManager *locationManager;

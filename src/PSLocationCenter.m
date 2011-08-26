@@ -27,6 +27,7 @@ static NSInteger _distanceFilter = 1000;
 - (id)init {
   self = [super init];
   if (self) {
+    _isUpdating = NO;
   }
   return self;
 }
@@ -40,18 +41,17 @@ static NSInteger _distanceFilter = 1000;
 
 #pragma mark - Location Methods
 - (void)getMyLocation {
-  if ([self hasAcquiredLocation]) {
-    [[NSNotificationCenter defaultCenter] postNotificationName:kLocationAcquired object:nil];
-  } else {
-    [self startUpdates];
-  }
+  [self startUpdates];
 }
 
 - (void)startUpdates {
 #if TARGET_IPHONE_SIMULATOR
   [[NSNotificationCenter defaultCenter] postNotificationName:kLocationAcquired object:nil];
 #else
-  [self startStandardUpdates];
+  if (!_isUpdating) {
+    _isUpdating = YES;
+    [self startStandardUpdates];
+  }
 #endif
 }
 
@@ -59,6 +59,7 @@ static NSInteger _distanceFilter = 1000;
 #if TARGET_IPHONE_SIMULATOR
   
 #else
+  _isUpdating = NO;
   [self stopStandardUpdates];
 #endif
 }
@@ -80,8 +81,6 @@ static NSInteger _distanceFilter = 1000;
 
 - (void)stopStandardUpdates {
   [self.locationManager stopUpdatingLocation];
-  self.oldLocation = nil;
-  self.currentLocation = nil;
 }
 
 - (void)startSignificantChangeUpdates {
@@ -118,24 +117,11 @@ static NSInteger _distanceFilter = 1000;
 #pragma mark CLLocationManagerDelegate
 // Delegate method from the CLLocationManagerDelegate protocol.
 - (void)locationManager:(CLLocationManager *)manager didUpdateToLocation:(CLLocation *)newLocation fromLocation:(CLLocation *)oldLocation {
-  // If it's a relatively recent event, turn off updates to save power
-  NSDate* eventDate = newLocation.timestamp;
   
-  NSTimeInterval howRecent = [eventDate timeIntervalSinceNow];
-  if (abs(howRecent) < 15.0)
-  {
-    self.oldLocation = self.currentLocation;
-    self.currentLocation = newLocation;
-    
-    NSLog(@"latitude %+.6f, longitude %+.6f\n",
-          newLocation.coordinate.latitude,
-          newLocation.coordinate.longitude);
-    
-    if (!self.oldLocation) {
-      [[NSNotificationCenter defaultCenter] postNotificationName:kLocationAcquired object:nil];
-    }
-  }
-  // else skip the event and process the next one.
+  self.oldLocation = oldLocation;
+  self.currentLocation = newLocation;
+  [self stopUpdates];
+  [[NSNotificationCenter defaultCenter] postNotificationName:kLocationAcquired object:nil];
 }
 
 @end

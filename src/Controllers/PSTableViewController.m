@@ -128,15 +128,6 @@
 //  [_tableView addObserver:self forKeyPath:@"contentOffset" options:NSKeyValueObservingOptionNew context:NULL];
 }
 
-// SUBCLASS SHOULD IMPLEMENT
-- (void)setupDataSource {
-  
-}
-
-- (void)reloadDataSource {
-  
-}
-
 // SUBCLASS CAN OPTIONALLY CALL
 - (void)setupPullRefresh {
   if (_refreshHeaderView == nil) {
