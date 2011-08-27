@@ -38,5 +38,6 @@
 - (void)stopStandardUpdates;
 
 - (void)startSignificantChangeUpdates;
+- (void)stopSignificantChangeUpdates;
 
 @end

@@ -41,7 +41,11 @@ static NSInteger _distanceFilter = 1000;
 
 #pragma mark - Location Methods
 - (void)getMyLocation {
-  [self startUpdates];
+  if (self.currentLocation && _isUpdating) {
+    [[NSNotificationCenter defaultCenter] postNotificationName:kLocationAcquired object:nil];
+  } else {
+    [self startUpdates];
+  }
 }
 
 - (void)startUpdates {
@@ -50,7 +54,7 @@ static NSInteger _distanceFilter = 1000;
 #else
   if (!_isUpdating) {
     _isUpdating = YES;
-    [self startStandardUpdates];
+    [self startSignificantChangeUpdates];
   }
 #endif
 }
@@ -60,7 +64,7 @@ static NSInteger _distanceFilter = 1000;
   
 #else
   _isUpdating = NO;
-  [self stopStandardUpdates];
+  [self stopSignificantChangeUpdates];
 #endif
 }
 
@@ -90,7 +94,12 @@ static NSInteger _distanceFilter = 1000;
     _locationManager = [[CLLocationManager alloc] init];
   
   self.locationManager.delegate = self;
+  self.locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters;
   [self.locationManager startMonitoringSignificantLocationChanges];
+}
+
+- (void)stopSignificantChangeUpdates {
+  [self.locationManager stopMonitoringSignificantLocationChanges];
 }
 
 - (BOOL)hasAcquiredLocation {
@@ -118,10 +127,16 @@ static NSInteger _distanceFilter = 1000;
 // Delegate method from the CLLocationManagerDelegate protocol.
 - (void)locationManager:(CLLocationManager *)manager didUpdateToLocation:(CLLocation *)newLocation fromLocation:(CLLocation *)oldLocation {
   
-  self.oldLocation = oldLocation;
   self.currentLocation = newLocation;
-  [self stopUpdates];
   [[NSNotificationCenter defaultCenter] postNotificationName:kLocationAcquired object:nil];
+  
+  // Check Timestamp to determine if this was cached
+//  NSDate *locTimestamp = newLocation.timestamp;
+//  if (fabs([locTimestamp timeIntervalSinceDate:[NSDate date]]) <= 60) {
+//    self.currentLocation = newLocation;
+//    self.oldLocation = oldLocation;
+//    [[NSNotificationCenter defaultCenter] postNotificationName:kLocationAcquired object:nil];
+//  }
 }
 
 @end
