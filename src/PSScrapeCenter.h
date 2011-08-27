@@ -15,8 +15,8 @@
 
 + (id)defaultCenter;
 
-- (NSString *)scrapeNumberOfPhotosWithHTMLString:(NSString *)htmlString;
-- (NSArray *)scrapePhotosWithHTMLString:(NSString *)htmlString;
-- (NSArray *)scrapePlacesWithHTMLString:(NSString *)htmlString;
+- (NSDictionary *)scrapePhotosWithHTMLString:(NSString *)htmlString;
+- (NSDictionary *)scrapePlacesWithHTMLString:(NSString *)htmlString;
+- (NSDictionary *)scrapeMapWithHTMLString:(NSString *)htmlString;
 
 @end

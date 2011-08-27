@@ -8,6 +8,8 @@
 
 #import "PSScrapeCenter.h"
 #import "TFHpple.h"
+#import "RegexKitLite.h"
+#import "HTMLParser.h"
 
 @implementation PSScrapeCenter
 
@@ -31,105 +33,115 @@
 }
 
 #pragma mark - Public Methods
-- (NSString *)scrapeNumberOfPhotosWithHTMLString:(NSString *)htmlString {
+- (NSDictionary *)scrapePhotosWithHTMLString:(NSString *)htmlString {
   // HTML Scraping
-  NSString *strippedString = [htmlString stringByReplacingOccurrencesOfString:@"<br>" withString:@""];
-  NSData *strippedData = [strippedString dataUsingEncoding:NSUTF8StringEncoding];
+  NSError *parserError = nil;
+  HTMLParser *parser = [[HTMLParser alloc] initWithString:htmlString error:&parserError];
+  HTMLNode *doc = [parser body];
   
-  TFHpple *xpathParser = [[TFHpple alloc] initWithHTMLData:strippedData];
-  NSArray *numPhotosArray = [xpathParser searchWithXPathQuery:@"//div[@id=\"mainContent\"]//td[@class=\"pager_current\"]"];
-//  NSLog(@"asdf: %@", numPhotosArray);
-  [xpathParser release];
-  if ([numPhotosArray count] > 0) {
-    NSString *numPhotosRaw = [[numPhotosArray objectAtIndex:0] content];
-    NSRange ofRange = [numPhotosRaw rangeOfString:@" of "];
-    NSString *numPhotos = [numPhotosRaw substringFromIndex:(ofRange.location + ofRange.length)];
-    return numPhotos;
-  } else {
-    return @"0";
-  }
-}
-
-- (NSArray *)scrapePhotosWithHTMLString:(NSString *)htmlString {
-  // HTML Scraping
-  NSString *strippedString = [htmlString stringByReplacingOccurrencesOfString:@"<br>" withString:@""];
-  NSData *strippedData = [strippedString dataUsingEncoding:NSUTF8StringEncoding];
+  HTMLNode *mainContentNode = [doc findChildWithAttribute:@"id" matchingName:@"mainContent" allowPartial:YES];
   
-  TFHpple *xpathParser = [[TFHpple alloc] initWithHTMLData:strippedData];
-  NSArray *elements  = [xpathParser searchWithXPathQuery:@"//div[@id=\"mainContent\"]//img"];
+  NSString *numPhotos = [[mainContentNode rawContents] stringByMatching:@"\\d+ Photos from"];
+  if (numPhotos) numPhotos = [numPhotos stringByReplacingOccurrencesOfString:@" Photos from" withString:@""];
   
-  NSMutableArray *photoArray = [NSMutableArray array];
-  for (TFHppleElement *element in elements) {
-    // Get the photo src url
-    NSString *src = [[element objectForKey:@"src"] stringByReplacingOccurrencesOfString:@"ms.jpg" withString:@"l.jpg"];
+  NSArray *photoNodes = [mainContentNode findChildTags:@"img"];
+  
+  NSMutableArray *photos = [NSMutableArray array];
+  for (HTMLNode *node in photoNodes) {
+    NSString *src = [[node getAttributeNamed:@"src"] stringByReplacingOccurrencesOfString:@"ms.jpg" withString:@"l.jpg"];
     
-    // Get the photo caption
-    NSString *alt = [element objectForKey:@"alt"];
+    NSString *alt = [node getAttributeNamed:@"alt"];
     
     NSDictionary *photoDict = [NSDictionary dictionaryWithObjectsAndKeys:src, @"src", alt, @"alt", nil];
-    [photoArray addObject:photoDict];
+    [photos addObject:photoDict];
   }
   
-  VLog(@"Photos: %@", photoArray);
+  [parser release];
   
-  [xpathParser release];
+  NSDictionary *photoDict = [NSDictionary dictionaryWithObjectsAndKeys:numPhotos, @"numPhotos", photos, @"photos", nil];
   
-  return photoArray;
+  VLog(@"Photos: %@", photoDict);
+  
+  return photoDict;
 }
 
-- (NSArray *)scrapePlacesWithHTMLString:(NSString *)htmlString {
+- (NSDictionary *)scrapePlacesWithHTMLString:(NSString *)htmlString {
   // HTML Scraping
-  NSString *strippedString = [htmlString stringByReplacingOccurrencesOfString:@"<br>" withString:@""];
-  NSData *strippedData = [strippedString dataUsingEncoding:NSUTF8StringEncoding];
+  NSError *parserError = nil;
+  HTMLParser *parser = [[HTMLParser alloc] initWithString:htmlString error:&parserError];
+  HTMLNode *doc = [parser body];
   
-  TFHpple *xpathParser = [[TFHpple alloc] initWithHTMLData:strippedData];
-  NSArray *elements  = [xpathParser searchWithXPathQuery:@"//span[@class=\"address\"]"];
+  HTMLNode *mainContentNode = [doc findChildWithAttribute:@"id" matchingName:@"mainContent" allowPartial:YES];
+//  NSString *mainContent = [mainContentNode rawContents];
+  
+  NSArray *addressNodes = [mainContentNode findChildrenWithAttribute:@"class" matchingName:@"address" allowPartial:YES];
   
   NSMutableArray *placeArray = [NSMutableArray array];
   int i = 0;
-  for (TFHppleElement *element in elements) {
-    // Add an internal autoincrementing index
-    NSNumber *index = [NSNumber numberWithInt:i];
-    
-    // Get the business id string that is used to identify this place
-    NSString *biz = [[[[[element firstChild] firstChild] attributes] objectForKey:@"href"] stringByReplacingOccurrencesOfString:@"/biz/" withString:@""];
-    
-    // Get the business name
-    NSString *name = [[[element firstChild] firstChild] content];
-    
-    // Find Distance in Miles
-    NSRange milesRange = [[element content] rangeOfString:@"miles"];
-    NSString *distance = nil;
-    if (NSEqualRanges(NSMakeRange(NSNotFound, 0), milesRange)) {
-      distance = @"0.00";
-    } else {
-      distance = [[element content] substringToIndex:(milesRange.location-1)];
-    }
-    
-    // Find Price in $
-    NSRange priceRange = [[element content] rangeOfString:@"Price: "];
-    NSString *price = nil;
-    if (NSEqualRanges(NSMakeRange(NSNotFound, 0), priceRange)) {
-      price = @"";
-    } else {
-      price = [[element content] substringFromIndex:(priceRange.location + priceRange.length)];
-    }
-    
-    // Find Phone Number
-    NSString *phone = [[[element children] lastObject] content];
+  for (HTMLNode *node in addressNodes) {
+    NSNumber *index = [NSNumber numberWithInt:i]; // Popularity index
+    HTMLNode *bizNode = [node findChildWithAttribute:@"href" matchingName:@"/biz/" allowPartial:YES];
+    NSString *biz = [[bizNode getAttributeNamed:@"href"] stringByReplacingOccurrencesOfString:@"/biz/" withString:@""];
+    NSString *name = [bizNode contents];
+    NSString *rating = [[[node findChildWithAttribute:@"alt" matchingName:@"star rating" allowPartial:YES] getAttributeNamed:@"alt"] stringByReplacingOccurrencesOfString:@" star rating" withString:@""];
+    NSString *phone = [[node findChildWithAttribute:@"title" matchingName:@"Call" allowPartial:YES] contents];
+    NSString *reviews = [[node rawContents] stringByMatching:@"\\d+ reviews"];
+    if (reviews) reviews = [reviews stringByReplacingOccurrencesOfString:@" reviews" withString:@""];
+    NSString *price = [[node rawContents] stringByMatching:@"Price: [$]+"];
+    if (price) price = [price stringByReplacingOccurrencesOfString:@"Price: " withString:@""];
+    NSString *category = [[node rawContents] stringByMatching:@"Category: .+"];
+    if (category) category = [category stringByReplacingOccurrencesOfString:@"Category: " withString:@""];
+    NSString *distance = [[node rawContents] stringByMatching:@"\\d+\\.\\d+ miles"];
+    if (distance) distance = [distance stringByReplacingOccurrencesOfString:@" miles" withString:@""];
+    NSString *city = [[node rawContents] stringByMatching:@"(?m)^\\w+, \\w{2}"];
     
     // Create payload, add to array
-    NSMutableDictionary *placeDict = [NSMutableDictionary dictionaryWithObjectsAndKeys:index, @"index", biz, @"biz", name, @"name", distance, @"distance", price, @"price", phone, @"phone", nil];
+    NSMutableDictionary *placeDict = [NSMutableDictionary dictionary];
+    if (index) [placeDict setObject:index forKey:@"index"];
+    if (biz) [placeDict setObject:biz forKey:@"biz"];
+    if (name) [placeDict setObject:name forKey:@"name"];
+    if (rating) [placeDict setObject:rating forKey:@"rating"];
+    if (phone) [placeDict setObject:phone forKey:@"phone"];
+    if (reviews) [placeDict setObject:reviews forKey:@"reviews"];
+    if (price) [placeDict setObject:price forKey:@"price"];
+    if (category) [placeDict setObject:category forKey:@"category"];
+    if (distance) [placeDict setObject:distance forKey:@"distance"];
+    if (city) [placeDict setObject:city forKey:@"city"];
+     
     [placeArray addObject:placeDict];
     
     i++;
   }
   
-  VLog(@"Places: %@", placeArray);
+  NSDictionary *placeDict = [NSDictionary dictionaryWithObject:placeArray forKey:@"places"];
   
-  [xpathParser release];
+  VLog(@"Places: %@", placeDict);
   
-  return placeArray;
+  [parser release];
+  
+  return placeDict;
+}
+
+- (NSDictionary *)scrapeMapWithHTMLString:(NSString *)htmlString {
+  // HTML Scraping
+  NSError *parserError = nil;
+  HTMLParser *parser = [[HTMLParser alloc] initWithString:htmlString error:&parserError];
+  HTMLNode *doc = [parser body];
+  
+  HTMLNode *mainContentNode = [doc findChildWithAttribute:@"id" matchingName:@"mainContent" allowPartial:YES];
+  //  NSString *mainContent = [mainContentNode rawContents];
+  
+  NSString *dirURLString = [[mainContentNode findChildWithAttribute:@"class"matchingName:@"dir-link" allowPartial:YES] getAttributeNamed:@"href"];
+  
+  NSString *address = [[[[dirURLString stringByMatching:@"daddr=[^&]+"] stringByReplacingOccurrencesOfString:@"daddr=" withString:@""] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding] stringByReplacingOccurrencesOfString:@"+" withString:@" "];
+  
+  NSString *mapString = [[mainContentNode findChildWithAttribute:@"src" matchingName:@"maps.google.com" allowPartial:YES] getAttributeNamed:@"src"];
+  
+  NSString *coordinates = [[[mapString stringByMatching:@"center=[^&]+"] stringByReplacingOccurrencesOfString:@"center=" withString:@""] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+  
+  NSDictionary *mapDict = [NSDictionary dictionaryWithObjectsAndKeys:address, @"address", coordinates, @"coordinates", nil];
+  
+  return mapDict;
 }
 
 @end

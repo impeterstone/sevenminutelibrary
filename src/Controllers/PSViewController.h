@@ -16,6 +16,7 @@
 #import "NSDate+SML.h"
 #import "NSDate+Helper.h"
 #import "UIBarButtonItem+SML.h"
+#import "UIImage+SML.h"
 
 @interface PSViewController : UIViewController {
   
