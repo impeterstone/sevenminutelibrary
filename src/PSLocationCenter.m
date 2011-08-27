@@ -28,6 +28,7 @@ static NSInteger _distanceFilter = 1000;
   self = [super init];
   if (self) {
     _isUpdating = NO;
+
   }
   return self;
 }
@@ -55,6 +56,8 @@ static NSInteger _distanceFilter = 1000;
   if (!_isUpdating) {
     _isUpdating = YES;
     [self startSignificantChangeUpdates];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(startSignificantChangeUpdates) name:kApplicationResumed object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(stopSignificantChangeUpdates) name:kApplicationSuspended object:nil];
   }
 #endif
 }
@@ -65,6 +68,8 @@ static NSInteger _distanceFilter = 1000;
 #else
   _isUpdating = NO;
   [self stopSignificantChangeUpdates];
+  [[NSNotificationCenter defaultCenter] removeObserver:self name:kApplicationResumed object:nil];
+  [[NSNotificationCenter defaultCenter] removeObserver:self name:kApplicationSuspended object:nil];
 #endif
 }
 
