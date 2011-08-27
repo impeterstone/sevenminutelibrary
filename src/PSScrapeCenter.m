@@ -89,10 +89,11 @@
     if (reviews) reviews = [reviews stringByReplacingOccurrencesOfString:@" reviews" withString:@""];
     NSString *price = [[node rawContents] stringByMatching:@"Price: [$]+"];
     if (price) price = [price stringByReplacingOccurrencesOfString:@"Price: " withString:@""];
-    NSString *category = [[node rawContents] stringByMatching:@"Category: .+"];
+    NSString *category = [[node rawContents] stringByMatching:@"Category: [^<]+"];
     if (category) category = [category stringByReplacingOccurrencesOfString:@"Category: " withString:@""];
     NSString *distance = [[node rawContents] stringByMatching:@"\\d+\\.\\d+ miles"];
     if (distance) distance = [distance stringByReplacingOccurrencesOfString:@" miles" withString:@""];
+    else distance = @"0.0";
     NSString *city = [[node rawContents] stringByMatching:@"(?m)^\\w+, \\w{2}"];
     
     // Create payload, add to array
