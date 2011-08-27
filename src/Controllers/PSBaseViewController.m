@@ -36,6 +36,11 @@
   [super dealloc];
 }
 
+#pragma mark - View Config
+- (UIView *)backgroundView {
+  return nil;
+}
+
 #pragma mark - View
 - (void)loadView {
   [super loadView];
@@ -89,12 +94,6 @@
 
 - (void)back {
   [self.navigationController popViewControllerAnimated:YES];
-}
-
-#pragma mark - View Configuration
-// Subclasses may optionally implement
-- (UIView *)backgroundView {
-  return nil;
 }
 
 #pragma mark - PSStateMachine

@@ -37,6 +37,10 @@
 @property (nonatomic, retain) NSMutableArray *items;
 @property (nonatomic, retain) NSMutableArray *searchItems;
 
+// View Config
+- (UIView *)rowBackgroundView;
+- (UIView *)rowSelectedBackgroundView;
+
 - (void)setupTableViewWithFrame:(CGRect)frame andStyle:(UITableViewStyle)style andSeparatorStyle:(UITableViewCellSeparatorStyle)separatorStyle;
 - (void)setupPullRefresh;
 - (void)setupTableHeader;

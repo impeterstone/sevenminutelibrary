@@ -72,6 +72,16 @@
   [super dealloc];
 }
 
+#pragma mark - View Config
+- (UIView *)rowBackgroundView {
+  return nil;
+}
+
+- (UIView *)rowSelectedBackgroundView {
+  return nil;
+}
+
+#pragma mark - View
 - (void)loadView {
   [super loadView];
 }
@@ -311,18 +321,8 @@
 }
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
-  if (tableView.style == UITableViewStylePlain) {
-    UIView *backgroundView = [[UIView alloc] initWithFrame:cell.bounds];
-    backgroundView.backgroundColor = CELL_BACKGROUND_COLOR;
-    cell.backgroundView = backgroundView;
-    
-    UIView *selectedBackgroundView = [[UIView alloc] initWithFrame:cell.bounds];
-    selectedBackgroundView.backgroundColor = CELL_SELECTED_COLOR;
-    cell.selectedBackgroundView = selectedBackgroundView;
-    
-    [backgroundView release];
-    [selectedBackgroundView release];
-  }
+  cell.backgroundView = [self rowBackgroundView];
+  cell.selectedBackgroundView = [self rowSelectedBackgroundView];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
