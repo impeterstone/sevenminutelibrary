@@ -16,7 +16,7 @@
 #import "NSDate+SML.h"
 #import "NSDate+Helper.h"
 
-#define MARGIN_X 5.0
+#define MARGIN_X 10.0
 #define MARGIN_Y 5.0
 
 enum {

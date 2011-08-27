@@ -55,7 +55,7 @@
     if (self.delegate && [self.delegate respondsToSelector:@selector(imageDidLoad:)]) {
       [self.delegate performSelector:@selector(imageDidLoad:) withObject:image];
     }
-  } else if (image == _placeholderImage) {
+  } else if (image == _placeholderImage && _placeholderImage) {
     [super setImage:image];
     [_loadingIndicator stopAnimating];
   } else {
