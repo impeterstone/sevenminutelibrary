@@ -82,7 +82,7 @@
     NSNumber *index = [NSNumber numberWithInt:i]; // Popularity index
     HTMLNode *bizNode = [node findChildWithAttribute:@"href" matchingName:@"/biz/" allowPartial:YES];
     NSString *biz = [[bizNode getAttributeNamed:@"href"] stringByReplacingOccurrencesOfString:@"/biz/" withString:@""];
-    NSString *name = [bizNode contents];
+    NSString *name = [[bizNode contents] stringByUnescapingHTML];
     NSString *rating = [[[node findChildWithAttribute:@"alt" matchingName:@"star rating" allowPartial:YES] getAttributeNamed:@"alt"] stringByReplacingOccurrencesOfString:@" star rating" withString:@""];
     NSString *phone = [[node findChildWithAttribute:@"title" matchingName:@"Call" allowPartial:YES] contents];
     NSString *reviews = [[node rawContents] stringByMatching:@"\\d+ reviews"];
@@ -90,7 +90,7 @@
     NSString *price = [[node rawContents] stringByMatching:@"Price: [$]+"];
     if (price) price = [price stringByReplacingOccurrencesOfString:@"Price: " withString:@""];
     NSString *category = [[node rawContents] stringByMatching:@"Category: [^<]+"];
-    if (category) category = [category stringByReplacingOccurrencesOfString:@"Category: " withString:@""];
+    if (category) category = [[category stringByReplacingOccurrencesOfString:@"Category: " withString:@""] stringByUnescapingHTML];
     NSString *distance = [[node rawContents] stringByMatching:@"\\d+\\.\\d+ miles"];
     if (distance) distance = [distance stringByReplacingOccurrencesOfString:@" miles" withString:@""];
     else distance = @"0.0";
@@ -140,9 +140,40 @@
   
   NSString *coordinates = [[[mapString stringByMatching:@"center=[^&]+"] stringByReplacingOccurrencesOfString:@"center=" withString:@""] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
   
-  NSDictionary *mapDict = [NSDictionary dictionaryWithObjectsAndKeys:address, @"address", coordinates, @"coordinates", nil];
+  // Create payload
+  NSMutableDictionary *mapDict = [NSMutableDictionary dictionary];
+  if (address) [mapDict setObject:address forKey:@"address"];
+  if (coordinates) [mapDict setObject:coordinates forKey:@"coordinates"];
+  
+  [parser release];
   
   return mapDict;
+}
+
+- (NSDictionary *)scrapeBizWithHTMLString:(NSString *)htmlString {
+  // HTML Scraping
+  NSError *parserError = nil;
+  HTMLParser *parser = [[HTMLParser alloc] initWithString:htmlString error:&parserError];
+  HTMLNode *doc = [parser body];
+  
+  HTMLNode *mainContentNode = [doc findChildWithAttribute:@"id" matchingName:@"mainContent" allowPartial:YES];
+  //  NSString *mainContent = [mainContentNode rawContents];
+
+  NSString *hours = [[[mainContentNode rawContents] stringByMatching:@"(?ms)Hours:[^<]+.*View Photos</a>"] stringByReplacingOccurrencesOfString:@"<br>" withString:@""];
+  hours = [hours stringByMatching:@"Hours:[^<]+"];
+  hours = [hours stringByReplacingOccurrencesOfRegex:@"\\s+" withString:@" "];
+  hours = [hours stringByReplacingOccurrencesOfRegex:@"Hours: " withString:@""];
+  NSArray *reviews = [NSArray array];
+  
+  // Create payload
+  NSMutableDictionary *bizDict = [NSMutableDictionary dictionary];
+  if (hours) [bizDict setObject:hours forKey:@"hours"];
+  if (reviews) [bizDict setObject:reviews forKey:@"reviews"];
+  
+  [parser release];
+  
+  // Hours:[^<]+.*View Photos</a>
+  return bizDict;
 }
 
 @end
