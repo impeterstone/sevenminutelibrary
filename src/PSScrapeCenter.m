@@ -66,6 +66,9 @@
 }
 
 - (NSDictionary *)scrapePlacesWithHTMLString:(NSString *)htmlString {
+  // Prepare response container
+  NSMutableDictionary *placeDict = [NSMutableDictionary dictionary];
+  
   // HTML Scraping
   NSError *parserError = nil;
   HTMLParser *parser = [[HTMLParser alloc] initWithString:htmlString error:&parserError];
@@ -73,6 +76,13 @@
   
   HTMLNode *mainContentNode = [doc findChildWithAttribute:@"id" matchingName:@"mainContent" allowPartial:YES];
 //  NSString *mainContent = [mainContentNode rawContents];
+  
+  NSString *pager = [[mainContentNode findChildWithAttribute:@"class" matchingName:@"pager_current" allowPartial:YES] contents];
+  NSString *currentPage = [[pager componentsMatchedByRegex:@"(?:Page )(\\d+)(?: of )(\\d+)" capture:1] lastObject];
+  NSString *numPages = [[pager componentsMatchedByRegex:@"(?:Page )(\\d+)(?: of )(\\d+)" capture:2] lastObject];
+  NSDictionary *pagingDict = [NSDictionary dictionaryWithObjectsAndKeys:currentPage, @"currentPage", numPages, @"numPages", nil];
+  [placeDict setObject:pagingDict forKey:@"paging"];
+  
   
   NSArray *addressNodes = [mainContentNode findChildrenWithAttribute:@"class" matchingName:@"address" allowPartial:YES];
   
@@ -114,7 +124,8 @@
     i++;
   }
   
-  NSDictionary *placeDict = [NSDictionary dictionaryWithObject:placeArray forKey:@"places"];
+  // Add array to response
+  [placeDict setObject:placeArray forKey:@"places"];
   
   VLog(@"Places: %@", placeDict);
   

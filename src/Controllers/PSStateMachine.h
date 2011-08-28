@@ -25,8 +25,8 @@
  Initiates loading of the dataSource
  */
 - (void)setupDataSource;
-- (void)reloadDataSource;
-- (void)loadDataSource;
+- (void)reloadDataSource; // Refresh
+- (void)loadDataSource; // Initial Load
 - (void)dataSourceDidLoad;
 
 /**
@@ -38,5 +38,17 @@
  Used to update the currently active scrollview (for scrollsToTop fix)
  */
 - (void)updateScrollsToTop:(BOOL)isEnabled;
+
+@optional
+/**
+ Used by tableView to page in more data
+ */
+- (void)loadMore;
+- (BOOL)shouldLoadMore;
+
+/**
+ Remotely fetch data
+ */
+- (void)fetchDataSource;
 
 @end

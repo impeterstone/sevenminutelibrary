@@ -27,9 +27,12 @@
     _items = [[NSMutableArray alloc] initWithCapacity:1];
     _sectionTitles = [[NSMutableArray alloc] initWithCapacity:1];
     _selectedIndexes = [[NSMutableDictionary alloc] initWithCapacity:1];
-    _loadingMore = NO;
+    _reloading = NO;
     _hasMore = YES;
     _adShowing = NO;
+    _pagingStart = 0;
+    _pagingCount = 0;
+    _pagingTotal = 0;
   }
   return self;
 }
@@ -43,8 +46,10 @@
   RELEASE_SAFELY(_searchBar);
   RELEASE_SAFELY(_refreshHeaderView);
   RELEASE_SAFELY(_loadMoreView);
-  RELEASE_SAFELY(_loadMoreButton);
-  RELEASE_SAFELY(_loadMoreActivity);
+}
+
+- (void)didReceiveMemoryWarning {
+  [super didReceiveMemoryWarning];
 }
 
 - (void)dealloc {
@@ -58,8 +63,6 @@
   RELEASE_SAFELY(_searchBar);
   RELEASE_SAFELY(_refreshHeaderView);
   RELEASE_SAFELY(_loadMoreView);
-  RELEASE_SAFELY(_loadMoreButton);
-  RELEASE_SAFELY(_loadMoreActivity);
   
   // Non-Views
   RELEASE_SAFELY(_sectionTitles);
@@ -132,6 +135,8 @@
   [self setupTableHeader];
   [self setupTableFooter];
   
+  if ([self shouldLoadMore]) [self setupLoadMoreView];
+  
   // Set the active scrollView
   _activeScrollView = _tableView;
   
@@ -176,82 +181,30 @@
   [self.view addSubview:footerView];
 }
 
-// This is the button load more style
-//- (void)setupLoadMoreView {
-//  _loadMoreView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.width, 44)];
-//  _loadMoreView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-//  _loadMoreView.backgroundColor = FB_COLOR_VERY_LIGHT_BLUE;
-//  
-//  // Button
-//  _loadMoreButton = [[UIButton alloc] initWithFrame:_loadMoreView.frame];
-//  _loadMoreButton.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-//  _loadMoreButton.userInteractionEnabled = NO;
-//  [_loadMoreButton setBackgroundImage:[UIImage imageNamed:@"search_background.png"] forState:UIControlStateNormal];
-//  [_loadMoreButton addTarget:self action:@selector(loadMore) forControlEvents:UIControlEventTouchUpInside];
-//  [_loadMoreButton setTitle:@"Load More..." forState:UIControlStateNormal];
-//  [_loadMoreButton setTitle:@"Loading More..." forState:UIControlStateSelected];
-//  [_loadMoreButton.titleLabel setShadowColor:[UIColor blackColor]];
-//  [_loadMoreButton.titleLabel setShadowOffset:CGSizeMake(0, 1)];
-//  [_loadMoreButton.titleLabel setFont:[UIFont fontWithName:@"HelveticaNeue" size:16.0]];
-//  
-//  // Activity
-//  _loadMoreActivity = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
-//  _loadMoreActivity.frame = CGRectMake(12, 12, 20, 20);
-//  _loadMoreActivity.hidesWhenStopped = YES;
-//  
-//  // Add to subview
-//  [_loadMoreView addSubview:_loadMoreButton];
-//  [_loadMoreView addSubview:_loadMoreActivity];
-//  
-//  // Always show
-//  //  [self showLoadMoreView];
-//}
-
 // This is the automatic load more style
 - (void)setupLoadMoreView {
   _loadMoreView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.width, 44)];
   _loadMoreView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-  _loadMoreView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"bg-darkgray-320x44.png"]];
-  UILabel *loadMoreLabel = [[[UILabel alloc] initWithFrame:_loadMoreView.bounds] autorelease];
-  loadMoreLabel.backgroundColor = [UIColor clearColor];
-  loadMoreLabel.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-  loadMoreLabel.text = @"Loading More...";
-  loadMoreLabel.shadowColor = [UIColor blackColor];
-  loadMoreLabel.shadowOffset = CGSizeMake(0, 1);
-  loadMoreLabel.font = [UIFont fontWithName:@"HelveticaNeue" size:16.0];
-  loadMoreLabel.textColor = [UIColor whiteColor];
-  loadMoreLabel.textAlignment = UITextAlignmentCenter;
+  _loadMoreView.backgroundColor = [UIColor blackColor];
+  UILabel *l = [[[UILabel alloc] initWithFrame:_loadMoreView.bounds] autorelease];
+  l.backgroundColor = [UIColor clearColor];
+  l.autoresizingMask = UIViewAutoresizingFlexibleWidth;
+  l.text = @"Loading More...";
+  l.shadowColor = [UIColor blackColor];
+  l.shadowOffset = CGSizeMake(0, 1);
+  l.font = [UIFont fontWithName:@"HelveticaNeue" size:16.0];
+  l.textColor = [UIColor whiteColor];
+  l.textAlignment = UITextAlignmentCenter;
   
   // Activity
-  _loadMoreActivity = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
-  _loadMoreActivity.frame = CGRectMake(12, 12, 20, 20);
-  _loadMoreActivity.hidesWhenStopped = YES;
+  UIActivityIndicatorView *av = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
+  av.frame = CGRectMake(12, 12, 20, 20);
+  av.hidesWhenStopped = YES;
+  [av startAnimating];
   
   // Add to subview
-  [_loadMoreView addSubview:loadMoreLabel];
-  [_loadMoreView addSubview:_loadMoreActivity];
-}
-
-- (void)showLoadMoreView {
-  if (_loadMoreView) {
-    [_loadMoreActivity startAnimating];
-    _tableView.tableFooterView = _loadMoreView;
-  }
-}
-
-- (void)hideLoadMoreView {
-  if (_loadMoreView) {
-    _tableView.tableFooterView = nil;
-  }
-}
-
-// Subclasses should override
-- (void)updateLoadMore {
-  _loadingMore = NO;
-}
-
-- (void)loadMore {
-  _loadingMore = YES;
+  [_loadMoreView addSubview:l];
+  [_loadMoreView addSubview:av];
 }
 
 #pragma mark PSStateMachine
@@ -273,6 +226,13 @@
 
 - (void)updateState {
   [super updateState];
+  
+  // Show/hide loadMore footer
+  if (_hasMore && [self shouldLoadMore]) {
+    self.tableView.tableFooterView = _loadMoreView;
+  } else {
+    self.tableView.tableFooterView = nil;
+  }
 }
 
 - (void)loadDataSource {
@@ -291,16 +251,19 @@
   [self updateState];
 }
 
-
-- (BOOL)cellIsSelected:(NSIndexPath *)indexPath {
-	// Return whether the cell at the specified index path is selected or not
-	NSNumber *selectedIndex = [_selectedIndexes objectForKey:indexPath];
-	return selectedIndex == nil ? NO : [selectedIndex boolValue];
+- (BOOL)shouldLoadMore {
+  return NO;
 }
 
 #pragma mark UITableViewDelegate
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
   [tableView deselectRowAtIndexPath:indexPath animated:YES];
+}
+
+- (BOOL)cellIsSelected:(NSIndexPath *)indexPath {
+	// Return whether the cell at the specified index path is selected or not
+	NSNumber *selectedIndex = [_selectedIndexes objectForKey:indexPath];
+	return selectedIndex == nil ? NO : [selectedIndex boolValue];
 }
 
 #pragma mark UITableViewDataSource
@@ -400,7 +363,7 @@
   
   if ([scrollView isKindOfClass:[UITableView class]]) {
     UITableView *tableView = (UITableView *)scrollView;
-    if (!_loadingMore && _hasMore && [[tableView visibleCells] count] > 0) {
+    if (!_reloading && _hasMore && [[tableView visibleCells] count] > 0) {
       CGFloat tableOffset = tableView.contentOffset.y + tableView.height;
       CGFloat tableBottom = tableView.contentSize.height - tableView.rowHeight;
       
@@ -412,27 +375,7 @@
 }
 
 - (void)scrollEndedTrigger {
-  //  [self loadImagesForOnScreenRows];
-//  [self loadMoreIfAvailable];
 }
-
-// Scrolling observer
-//- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
-//  if ([keyPath isEqualToString:@"contentOffset"] && [object isKindOfClass:[UITableView class]]) {
-//    // Make sure we are showing the footer first before attempting to load more
-//    // Once we begin loading more, this should no longer trigger
-//    //  NSLog(@"check to load more: %@", NSStringFromCGPoint(_tableView.contentOffset));
-//    UITableView *tableView = (UITableView *)object;
-//    if (!_loadingMore && _hasMore && [[tableView visibleCells] count] > 0) {
-//      CGFloat tableOffset = tableView.contentOffset.y + tableView.height;
-//      CGFloat tableBottom = tableView.contentSize.height - tableView.rowHeight;
-//      
-//      if (tableOffset >= tableBottom) {
-//        [self loadMore];
-//      }
-//    }
-//  }
-//}
 
 #pragma mark - EGORefreshTableHeaderDelegate Methods
 - (void)egoRefreshTableHeaderDidTriggerRefresh:(EGORefreshTableHeaderView*)view {
@@ -487,32 +430,6 @@
 
 - (void)bannerViewActionDidFinish:(ADBannerView *)banner {
   
-}
-
-#pragma mark -
-#pragma mark Image Lazy Loading
-- (void)loadImagesForOnScreenRows {
-  //  NSArray *visibleIndexPaths = nil;
-  //  if (self.searchDisplayController.active) {
-  //    _visibleCells = [[self.searchDisplayController.searchResultsTableView visibleCells] retain];
-  //    _visibleIndexPaths = [[self.searchDisplayController.searchResultsTableView indexPathsForVisibleRows] retain];
-  //  } else {
-  //    _visibleCells = [[self.tableView visibleCells] retain];
-  //    _visibleIndexPaths = [[self.tableView indexPathsForVisibleRows] retain];
-  //  }
-  
-  // Subclass SHOULD IMPLEMENT
-  
-  //  for (id cell in visibleCells) {
-  //    if ([cell isKindOfClass:[PSImageCell class]]) {
-  //      [(PSImageCell *)cell loadImage];
-  //    }
-  //  }
-}
-
-- (void)didReceiveMemoryWarning {
-  // Releases the view if it doesn't have a superview.
-  [super didReceiveMemoryWarning];
 }
 
 @end

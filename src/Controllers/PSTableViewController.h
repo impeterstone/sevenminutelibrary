@@ -26,11 +26,13 @@
   UISearchBar *_searchBar;
   EGORefreshTableHeaderView *_refreshHeaderView;
   UIView *_loadMoreView;
-  UIButton *_loadMoreButton;
-  UIActivityIndicatorView *_loadMoreActivity;
   BOOL _reloading;
-  BOOL _loadingMore;
   BOOL _hasMore;
+  
+  // Paging
+  NSInteger _pagingStart;
+  NSInteger _pagingCount;
+  NSInteger _pagingTotal;
 }
 
 @property (nonatomic, retain) UITableView *tableView;
@@ -41,6 +43,7 @@
 - (UIView *)rowBackgroundView;
 - (UIView *)rowSelectedBackgroundView;
 
+// View Setup
 - (void)setupTableViewWithFrame:(CGRect)frame andStyle:(UITableViewStyle)style andSeparatorStyle:(UITableViewCellSeparatorStyle)separatorStyle;
 - (void)setupPullRefresh;
 - (void)setupTableHeader;
@@ -51,16 +54,10 @@
 - (void)setupSearchDisplayControllerWithScopeButtonTitles:(NSArray *)scopeButtonTitles;
 - (void)setupSearchDisplayControllerWithScopeButtonTitles:(NSArray *)scopeButtonTitles andPlaceholder:(NSString *)placeholder;
 
-- (void)showLoadMoreView;
-- (void)hideLoadMoreView;
-
-- (void)updateLoadMore;
-- (void)loadMore;
-
+// Cell Selection State
 - (BOOL)cellIsSelected:(NSIndexPath *)indexPath;
 
-- (void)loadImagesForOnScreenRows;
-
+// ScrollView Stuff
 - (void)scrollEndedTrigger;
 
 @end

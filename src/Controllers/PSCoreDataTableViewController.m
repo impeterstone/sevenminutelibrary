@@ -55,16 +55,6 @@
   [super updateState];
 }
 
-- (void)updateLoadMore {
-  [super updateLoadMore];
-  NSInteger newFetchedCount = [_fetchedResultsController.fetchedObjects count];
-  if (_fetchTotal == newFetchedCount) {
-    _hasMore = YES;
-  } else {
-    _hasMore = NO;
-  }
-}
-
 #pragma mark Data Source
 - (void)loadMore {
   [super loadMore];
@@ -175,10 +165,16 @@
               _hasMore = NO;
             }
             break;
-          case FetchTypeLoadMore:
-            [self updateLoadMore];
+          case FetchTypeLoadMore: {
+            NSInteger newFetchedCount = [_fetchedResultsController.fetchedObjects count];
+            if (_fetchTotal == newFetchedCount) {
+              _hasMore = YES;
+            } else {
+              _hasMore = NO;
+            }
             shouldReloadTable = YES;
             break;
+          }
           case FetchTypeRefresh:
             shouldReloadTable = YES;
             break;
