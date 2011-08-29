@@ -142,6 +142,7 @@
   ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:urlPath]];
   request.requestMethod = @"GET";
   request.allowCompressedResponse = YES;
+  request.userInfo = [NSDictionary dictionaryWithObject:delegate forKey:@"delegate"];
   
   // Request Completion Block
   [request setDelegate:self];
@@ -155,19 +156,20 @@
 
 - (void)downloadImageRequestFinished:(ASIHTTPRequest *)request {
   NSString *urlPath = [[request originalURL] absoluteString];
+  id delegate = [request.userInfo objectForKey:@"delegate"];
   
   if ([request responseData]) {
     [self cacheImage:[request responseData] forURLPath:urlPath];
     // Notify delegate
-//    if (delegate && [delegate respondsToSelector:@selector(imageCacheDidLoad:forURLPath:)]) {
-//      [delegate performSelector:@selector(imageCacheDidLoad:forURLPath:) withObject:[request responseData] withObject:urlPath];
-//    }
+    if (delegate && [delegate respondsToSelector:@selector(imageCacheDidLoad:forURLPath:)]) {
+      [delegate performSelector:@selector(imageCacheDidLoad:forURLPath:) withObject:[request responseData] withObject:urlPath];
+    }
     
     // Remove request from pendingRequests
     [_pendingRequests removeObjectForKey:[[request originalURL] absoluteString]];
     
     // fire notification
-    [[NSNotificationCenter defaultCenter] postNotificationName:kPSImageCacheDidCacheImage object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[request responseData], @"imageData", urlPath, @"urlPath", nil]];
+//    [[NSNotificationCenter defaultCenter] postNotificationName:kPSImageCacheDidCacheImage object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[request responseData], @"imageData", urlPath, @"urlPath", nil]];
   } else {
     // something bad happened
   }

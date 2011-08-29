@@ -7,32 +7,24 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <QuartzCore/QuartzCore.h>
-#import "PSConstants.h"
-#import "ASIHTTPRequest.h"
+#import "PSURLCacheImageView.h"
 
-@interface PSImageArrayView : UIImageView {
+@interface PSImageArrayView : PSURLCacheImageView {
   NSArray *_urlPathArray;
   NSMutableDictionary *_images;
-  NSMutableArray *_pendingRequests;
-  UIActivityIndicatorView *_loadingIndicator;
-  NSTimer *_animateTimer;
   
-  BOOL _shouldScale;
+  NSTimer *_animateTimer;
   NSInteger _animateIndex;
 }
 
 @property (nonatomic, retain) NSArray *urlPathArray;
-@property (nonatomic, assign) BOOL shouldScale;
 
-- (void)getImageRequestWithUrlPath:(NSString *)urlPath;
 - (void)loadImageArray;
-- (void)animateImages;
+- (void)unloadImageArray;
 
-- (void)requestFinished:(ASIHTTPRequest *)request;
-- (void)requestFailed:(ASIHTTPRequest *)request withError:(NSError *)error;
 
 - (void)prepareImageArray;
-- (void)checkAndResetImageArray;
+- (void)animateImages;
+
 
 @end

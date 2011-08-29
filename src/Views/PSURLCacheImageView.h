@@ -21,6 +21,6 @@
 - (void)unloadImage;
 
 // Image cache loaded from notification
-- (void)imageCacheDidLoad:(NSNotification *)notification;
+//- (void)imageCacheDidLoad:(NSNotification *)notification;
 
 @end
