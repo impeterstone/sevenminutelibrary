@@ -202,7 +202,7 @@
   l.shadowOffset = [PSStyleSheet shadowOffsetForStyle:@"loadMoreLabel"];
   
   // Activity
-  UIActivityIndicatorView *av = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
+  UIActivityIndicatorView *av = [[[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite] autorelease];
   av.frame = CGRectMake(12, 12, 20, 20);
   av.hidesWhenStopped = YES;
   [av startAnimating];

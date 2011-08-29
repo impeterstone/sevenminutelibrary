@@ -48,24 +48,26 @@
 }
 
 - (void)unloadImageArray {
+  INVALIDATE_TIMER(_animateTimer);
+  _animateIndex = 0;
   [_images removeAllObjects];
 }
 
 - (void)prepareImageArray {
-  if ([_images count] >= [_urlPathArray count] && !_animateTimer) {
-    
-    _animateTimer = [[NSTimer timerWithTimeInterval:6.0 target:self selector:@selector(animateImages) userInfo:nil repeats:YES] retain];
+  if ([_images count] == [_urlPathArray count] && ![[_images allValues] containsObject:[NSNull null]] && !_animateTimer) {
+    _animateTimer = [[NSTimer alloc] initWithFireDate:[NSDate dateWithTimeIntervalSinceNow:0.0] interval:8.0 target:self selector:@selector(animateImages) userInfo:nil repeats:YES];
     [[NSRunLoop currentRunLoop] addTimer:_animateTimer forMode:NSDefaultRunLoopMode];
-    [_animateTimer fire];
   }
 }
 
 - (void)animateImages {
   NSArray *imageArray = [_images allValues];
+  if ([imageArray count] < [_urlPathArray count]) return;
+  
   self.image = [imageArray objectAtIndex:_animateIndex];
   
   CABasicAnimation *crossFade = [CABasicAnimation animationWithKeyPath:@"contents"];
-  crossFade.duration = 3.0;
+  crossFade.duration = 4.0;
   crossFade.fromValue = (id)[[imageArray objectAtIndex:_animateIndex] CGImage];
   
   _animateIndex++;
@@ -83,7 +85,7 @@
 #pragma mark - PSImageCacheDelegate
 - (void)imageCacheDidLoad:(NSData *)imageData forURLPath:(NSString *)urlPath {
   if (imageData) {
-    if ([_images objectForKey:@"urlPath"] == [NSNull null]) {
+    if ([_images objectForKey:urlPath] == [NSNull null]) {
       dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         UIImage *image = [UIImage imageWithData:imageData];
         dispatch_async(dispatch_get_main_queue(), ^{
