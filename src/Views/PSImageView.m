@@ -41,12 +41,16 @@
 }
 
 - (void)setImage:(UIImage *)image {
+  [self setImage:image animated:YES];
+}
+
+- (void)setImage:(UIImage *)image animated:(BOOL)animated {
   if (image && image != _placeholderImage) {
     // RETINA
     [_loadingIndicator stopAnimating];
 //    UIImage *newImage = [UIImage imageWithCGImage:image.CGImage scale:2 orientation:image.imageOrientation];
     UIImage *newImage = [image imageScaledForScreen];
-    if (_shouldAnimate) {
+    if (_shouldAnimate && animated) {
 //      [self animateCrossFade:newImage];
       [self animateImageFade:newImage];
     } else {

@@ -60,7 +60,8 @@
     _animateTimer = [[NSTimer alloc] initWithFireDate:[NSDate dateWithTimeIntervalSinceNow:3.0] interval:6.0 target:self selector:@selector(animateImages) userInfo:nil repeats:YES];
     [[NSRunLoop currentRunLoop] addTimer:_animateTimer forMode:NSDefaultRunLoopMode];
     _animateIndex = 0;
-    self.image = [[_images allValues] objectAtIndex:_animateIndex];
+    [self setImage:[[_images allValues] objectAtIndex:_animateIndex] animated:YES];
+//    self.image = [[_images allValues] objectAtIndex:_animateIndex];
   }
 }
 
@@ -80,7 +81,8 @@
   crossFade.toValue = (id)[[imageArray objectAtIndex:(_animateIndex)] CGImage];
   [self.layer addAnimation:crossFade forKey:@"animateContents"];
   
-  self.image = [imageArray objectAtIndex:_animateIndex];
+  [self setImage:[imageArray objectAtIndex:_animateIndex] animated:NO];
+//  self.image = [imageArray objectAtIndex:_animateIndex];
 }
 
 - (void)resumeAnimations {

@@ -24,6 +24,8 @@
 - (void)animateImageFade:(UIImage *)image;
 - (void)animateCrossFade:(UIImage *)image;
 
+- (void)setImage:(UIImage *)image animated:(BOOL)animated;
+
 @property (nonatomic, retain) UIImage *placeholderImage;
 @property (nonatomic, assign) BOOL shouldScale;
 @property (nonatomic, assign) BOOL shouldAnimate;
