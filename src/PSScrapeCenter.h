@@ -14,6 +14,7 @@
 }
 
 + (id)defaultCenter;
++ (dispatch_queue_t)sharedQueue;
 
 - (NSDictionary *)scrapePhotosWithHTMLString:(NSString *)htmlString;
 - (NSDictionary *)scrapePlacesWithHTMLString:(NSString *)htmlString;

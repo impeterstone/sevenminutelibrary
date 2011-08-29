@@ -11,7 +11,18 @@
 #import "RegexKitLite.h"
 #import "HTMLParser.h"
 
+static dispatch_queue_t _psScrapeQueue = nil;
+
 @implementation PSScrapeCenter
+
++ (void)initialize {
+  _psScrapeQueue = dispatch_queue_create("com.sevenminutelabs.psScrapeQueue", NULL);
+}
+
++ (dispatch_queue_t)sharedQueue {
+  return dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0);
+//  return _psScrapeQueue;
+}
 
 + (id)defaultCenter {
   static id defaultCenter = nil;
@@ -42,7 +53,11 @@
   HTMLNode *mainContentNode = [doc findChildWithAttribute:@"id" matchingName:@"mainContent" allowPartial:YES];
   
   NSString *numphotos = [[mainContentNode rawContents] stringByMatching:@"\\d+ Photos from"];
-  if (numphotos) numphotos = [numphotos stringByReplacingOccurrencesOfString:@" Photos from" withString:@""];
+  if (numphotos) {
+    numphotos = [numphotos stringByReplacingOccurrencesOfString:@" Photos from" withString:@""];
+  } else {
+    numphotos = @"0";
+  }
   
   NSArray *photoNodes = [mainContentNode findChildTags:@"img"];
   
