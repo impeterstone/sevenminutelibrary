@@ -41,24 +41,27 @@
   
   HTMLNode *mainContentNode = [doc findChildWithAttribute:@"id" matchingName:@"mainContent" allowPartial:YES];
   
-  NSString *numPhotos = [[mainContentNode rawContents] stringByMatching:@"\\d+ Photos from"];
-  if (numPhotos) numPhotos = [numPhotos stringByReplacingOccurrencesOfString:@" Photos from" withString:@""];
+  NSString *numphotos = [[mainContentNode rawContents] stringByMatching:@"\\d+ Photos from"];
+  if (numphotos) numphotos = [numphotos stringByReplacingOccurrencesOfString:@" Photos from" withString:@""];
   
   NSArray *photoNodes = [mainContentNode findChildTags:@"img"];
   
   NSMutableArray *photos = [NSMutableArray array];
   for (HTMLNode *node in photoNodes) {
     NSString *src = [[node getAttributeNamed:@"src"] stringByReplacingOccurrencesOfString:@"ms.jpg" withString:@"l.jpg"];
+    NSString *caption = [node getAttributeNamed:@"alt"];
     
-    NSString *alt = [node getAttributeNamed:@"alt"];
+    // Create payload
+    NSMutableDictionary *photoDict = [NSMutableDictionary dictionary];
+    src ? [photoDict setObject:src forKey:@"src"] : [photoDict setObject:[NSNull null] forKey:@"src"];
+    caption ? [photoDict setObject:caption forKey:@"caption"] : [photoDict setObject:[NSNull null] forKey:@"caption"];
     
-    NSDictionary *photoDict = [NSDictionary dictionaryWithObjectsAndKeys:src, @"src", alt, @"alt", nil];
     [photos addObject:photoDict];
   }
   
   [parser release];
   
-  NSDictionary *photoDict = [NSDictionary dictionaryWithObjectsAndKeys:numPhotos, @"numPhotos", photos, @"photos", nil];
+  NSDictionary *photoDict = [NSDictionary dictionaryWithObjectsAndKeys:numphotos, @"numphotos", photos, @"photos", nil];
   
   VLog(@"Photos: %@", photoDict);
   
@@ -95,8 +98,8 @@
     NSString *name = [[bizNode contents] stringByUnescapingHTML];
     NSString *rating = [[[node findChildWithAttribute:@"alt" matchingName:@"star rating" allowPartial:YES] getAttributeNamed:@"alt"] stringByReplacingOccurrencesOfString:@" star rating" withString:@""];
     NSString *phone = [[node findChildWithAttribute:@"title" matchingName:@"Call" allowPartial:YES] contents];
-    NSString *reviews = [[node rawContents] stringByMatching:@"\\d+ reviews"];
-    if (reviews) reviews = [reviews stringByReplacingOccurrencesOfString:@" reviews" withString:@""];
+    NSString *numreviews = [[node rawContents] stringByMatching:@"\\d+ reviews"];
+    if (numreviews) numreviews = [numreviews stringByReplacingOccurrencesOfString:@" reviews" withString:@""];
     NSString *price = [[node rawContents] stringByMatching:@"Price: [$]+"];
     if (price) price = [price stringByReplacingOccurrencesOfString:@"Price: " withString:@""];
     NSString *category = [[node rawContents] stringByMatching:@"Category: [^<]+"];
@@ -108,16 +111,16 @@
     
     // Create payload, add to array
     NSMutableDictionary *placeDict = [NSMutableDictionary dictionary];
-    if (index) [placeDict setObject:index forKey:@"index"];
-    if (biz) [placeDict setObject:biz forKey:@"biz"];
-    if (name) [placeDict setObject:name forKey:@"name"];
-    if (rating) [placeDict setObject:rating forKey:@"rating"];
-    if (phone) [placeDict setObject:phone forKey:@"phone"];
-    if (reviews) [placeDict setObject:reviews forKey:@"reviews"];
-    if (price) [placeDict setObject:price forKey:@"price"];
-    if (category) [placeDict setObject:category forKey:@"category"];
-    if (distance) [placeDict setObject:distance forKey:@"distance"];
-    if (city) [placeDict setObject:city forKey:@"city"];
+    index ? [placeDict setObject:index forKey:@"index"] : [placeDict setObject:[NSNull null] forKey:@"index"];
+    biz ? [placeDict setObject:biz forKey:@"biz"] : [placeDict setObject:[NSNull null] forKey:@"biz"];
+    name ? [placeDict setObject:name forKey:@"name"] : [placeDict setObject:[NSNull null] forKey:@"name"];
+    rating ? [placeDict setObject:rating forKey:@"rating"] : [placeDict setObject:[NSNull null] forKey:@"rating"];
+    phone ? [placeDict setObject:phone forKey:@"phone"] : [placeDict setObject:[NSNull null] forKey:@"phone"];
+    numreviews ? [placeDict setObject:numreviews forKey:@"numreviews"] : [placeDict setObject:[NSNull null] forKey:@"numreviews"];
+    price ? [placeDict setObject:price forKey:@"price"] : [placeDict setObject:[NSNull null] forKey:@"price"];
+    category ? [placeDict setObject:category forKey:@"category"] : [placeDict setObject:[NSNull null] forKey:@"category"];
+    distance ? [placeDict setObject:distance forKey:@"distance"] : [placeDict setObject:[NSNull null] forKey:@"distance"];
+    city ? [placeDict setObject:city forKey:@"city"] : [placeDict setObject:[NSNull null] forKey:@"city"];
      
     [placeArray addObject:placeDict];
     
@@ -153,8 +156,8 @@
   
   // Create payload
   NSMutableDictionary *mapDict = [NSMutableDictionary dictionary];
-  if (address) [mapDict setObject:address forKey:@"address"];
-  if (coordinates) [mapDict setObject:coordinates forKey:@"coordinates"];
+  address ? [mapDict setObject:address forKey:@"address"] : [mapDict setObject:[NSNull null] forKey:@"address"];
+  coordinates ? [mapDict setObject:coordinates forKey:@"coordinates"] : [mapDict setObject:[NSNull null] forKey:@"coordinates"];
   
   [parser release];
   
@@ -178,8 +181,8 @@
   
   // Create payload
   NSMutableDictionary *bizDict = [NSMutableDictionary dictionary];
-  if (hours) [bizDict setObject:hours forKey:@"hours"];
-  if (reviews) [bizDict setObject:reviews forKey:@"reviews"];
+  hours ? [bizDict setObject:hours forKey:@"hours"] : [bizDict setObject:[NSNull null] forKey:@"hours"];
+  reviews ? [bizDict setObject:reviews forKey:@"reviews"] : [bizDict setObject:[NSNull null] forKey:@"reviews"];
   
   [parser release];
   
