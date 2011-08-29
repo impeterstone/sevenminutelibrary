@@ -42,9 +42,13 @@
     _subtitleLabel.shadowColor = [PSStyleSheet shadowColorForStyle:@"nullSubtitle"];
     _subtitleLabel.shadowOffset = [PSStyleSheet shadowOffsetForStyle:@"nullSubtitle"];
     
+    _aiv = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhiteLarge];
+    _aiv.hidesWhenStopped = YES;
+    
     [self addSubview:_imageView];
     [self addSubview:_titleLabel];
     [self addSubview:_subtitleLabel];
+    [self addSubview:_aiv];
   }
   return self;
 }
@@ -55,10 +59,19 @@
   
   CGFloat top = floorf(self.height / 2);
   
-  if (_imageView.image) {
+  if (_imageView.image && (self.state == PSNullViewStateEmpty)) {
+    _imageView.hidden = NO;
     _imageView.left = floorf(self.width / 2) - floorf(_imageView.width / 2);
     _imageView.top = top - floorf(_imageView.height / 2) - 30;
     top = _imageView.bottom + 20;
+  } else if (self.state == PSNullViewStateLoading) {
+    _imageView.hidden = YES;
+    _aiv.left = floorf(self.width / 2) - floorf(_aiv.width / 2);
+    _aiv.top = top - floorf(_aiv.height / 2) - 30;
+    top = _aiv.bottom + 10;
+  } else {
+    _imageView.hidden = YES;
+    top -= 20;
   }
 
   _titleLabel.width = self.width;
@@ -89,21 +102,25 @@
       _titleLabel.text = nil;
       _subtitleLabel.text = nil;
       _imageView.hidden = YES;
+      [_aiv stopAnimating];
       break;
     case PSNullViewStateEmpty:
       _titleLabel.text = _emptyTitle;
       _subtitleLabel.text = _emptySubtitle;
       _imageView.hidden = NO;
+      [_aiv stopAnimating];
       break;
     case PSNullViewStateLoading:
       _titleLabel.text = _loadingTitle;
       _subtitleLabel.text = _loadingSubtitle;
       _imageView.hidden = NO;
+      [_aiv startAnimating];
       break;
     default:
       _titleLabel.text = nil;
       _subtitleLabel.text = nil;
       _imageView.hidden = YES;
+      [_aiv stopAnimating];
       break;
   }
   [_titleLabel sizeToFit];

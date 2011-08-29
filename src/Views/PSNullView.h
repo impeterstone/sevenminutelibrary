@@ -24,6 +24,7 @@ typedef enum {
   NSString *_loadingSubtitle;
   NSString *_emptyTitle;
   NSString *_emptySubtitle;
+  UIActivityIndicatorView *_aiv;
 }
 
 @property (nonatomic, assign) PSNullViewState state;

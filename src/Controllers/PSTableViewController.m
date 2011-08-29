@@ -167,6 +167,7 @@
 
 // Optional Header View
 - (void)setupHeaderWithView:(UIView *)headerView {
+  _nullView.frame = CGRectMake(_nullView.left, _nullView.top + headerView.height, _nullView.width, _nullView.height - headerView.height);
   _tableView.frame = CGRectMake(_tableView.left, _tableView.top + headerView.height, _tableView.width, _tableView.height - headerView.height);  
   headerView.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleBottomMargin;
   [self.view addSubview:headerView];
@@ -185,16 +186,20 @@
 - (void)setupLoadMoreView {
   _loadMoreView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.width, 44)];
   _loadMoreView.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-  _loadMoreView.backgroundColor = [UIColor blackColor];
+  _loadMoreView.backgroundColor = [UIColor clearColor];
+  
+  UIImageView *bg = [[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"shadow_lastcell.png"]] autorelease];
+  bg.autoresizingMask = ~UIViewAutoresizingNone;
+  
   UILabel *l = [[[UILabel alloc] initWithFrame:_loadMoreView.bounds] autorelease];
   l.backgroundColor = [UIColor clearColor];
   l.autoresizingMask = UIViewAutoresizingFlexibleWidth;
   l.text = @"Loading More...";
-  l.shadowColor = [UIColor blackColor];
-  l.shadowOffset = CGSizeMake(0, 1);
-  l.font = [UIFont fontWithName:@"HelveticaNeue" size:16.0];
-  l.textColor = [UIColor whiteColor];
   l.textAlignment = UITextAlignmentCenter;
+  l.font = [PSStyleSheet fontForStyle:@"loadMoreLabel"];
+  l.textColor = [PSStyleSheet textColorForStyle:@"loadMoreLabel"];
+  l.shadowColor = [PSStyleSheet shadowColorForStyle:@"loadMoreLabel"];
+  l.shadowOffset = [PSStyleSheet shadowOffsetForStyle:@"loadMoreLabel"];
   
   // Activity
   UIActivityIndicatorView *av = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleWhite];
@@ -203,6 +208,7 @@
   [av startAnimating];
   
   // Add to subview
+  [_loadMoreView addSubview:bg];
   [_loadMoreView addSubview:l];
   [_loadMoreView addSubview:av];
 }
@@ -228,7 +234,7 @@
   [super updateState];
   
   // Show/hide loadMore footer
-  if (_hasMore && [self shouldLoadMore]) {
+  if (_hasMore && [self shouldLoadMore] && [self dataIsAvailable]) {
     self.tableView.tableFooterView = _loadMoreView;
   } else {
     self.tableView.tableFooterView = nil;
