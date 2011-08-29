@@ -8,6 +8,7 @@
 
 #import <UIKit/UIKit.h>
 #import <iAd/iAd.h>
+#import <iAd/ADBannerView.h>
 
 @interface UIViewController (Ad)
 

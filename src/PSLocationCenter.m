@@ -27,21 +27,24 @@ static NSInteger _distanceFilter = 100;
   if (self) {
     _isUpdating = NO;
 
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(startUpdates) name:kApplicationResumed object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(stopUpdates) name:kApplicationSuspended object:nil];
   }
   return self;
 }
 
 - (void)dealloc {
+  [[NSNotificationCenter defaultCenter] removeObserver:self name:kApplicationResumed object:nil];
+  [[NSNotificationCenter defaultCenter] removeObserver:self name:kApplicationSuspended object:nil];
+  
   RELEASE_SAFELY(_locationManager);
   [super dealloc];
 }
 
 #pragma mark - Location Methods
 - (void)getMyLocation {
-  if (_isUpdating) {
-    [self stopUpdates];
-  }
-  
+  // Force acquiring a new location
+  [self stopUpdates];  
   [self startUpdates];
 }
 
@@ -51,9 +54,13 @@ static NSInteger _distanceFilter = 100;
 #else
   if (!_isUpdating) {
     _isUpdating = YES;
-    [self startSignificantChangeUpdates];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(startSignificantChangeUpdates) name:kApplicationResumed object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(stopSignificantChangeUpdates) name:kApplicationSuspended object:nil];
+    
+    // Check location capabilities
+    if ([CLLocationManager significantLocationChangeMonitoringAvailable]) {
+      [self startSignificantChangeUpdates];
+    } else {
+      [self startStandardUpdates];
+    }
   }
 #endif
 }
@@ -62,10 +69,16 @@ static NSInteger _distanceFilter = 100;
 #if TARGET_IPHONE_SIMULATOR
   
 #else
-  _isUpdating = NO;
-  [self stopSignificantChangeUpdates];
-  [[NSNotificationCenter defaultCenter] removeObserver:self name:kApplicationResumed object:nil];
-  [[NSNotificationCenter defaultCenter] removeObserver:self name:kApplicationSuspended object:nil];
+  if (_isUpdating) {
+    _isUpdating = NO;
+  
+    // Check location capabilities
+    if ([CLLocationManager significantLocationChangeMonitoringAvailable]) {
+      [self stopSignificantChangeUpdates];
+    } else {
+      [self stopStandardUpdates];
+    }
+  }
 #endif
 }
 
@@ -75,7 +88,7 @@ static NSInteger _distanceFilter = 100;
   if (!_locationManager) {
     _locationManager = [[CLLocationManager alloc] init];
     
-    _locationManager.purpose = nil; // Displayed to user
+//    _locationManager.purpose = nil; // Displayed to user
     
     _locationManager.delegate = self;
     _locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters;
@@ -94,11 +107,18 @@ static NSInteger _distanceFilter = 100;
 - (void)startSignificantChangeUpdates {
   // Create the location manager if this object does not
   // already have one.
-  if (nil == _locationManager)
+  if (!_locationManager) {
     _locationManager = [[CLLocationManager alloc] init];
+    
+//    _locationManager.purpose = nil; // Displayed to user
+    
+    _locationManager.delegate = self;
+    _locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters;
+    
+    // Set a movement threshold for new events.
+    _locationManager.distanceFilter = _distanceFilter;
+  }
   
-  self.locationManager.delegate = self;
-  self.locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters;
   [self.locationManager startMonitoringSignificantLocationChanges];
 }
 
@@ -135,18 +155,22 @@ static NSInteger _distanceFilter = 100;
 // Delegate method from the CLLocationManagerDelegate protocol.
 - (void)locationManager:(CLLocationManager *)manager didUpdateToLocation:(CLLocation *)newLocation fromLocation:(CLLocation *)oldLocation {
   
-  // If no previous location, always set new location
-  if (!oldLocation) {
-    [[NSNotificationCenter defaultCenter] postNotificationName:kLocationAcquired object:nil];
-    return;
-  }
+  // Check distance and timestamp
+  //    if (fabs([newLocation.timestamp timeIntervalSinceDate:oldLocation.timestamp]) > 60) {
+  //    }
   
-  if (oldLocation && newLocation) {
-    // Check distance and timestamp
-    if (fabs([newLocation.timestamp timeIntervalSinceDate:oldLocation.timestamp]) > 60) {
-      [[NSNotificationCenter defaultCenter] postNotificationName:kLocationAcquired object:nil];
-    }
-    return;
+  if (!oldLocation) {
+    // If no previous location, always set new location
+    [[NSNotificationCenter defaultCenter] postNotificationName:kLocationAcquired object:nil];
+    DLog(@"Location updated: %@, oldLocation: %@", newLocation, oldLocation);
+  } else if (oldLocation && newLocation && [oldLocation distanceFromLocation:newLocation] > 0) {
+    // Check if distance changed
+    [[NSNotificationCenter defaultCenter] postNotificationName:kLocationAcquired object:nil];
+
+    DLog(@"Location updated: %@, oldLocation: %@", newLocation, oldLocation);
+  } else {
+    // Location unchanged
+    DLog(@"Location discarded: %@, oldLocation: %@", newLocation, oldLocation);
   }
 
 }

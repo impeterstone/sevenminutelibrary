@@ -13,6 +13,14 @@
 - (ADBannerView *)newAdBannerViewWithDelegate:(id)delegate {
   ADBannerView *adView = [[ADBannerView alloc] initWithFrame:CGRectZero];
   adView.delegate = delegate;
+  
+  if (&ADBannerContentSizeIdentifierPortrait != nil) {
+    adView.requiredContentSizeIdentifiers = [NSSet setWithObject:ADBannerContentSizeIdentifierPortrait];;
+    adView.currentContentSizeIdentifier = ADBannerContentSizeIdentifierPortrait;
+  } else {
+    adView.requiredContentSizeIdentifiers = [NSSet setWithObject:ADBannerContentSizeIdentifier320x50];
+    adView.currentContentSizeIdentifier = ADBannerContentSizeIdentifier320x50;
+  }
   return adView;
 }
 
