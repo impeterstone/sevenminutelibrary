@@ -12,21 +12,18 @@
 
 @interface PSLocationCenter : PSObject <CLLocationManagerDelegate> {
   CLLocationManager *_locationManager;
-  CLLocation *_oldLocation;
-  CLLocation *_currentLocation;
   
   BOOL _isUpdating;
 }
 
 @property (nonatomic, retain) CLLocationManager *locationManager;
-@property (nonatomic, retain) CLLocation *oldLocation;
-@property (nonatomic, retain) CLLocation *currentLocation;
 
 + (id)defaultCenter;
 
 // Public Methods
 - (void)getMyLocation;
 - (BOOL)hasAcquiredLocation;
+- (CLLocation *)location;
 - (CGFloat)latitude;
 - (CGFloat)longitude;
 

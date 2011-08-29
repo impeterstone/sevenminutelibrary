@@ -8,13 +8,11 @@
 
 #import "PSLocationCenter.h"
 
-static NSInteger _distanceFilter = 1000;
+static NSInteger _distanceFilter = 100;
 
 @implementation PSLocationCenter
 
 @synthesize locationManager = _locationManager;
-@synthesize oldLocation = _oldLocation;
-@synthesize currentLocation = _currentLocation;
 
 + (id)defaultCenter {
   static id defaultCenter = nil;
@@ -35,18 +33,16 @@ static NSInteger _distanceFilter = 1000;
 
 - (void)dealloc {
   RELEASE_SAFELY(_locationManager);
-  RELEASE_SAFELY(_oldLocation);
-  RELEASE_SAFELY(_currentLocation);
   [super dealloc];
 }
 
 #pragma mark - Location Methods
 - (void)getMyLocation {
-  if (self.currentLocation && _isUpdating) {
-    [[NSNotificationCenter defaultCenter] postNotificationName:kLocationAcquired object:nil];
-  } else {
-    [self startUpdates];
+  if (_isUpdating) {
+    [self stopUpdates];
   }
+  
+  [self startUpdates];
 }
 
 - (void)startUpdates {
@@ -76,14 +72,17 @@ static NSInteger _distanceFilter = 1000;
 - (void)startStandardUpdates {
   // Create the location manager if this object does not
   // already have one.
-  if (nil == _locationManager)
+  if (!_locationManager) {
     _locationManager = [[CLLocationManager alloc] init];
-  
-  self.locationManager.delegate = self;
-  self.locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters;
-  
-  // Set a movement threshold for new events.
-  self.locationManager.distanceFilter = _distanceFilter;
+    
+    _locationManager.purpose = nil; // Displayed to user
+    
+    _locationManager.delegate = self;
+    _locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters;
+    
+    // Set a movement threshold for new events.
+    _locationManager.distanceFilter = _distanceFilter;
+  }
   
   [self.locationManager startUpdatingLocation];
 }
@@ -108,15 +107,19 @@ static NSInteger _distanceFilter = 1000;
 }
 
 - (BOOL)hasAcquiredLocation {
-  if (self.currentLocation) return YES;
+  if ([self location]) return YES;
   else return NO;
+}
+
+- (CLLocation *)location {
+  return self.locationManager.location;
 }
 
 - (CGFloat)latitude {
 #if TARGET_IPHONE_SIMULATOR
   return 37.32798;
 #else
-  return self.currentLocation.coordinate.latitude;
+  return self.locationManager.location.coordinate.latitude;
 #endif
 }
 
@@ -124,7 +127,7 @@ static NSInteger _distanceFilter = 1000;
 #if TARGET_IPHONE_SIMULATOR
   return -122.01382;
 #else
-  return self.currentLocation.coordinate.longitude;
+  return self.locationManager.location.coordinate.longitude;
 #endif
 }
 
@@ -132,16 +135,20 @@ static NSInteger _distanceFilter = 1000;
 // Delegate method from the CLLocationManagerDelegate protocol.
 - (void)locationManager:(CLLocationManager *)manager didUpdateToLocation:(CLLocation *)newLocation fromLocation:(CLLocation *)oldLocation {
   
-  self.currentLocation = newLocation;
-  [[NSNotificationCenter defaultCenter] postNotificationName:kLocationAcquired object:nil];
+  // If no previous location, always set new location
+  if (!oldLocation) {
+    [[NSNotificationCenter defaultCenter] postNotificationName:kLocationAcquired object:nil];
+    return;
+  }
   
-  // Check Timestamp to determine if this was cached
-//  NSDate *locTimestamp = newLocation.timestamp;
-//  if (fabs([locTimestamp timeIntervalSinceDate:[NSDate date]]) <= 60) {
-//    self.currentLocation = newLocation;
-//    self.oldLocation = oldLocation;
-//    [[NSNotificationCenter defaultCenter] postNotificationName:kLocationAcquired object:nil];
-//  }
+  if (oldLocation && newLocation) {
+    // Check distance and timestamp
+    if (fabs([newLocation.timestamp timeIntervalSinceDate:oldLocation.timestamp]) > 60) {
+      [[NSNotificationCenter defaultCenter] postNotificationName:kLocationAcquired object:nil];
+    }
+    return;
+  }
+
 }
 
 @end
