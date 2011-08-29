@@ -367,14 +367,16 @@
     [_refreshHeaderView egoRefreshScrollViewDidScroll:scrollView];
   }
   
-  if ([scrollView isKindOfClass:[UITableView class]]) {
-    UITableView *tableView = (UITableView *)scrollView;
-    if (!_reloading && _hasMore && [[tableView visibleCells] count] > 0) {
-      CGFloat tableOffset = tableView.contentOffset.y + tableView.height;
-      CGFloat tableBottom = tableView.contentSize.height - tableView.rowHeight;
-      
-      if (tableOffset >= tableBottom) {
-        [self loadMore];
+  if ([self shouldLoadMore]) {
+    if ([scrollView isKindOfClass:[UITableView class]]) {
+      UITableView *tableView = (UITableView *)scrollView;
+      if (!_reloading && _hasMore && [[tableView visibleCells] count] > 0) {
+        CGFloat tableOffset = tableView.contentOffset.y + tableView.height;
+        CGFloat tableBottom = tableView.contentSize.height - tableView.rowHeight;
+        
+        if (tableOffset >= tableBottom) {
+          [self loadMore];
+        }
       }
     }
   }
