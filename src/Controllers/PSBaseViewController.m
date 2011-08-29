@@ -67,6 +67,7 @@
   _navTitleLabel.autoresizingMask = UIViewAutoresizingFlexibleHeight;
   _navTitleLabel.textAlignment = UITextAlignmentCenter;
   _navTitleLabel.numberOfLines = 3;
+  _navTitleLabel.text = self.title;
   _navTitleLabel.font = [PSStyleSheet fontForStyle:@"navigationTitle"];
   _navTitleLabel.textColor = [PSStyleSheet textColorForStyle:@"navigationTitle"];
   _navTitleLabel.shadowColor = [PSStyleSheet shadowColorForStyle:@"navigationTitle"];
