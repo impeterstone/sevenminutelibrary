@@ -55,16 +55,15 @@
 
 - (void)prepareImageArray {
   if ([_images count] == [_urlPathArray count] && ![[_images allValues] containsObject:[NSNull null]] && !_animateTimer) {
-    _animateTimer = [[NSTimer alloc] initWithFireDate:[NSDate dateWithTimeIntervalSinceNow:0.0] interval:8.0 target:self selector:@selector(animateImages) userInfo:nil repeats:YES];
+    _animateTimer = [[NSTimer alloc] initWithFireDate:[NSDate dateWithTimeIntervalSinceNow:3.0] interval:6.0 target:self selector:@selector(animateImages) userInfo:nil repeats:YES];
     [[NSRunLoop currentRunLoop] addTimer:_animateTimer forMode:NSDefaultRunLoopMode];
+    _animateIndex = 0;
+    self.image = [[_images allValues] objectAtIndex:_animateIndex];
   }
 }
 
 - (void)animateImages {
   NSArray *imageArray = [_images allValues];
-  if ([imageArray count] < [_urlPathArray count]) return;
-  
-  self.image = [imageArray objectAtIndex:_animateIndex];
   
   CABasicAnimation *crossFade = [CABasicAnimation animationWithKeyPath:@"contents"];
   crossFade.duration = 4.0;
