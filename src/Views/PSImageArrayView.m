@@ -27,6 +27,7 @@
 }
 
 - (void)dealloc {
+  [self.layer removeAllAnimations];
   RELEASE_SAFELY(_urlPathArray);
   RELEASE_SAFELY(_images);
   INVALIDATE_TIMER(_animateTimer);
@@ -48,6 +49,7 @@
 }
 
 - (void)unloadImageArray {
+  [self.layer removeAllAnimations];
   INVALIDATE_TIMER(_animateTimer);
   _animateIndex = 0;
   [_images removeAllObjects];
@@ -63,6 +65,7 @@
 }
 
 - (void)animateImages {
+  if (![_animateTimer isValid]) return;
   NSArray *imageArray = [_images allValues];
   
   CABasicAnimation *crossFade = [CABasicAnimation animationWithKeyPath:@"contents"];
@@ -80,10 +83,19 @@
   self.image = [imageArray objectAtIndex:_animateIndex];
 }
 
+- (void)resumeAnimations {
+  [self prepareImageArray];
+}
+
+- (void)pauseAnimations {
+  [self.layer removeAllAnimations];
+  INVALIDATE_TIMER(_animateTimer);
+}
+
 
 #pragma mark - PSImageCacheDelegate
 - (void)imageCacheDidLoad:(NSData *)imageData forURLPath:(NSString *)urlPath {
-  if (imageData) {
+  if (imageData && [_urlPathArray containsObject:urlPath]) {
     if ([_images objectForKey:urlPath] == [NSNull null]) {
       dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         UIImage *image = [UIImage imageWithData:imageData];

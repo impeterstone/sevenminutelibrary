@@ -22,9 +22,11 @@
 - (void)loadImageArray;
 - (void)unloadImageArray;
 
-
 - (void)prepareImageArray;
 - (void)animateImages;
+
+- (void)resumeAnimations;
+- (void)pauseAnimations;
 
 
 @end
