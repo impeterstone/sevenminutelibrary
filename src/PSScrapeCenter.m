@@ -10,6 +10,7 @@
 #import "TFHpple.h"
 #import "RegexKitLite.h"
 #import "HTMLParser.h"
+#import <math.h>
 
 static dispatch_queue_t _psScrapeQueue = nil;
 
@@ -124,6 +125,23 @@ static dispatch_queue_t _psScrapeQueue = nil;
     else distance = @"0.0";
     NSString *city = [[node rawContents] stringByMatching:@"(?m)^\\w+, \\w{2}"];
     
+    // Calculate composite rating
+    NSString *score = nil;
+    if (rating && numreviews) {
+      CGFloat rawRating = [rating floatValue];
+      CGFloat rawNumReviews = [numreviews floatValue];
+      CGFloat baseRating = (rawRating / 5.0) * 100.0;
+      BOOL isPositive = (rawNumReviews >= 100);
+      if (!isPositive) rawNumReviews += 100;
+      
+      CGFloat reviewModifier = logf(rawNumReviews);
+      CGFloat adjustedRating = isPositive ? (baseRating + reviewModifier) : MIN((baseRating - reviewModifier), 100.0);
+      
+      score = [NSString stringWithFormat:@"%.1f", adjustedRating];
+    } else {
+      score = @"0.0";
+    }
+    
     // Create payload, add to array
     NSMutableDictionary *placeDict = [NSMutableDictionary dictionary];
     index ? [placeDict setObject:index forKey:@"index"] : [placeDict setObject:[NSNull null] forKey:@"index"];
@@ -136,6 +154,7 @@ static dispatch_queue_t _psScrapeQueue = nil;
     category ? [placeDict setObject:category forKey:@"category"] : [placeDict setObject:[NSNull null] forKey:@"category"];
     distance ? [placeDict setObject:distance forKey:@"distance"] : [placeDict setObject:[NSNull null] forKey:@"distance"];
     city ? [placeDict setObject:city forKey:@"city"] : [placeDict setObject:[NSNull null] forKey:@"city"];
+    score ? [placeDict setObject:score forKey:@"score"] : [placeDict setObject:[NSNull null] forKey:@"score"];
      
     [placeArray addObject:placeDict];
     
