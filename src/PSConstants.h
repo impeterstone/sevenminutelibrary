@@ -17,6 +17,11 @@
 #define RADIANS(degrees) ((degrees * M_PI) / 180.0)
 
 /**
+ Alert Tags
+ */
+#define kAlertFacebookPermissionsPublish 7001
+
+/**
  Locale/Language
  */
 #define USER_LANGUAGE [[NSLocale preferredLanguages] objectAtIndex:0]
