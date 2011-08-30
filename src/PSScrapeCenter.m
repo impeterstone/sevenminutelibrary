@@ -135,11 +135,11 @@ static dispatch_queue_t _psScrapeQueue = nil;
       if (!isPositive) rawNumReviews += 100;
       
       CGFloat reviewModifier = logf(rawNumReviews);
-      CGFloat adjustedRating = isPositive ? (baseRating + reviewModifier) : MIN((baseRating - reviewModifier), 100.0);
+      CGFloat adjustedRating = isPositive ? round(baseRating + reviewModifier) : MIN(round(baseRating - reviewModifier), 100);
       
-      score = [NSString stringWithFormat:@"%.1f", adjustedRating];
+      score = [NSString stringWithFormat:@"%.0f", adjustedRating];
     } else {
-      score = @"0.0";
+      score = @"N/A";
     }
     
     // Create payload, add to array

@@ -59,7 +59,7 @@
   if ([_images count] == 1) {
     [self setImage:[_images objectAtIndex:0] animated:YES];
   } else if ([_images count] > 1 && !_animateTimer) {
-    _animateTimer = [[NSTimer alloc] initWithFireDate:[NSDate dateWithTimeIntervalSinceNow:3.0] interval:6.0 target:self selector:@selector(animateImages) userInfo:nil repeats:YES];
+    _animateTimer = [[NSTimer alloc] initWithFireDate:[NSDate dateWithTimeIntervalSinceNow:3.0] interval:9.0 target:self selector:@selector(animateImages) userInfo:nil repeats:YES];
     [[NSRunLoop currentRunLoop] addTimer:_animateTimer forMode:NSDefaultRunLoopMode];
   }
 }
