@@ -135,6 +135,10 @@ static NSInteger _distanceFilter = 100;
   return self.locationManager.location;
 }
 
+- (CLLocationCoordinate2D)locationCoordinate {
+  return [self.locationManager.location coordinate];
+}
+
 - (CGFloat)latitude {
 #if TARGET_IPHONE_SIMULATOR
   return 37.32798;

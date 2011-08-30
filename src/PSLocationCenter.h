@@ -24,6 +24,7 @@
 - (void)getMyLocation;
 - (BOOL)hasAcquiredLocation;
 - (CLLocation *)location;
+- (CLLocationCoordinate2D)locationCoordinate;
 - (CGFloat)latitude;
 - (CGFloat)longitude;
 
