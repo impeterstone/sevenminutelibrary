@@ -236,7 +236,7 @@
   // Show/hide loadMore footer
   if (_hasMore && [self shouldLoadMore] && [self dataIsAvailable]) {
     self.tableView.tableFooterView = _loadMoreView;
-  } else {
+  } else if (!_hasMore && [self shouldLoadMore]) {
     self.tableView.tableFooterView = nil;
   }
 }
