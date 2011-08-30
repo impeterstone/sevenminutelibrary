@@ -22,7 +22,7 @@
 }
 
 - (void)animateImageFade:(UIImage *)image;
-- (void)animateCrossFade:(UIImage *)image;
+- (void)stopAnimations;
 
 - (void)setImage:(UIImage *)image animated:(BOOL)animated;
 

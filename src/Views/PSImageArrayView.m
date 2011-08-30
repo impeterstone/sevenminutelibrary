@@ -19,7 +19,7 @@
   if (self) {
     _animateIndex = 0;
     _shouldScale = NO;
-    _images = [[NSMutableDictionary alloc] init];
+    _images = [[NSMutableArray alloc] init];
 
     self.backgroundColor = [UIColor blackColor];
   }
@@ -39,50 +39,46 @@
 - (void)loadImageArray {
   // Download all images
   for (NSString *urlPath in _urlPathArray) {
-    [_images setObject:[NSNull null] forKey:urlPath];
-    UIImage *image = [[PSImageCache sharedCache] imageForURLPath:urlPath shouldDownload:YES withDelegate:self];
+    UIImage *image = [[PSImageCache sharedCache] imageForURLPath:urlPath shouldDownload:YES withDelegate:nil];
     if (image) {
-      [_images setObject:image forKey:urlPath];
+      [_images addObject:image];
       [self prepareImageArray];
     }
   }
 }
 
 - (void)unloadImageArray {
-  [self.layer removeAllAnimations];
   INVALIDATE_TIMER(_animateTimer);
   _animateIndex = 0;
   [_images removeAllObjects];
+  [self.layer removeAllAnimations];
+  self.image = nil;
 }
 
 - (void)prepareImageArray {
-  if ([_images count] == [_urlPathArray count] && ![[_images allValues] containsObject:[NSNull null]] && !_animateTimer) {
+  if ([_images count] == 1) {
+    [self setImage:[_images objectAtIndex:0] animated:YES];
+  } else if ([_images count] > 1 && !_animateTimer) {
     _animateTimer = [[NSTimer alloc] initWithFireDate:[NSDate dateWithTimeIntervalSinceNow:3.0] interval:6.0 target:self selector:@selector(animateImages) userInfo:nil repeats:YES];
     [[NSRunLoop currentRunLoop] addTimer:_animateTimer forMode:NSDefaultRunLoopMode];
-    _animateIndex = 0;
-    [self setImage:[[_images allValues] objectAtIndex:_animateIndex] animated:YES];
-//    self.image = [[_images allValues] objectAtIndex:_animateIndex];
   }
 }
 
 - (void)animateImages {
-  if (![_animateTimer isValid]) return;
-  NSArray *imageArray = [_images allValues];
-  
+  if (![_animateTimer isValid]) return;  
   CABasicAnimation *crossFade = [CABasicAnimation animationWithKeyPath:@"contents"];
   crossFade.duration = 4.0;
-  crossFade.fromValue = (id)[[imageArray objectAtIndex:_animateIndex] CGImage];
+  crossFade.fromValue = (id)[[_images objectAtIndex:_animateIndex] CGImage];
   
   _animateIndex++;
   if (_animateIndex == [_images count]) {
     _animateIndex = 0;
   }
   
-  crossFade.toValue = (id)[[imageArray objectAtIndex:(_animateIndex)] CGImage];
+  crossFade.toValue = (id)[[_images objectAtIndex:(_animateIndex)] CGImage];
   [self.layer addAnimation:crossFade forKey:@"animateContents"];
   
-  [self setImage:[imageArray objectAtIndex:_animateIndex] animated:NO];
-//  self.image = [imageArray objectAtIndex:_animateIndex];
+  [self setImage:[_images objectAtIndex:_animateIndex] animated:NO];
 }
 
 - (void)resumeAnimations {
@@ -94,21 +90,27 @@
   INVALIDATE_TIMER(_animateTimer);
 }
 
-
-#pragma mark - PSImageCacheDelegate
-- (void)imageCacheDidLoad:(NSData *)imageData forURLPath:(NSString *)urlPath {
+#pragma mark - PSImageCacheNotification
+- (void)imageCacheDidLoad:(NSNotification *)notification {
+  NSDictionary *userInfo = [notification userInfo];
+  NSString *urlPath = [userInfo objectForKey:@"urlPath"];
+  NSData *imageData = [userInfo objectForKey:@"imageData"];
+  
   if (imageData && [_urlPathArray containsObject:urlPath]) {
-    if ([_images objectForKey:urlPath] == [NSNull null]) {
-      dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        UIImage *image = [UIImage imageWithData:imageData];
-        dispatch_async(dispatch_get_main_queue(), ^{
-          [_images setObject:image forKey:urlPath];
-          [self prepareImageArray];
-        });
-      });
-    }
+    UIImage *image = [UIImage imageWithData:imageData];
+    [_images addObject:image];
+    [self prepareImageArray];
   }
 }
+
+#pragma mark - PSImageCacheDelegate
+//- (void)imageCacheDidLoad:(NSData *)imageData forURLPath:(NSString *)urlPath {
+//  if (imageData && [_urlPathArray containsObject:urlPath]) {
+//    UIImage *image = [UIImage imageWithData:imageData];
+//    [_images addObject:image];
+//    [self prepareImageArray];
+//  }
+//}
 
 
 @end

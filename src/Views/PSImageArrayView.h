@@ -11,7 +11,7 @@
 
 @interface PSImageArrayView : PSURLCacheImageView {
   NSArray *_urlPathArray;
-  NSMutableDictionary *_images;
+  NSMutableArray *_images;
   
   NSTimer *_animateTimer;
   NSInteger _animateIndex;

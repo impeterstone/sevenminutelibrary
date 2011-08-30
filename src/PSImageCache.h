@@ -38,6 +38,8 @@
 - (void)downloadImageRequestFinished:(ASIHTTPRequest *)request;
 - (void)downloadImageRequestFailed:(ASIHTTPRequest *)request;
 
+- (void)cancelDownloadForURLPath:(NSString *)urlPath;
+
 // Helpers
 + (NSString *)documentDirectory;
 + (NSString *)cachesDirectory;

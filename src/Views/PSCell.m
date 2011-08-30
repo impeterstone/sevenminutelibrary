@@ -15,11 +15,18 @@
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
   self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
   if (self) {
+    DLog(@"Called by class: %@", [self class]);
+    
     _isExpanded = NO;
     self.opaque = YES;
     self.contentMode = UIViewContentModeRedraw;
   }
   return self;
+}
+
+- (void)dealloc {
+  DLog(@"Called by class: %@", [self class]);
+  [super dealloc];
 }
 
 + (NSString *)reuseIdentifier {
@@ -71,10 +78,6 @@
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {
   [super setSelected:selected animated:animated];
-}
-
-- (void)dealloc {
-  [super dealloc];
 }
 
 @end
