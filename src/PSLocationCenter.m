@@ -13,6 +13,8 @@ static NSInteger _distanceFilter = 100;
 @implementation PSLocationCenter
 
 @synthesize locationManager = _locationManager;
+@synthesize shouldDisableAfterLocationFix = _shouldDisableAfterLocationFix;
+@synthesize shouldMonitorSignificantChange = _shouldMonitorSignificantChange;
 
 + (id)defaultCenter {
   static id defaultCenter = nil;
@@ -26,6 +28,8 @@ static NSInteger _distanceFilter = 100;
   self = [super init];
   if (self) {
     _isUpdating = NO;
+    _shouldDisableAfterLocationFix = NO;
+    _shouldMonitorSignificantChange = NO;
     
     // Create the location manager if this object does not
     // already have one.
@@ -40,17 +44,11 @@ static NSInteger _distanceFilter = 100;
       // Set a movement threshold for new events.
       _locationManager.distanceFilter = _distanceFilter;
     }
-
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(startUpdates) name:kApplicationResumed object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(stopUpdates) name:kApplicationSuspended object:nil];
   }
   return self;
 }
 
-- (void)dealloc {
-  [[NSNotificationCenter defaultCenter] removeObserver:self name:kApplicationResumed object:nil];
-  [[NSNotificationCenter defaultCenter] removeObserver:self name:kApplicationSuspended object:nil];
-  
+- (void)dealloc {  
   RELEASE_SAFELY(_locationManager);
   [super dealloc];
 }
@@ -70,11 +68,14 @@ static NSInteger _distanceFilter = 100;
     _isUpdating = YES;
     
     // Check location capabilities
-    if ([CLLocationManager significantLocationChangeMonitoringAvailable]) {
-      [self startStandardUpdates];
-      [self startSignificantChangeUpdates];
+    if ([CLLocationManager significantLocationChangeMonitoringAvailable] && _shouldMonitorSignificantChange) {
+      [self.locationManager startUpdatingLocation];
+      [self.locationManager startMonitoringSignificantLocationChanges];
+      
+      [[NSNotificationCenter defaultCenter] addObserver:self.locationManager selector:@selector(startMonitoringSignificantLocationChanges) name:kApplicationResumed object:nil];
+      [[NSNotificationCenter defaultCenter] addObserver:self.locationManager selector:@selector(stopMonitoringSignificantLocationChanges) name:kApplicationSuspended object:nil];
     } else {
-      [self startStandardUpdates];
+      [self.locationManager startUpdatingLocation];
     }
   }
 #endif
@@ -88,32 +89,20 @@ static NSInteger _distanceFilter = 100;
     _isUpdating = NO;
   
     // Check location capabilities
-    if ([CLLocationManager significantLocationChangeMonitoringAvailable]) {
-      [self stopStandardUpdates];
-      [self stopSignificantChangeUpdates];
+    if ([CLLocationManager significantLocationChangeMonitoringAvailable] && _shouldMonitorSignificantChange) {
+      [self.locationManager stopUpdatingLocation];
+      [self.locationManager stopMonitoringSignificantLocationChanges];
+      
+      [[NSNotificationCenter defaultCenter] removeObserver:self.locationManager name:kApplicationResumed object:nil];
+      [[NSNotificationCenter defaultCenter] removeObserver:self.locationManager name:kApplicationSuspended object:nil];
     } else {
-      [self stopStandardUpdates];
+      [self.locationManager stopUpdatingLocation];
     }
   }
 #endif
 }
 
-- (void)startStandardUpdates {
-  [self.locationManager startUpdatingLocation];
-}
-
-- (void)stopStandardUpdates {
-  [self.locationManager stopUpdatingLocation];
-}
-
-- (void)startSignificantChangeUpdates {
-  [self.locationManager startMonitoringSignificantLocationChanges];
-}
-
-- (void)stopSignificantChangeUpdates {
-  [self.locationManager stopMonitoringSignificantLocationChanges];
-}
-
+#pragma mark - Public Accessors
 - (BOOL)hasAcquiredLocation {
   if ([self location]) return YES;
   else return NO;
@@ -146,33 +135,30 @@ static NSInteger _distanceFilter = 100;
 #pragma mark CLLocationManagerDelegate
 // Delegate method from the CLLocationManagerDelegate protocol.
 - (void)locationManager:(CLLocationManager *)manager didUpdateToLocation:(CLLocation *)newLocation fromLocation:(CLLocation *)oldLocation {
-  
-  // Check distance and timestamp
-  //    if (fabs([newLocation.timestamp timeIntervalSinceDate:oldLocation.timestamp]) > 60) {
-  //    }
-  
+  /**
+   Reasons to discard location
+   1. Accuracy is bad (greater than threshold)
+   2. Location is stale (older than 300 seconds)
+   3. Location distance change is less than threshold
+   */
   CLLocationAccuracy accuracy = newLocation.horizontalAccuracy;
-  if (accuracy >= _distanceFilter) {
-    // Too much uncertainty
-    DLog(@"Location discarded due to accuracy: %@, oldLocation: %@, accuracy: %g", newLocation, oldLocation, accuracy);
-  } else if (!oldLocation) {
-    // If no previous location, always set new location
-    if ([[NSDate date] timeIntervalSinceDate:newLocation.timestamp] < 300) {
-      [[NSNotificationCenter defaultCenter] postNotificationName:kLocationAcquired object:nil];
-      DLog(@"Location updated: %@, oldLocation: %@, accuracy: %g", newLocation, oldLocation, accuracy);
-    } else {
-      DLog(@"Location discarded due to age: %@, oldLocation: %@, accuracy: %g", newLocation, oldLocation, accuracy);
-    }
-  } else if (oldLocation && newLocation && [oldLocation distanceFromLocation:newLocation] > 0) {
-    // Check if distance changed
-    [[NSNotificationCenter defaultCenter] postNotificationName:kLocationAcquired object:nil];
-
-    DLog(@"Location updated: %@, oldLocation: %@, accuracy: %g", newLocation, oldLocation, accuracy);
+  NSTimeInterval age = [[NSDate date] timeIntervalSinceDate:newLocation.timestamp];
+  CLLocationDistance distance = [newLocation distanceFromLocation:oldLocation];
+  
+  if ((accuracy >= _distanceFilter) || (age >= 300) || (distance < _distanceFilter)) {
+    // Location Discarded
+    DLog(@"Location discarded: %@, oldLocation: %@, accuracy: %g, age: %g, distanceChanged: %g", newLocation, oldLocation, accuracy, age, distance);
   } else {
-    // Location unchanged
-    DLog(@"Location discarded: %@, oldLocation: %@, accuracy: %g", newLocation, oldLocation, accuracy);
+    // Location Acquired
+    DLog(@"Location updated: %@, oldLocation: %@, accuracy: %g, age: %g, distanceChanged: %g", newLocation, oldLocation, accuracy, age, distance);
+    
+    if (_shouldDisableAfterLocationFix) {
+      [self stopUpdates];
+    }
+    
+    // Post Notification
+    [[NSNotificationCenter defaultCenter] postNotificationName:kLocationAcquired object:nil];
   }
-
 }
 
 @end

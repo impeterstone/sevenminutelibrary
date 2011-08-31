@@ -14,9 +14,13 @@
   CLLocationManager *_locationManager;
   
   BOOL _isUpdating;
+  BOOL _shouldDisableAfterLocationFix;
+  BOOL _shouldMonitorSignificantChange;
 }
 
 @property (nonatomic, retain) CLLocationManager *locationManager;
+@property (nonatomic, assign) BOOL shouldDisableAfterLocationFix;
+@property (nonatomic, assign) BOOL shouldMonitorSignificantChange;
 
 + (id)defaultCenter;
 
@@ -31,11 +35,5 @@
 // Private Methods
 - (void)startUpdates;
 - (void)stopUpdates;
-
-- (void)startStandardUpdates;
-- (void)stopStandardUpdates;
-
-- (void)startSignificantChangeUpdates;
-- (void)stopSignificantChangeUpdates;
 
 @end
