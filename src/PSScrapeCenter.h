@@ -20,5 +20,6 @@
 - (NSDictionary *)scrapePlacesWithHTMLString:(NSString *)htmlString;
 - (NSDictionary *)scrapeMapWithHTMLString:(NSString *)htmlString;
 - (NSDictionary *)scrapeBizWithHTMLString:(NSString *)htmlString;
+- (NSDictionary *)scrapeReviewsWithHTMLString:(NSString *)htmlString;
 
 @end

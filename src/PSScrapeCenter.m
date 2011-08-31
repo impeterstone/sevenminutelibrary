@@ -10,6 +10,7 @@
 #import "TFHpple.h"
 #import "RegexKitLite.h"
 #import "HTMLParser.h"
+#import "SBJson.h"
 #import <math.h>
 
 static dispatch_queue_t _psScrapeQueue = nil;
@@ -62,17 +63,23 @@ static dispatch_queue_t _psScrapeQueue = nil;
   
   NSArray *photoNodes = [mainContentNode findChildTags:@"img"];
   
+  // Parse page
   NSMutableArray *photos = [NSMutableArray array];
   for (HTMLNode *node in photoNodes) {
+    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+    
     NSString *src = [[node getAttributeNamed:@"src"] stringByReplacingOccurrencesOfString:@"ms.jpg" withString:@"l.jpg"];
     NSString *caption = [node getAttributeNamed:@"alt"];
     
     // Create payload
-    NSMutableDictionary *photoDict = [NSMutableDictionary dictionary];
+    NSMutableDictionary *photoDict = [[NSMutableDictionary alloc] initWithCapacity:2];
     src ? [photoDict setObject:src forKey:@"src"] : [photoDict setObject:[NSNull null] forKey:@"src"];
     caption ? [photoDict setObject:caption forKey:@"caption"] : [photoDict setObject:[NSNull null] forKey:@"caption"];
     
     [photos addObject:photoDict];
+    [photoDict release];
+    
+    [pool drain];
   }
   
   [parser release];
@@ -199,29 +206,159 @@ static dispatch_queue_t _psScrapeQueue = nil;
 }
 
 - (NSDictionary *)scrapeBizWithHTMLString:(NSString *)htmlString {
+//  http://www.yelp.com/biz/alexanders-steakhouse-cupertino?rpp=9999&sort_by=relevance_desc
   // HTML Scraping
   NSError *parserError = nil;
   HTMLParser *parser = [[HTMLParser alloc] initWithString:htmlString error:&parserError];
   HTMLNode *doc = [parser body];
   
-  HTMLNode *mainContentNode = [doc findChildWithAttribute:@"id" matchingName:@"mainContent" allowPartial:YES];
+//  HTMLNode *mainContentNode = [doc findChildWithAttribute:@"id" matchingName:@"mainContent" allowPartial:YES];
   //  NSString *mainContent = [mainContentNode rawContents];
-
-  NSString *hours = [[[mainContentNode rawContents] stringByMatching:@"(?ms)Hours:[^<]+.*View Photos</a>"] stringByReplacingOccurrencesOfString:@"<br>" withString:@""];
-  hours = [hours stringByMatching:@"Hours:[^<]+"];
-  hours = [hours stringByReplacingOccurrencesOfRegex:@"\\s+" withString:@" "];
-  hours = [hours stringByReplacingOccurrencesOfRegex:@"Hours: " withString:@""];
-  NSArray *reviews = [NSArray array];
+  
+//  <dd class="attr-BusinessHours"><p class="hours">Mon-Thu 5:30 pm - 9:30 pm</p>
+//  <p class="hours">Tue-Fri 11:30 am - 2 pm</p>
+//  <p class="hours">Fri-Sat 5:30 pm - 10:30 pm</p>
+//  <p class="hours">Sun 5:30 pm - 9 pm</p></dd>
+  
+  // Review Summary Snippets
+  HTMLNode *summaryNode = [doc findChildWithAttribute:@"id" matchingName:@"review_summaries" allowPartial:NO];
+  NSArray *snippetsNodes = [summaryNode findChildrenWithAttribute:@"class" matchingName:@"snippet" allowPartial:NO];
+  NSMutableArray *snippets = [NSMutableArray arrayWithCapacity:3];
+  for (HTMLNode *snippetNode in snippetsNodes) {
+    NSString *snippet = [[[snippetNode allContents] componentsMatchedByRegex:@"\"(.+)\"" capture:1] lastObject];
+    [snippets addObject:snippet];
+  }
+  
+  // Hours
+  NSArray *hourNodes = [doc findChildrenWithAttribute:@"class" matchingName:@"hours" allowPartial:NO];
+  NSMutableArray *hours = [NSMutableArray array];
+  for (HTMLNode *hourNode in hourNodes) {
+    [hours addObject:[hourNode contents]];
+  }
+  
+//  NSArray *reviewNodes = [doc findChildrenWithAttribute:@"class" matchingName:@"review_comment" allowPartial:YES];
+//  NSMutableArray *reviews = [NSMutableArray array];
+//  for (HTMLNode *reviewNode in reviewNodes) {
+//    [reviews addObject:[reviewNode contents]];
+//  }
+  
+  // Reviews
+  NSArray *reviewNodes = [doc findChildrenWithAttribute:@"class" matchingName:@"review-content" allowPartial:YES];
+  NSMutableArray *reviews = [NSMutableArray array];
+  for (HTMLNode *reviewNode in reviewNodes) {
+    NSMutableDictionary *reviewDict = [NSMutableDictionary dictionaryWithCapacity:3];
+    // Review ID
+    NSString *srid = [[[reviewNode findChildWithAttribute:@"class" matchingName:@"rateReview" allowPartial:NO] getAttributeNamed:@"id"] stringByReplacingOccurrencesOfString:@"ufc_" withString:@""];
+    [reviewDict setObject:srid forKey:@"srid"];
+    
+    // Review Rating
+    NSString *rating = [[[reviewNode findChildWithAttribute:@"alt" matchingName:@"star rating" allowPartial:YES] getAttributeNamed:@"alt"] stringByReplacingOccurrencesOfString:@" star rating" withString:@""];
+    [reviewDict setObject:rating forKey:@"rating"];
+    
+    // Review Date
+    NSString *date = [[[reviewNode findChildWithAttribute:@"class" matchingName:@"dtreviewed" allowPartial:YES] allContents] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    [reviewDict setObject:date forKey:@"date"];
+    
+    // Review Comment
+    NSString *comment = [[reviewNode findChildWithAttribute:@"class" matchingName:@"review_comment" allowPartial:YES] allContents];
+    [reviewDict setObject:comment forKey:@"comment"];
+    
+    
+    [reviews addObject:reviewDict];
+  }
+  
+  // Scrape bizdetails json
+  NSDictionary *bizDetails = nil;
+  NSArray *scriptNodes = [doc findChildrenWithAttribute:@"type" matchingName:@"text/javascript" allowPartial:NO];
+  for (HTMLNode *scriptNode in scriptNodes) {
+    if ([[scriptNode allContents] rangeOfString:@"yelp.init.bizDetails"].location != NSNotFound) {
+      NSString *bizDetailsJSON = [[[scriptNode allContents] componentsMatchedByRegex:@"(yelp\\.init\\.wrapper\\(\"yelp\\.init\\.bizDetails\\.page\", )(.+)(\\);)" capture:2] lastObject];
+      bizDetails = [bizDetailsJSON JSONValue];
+    }
+  }
   
   // Create payload
   NSMutableDictionary *bizDict = [NSMutableDictionary dictionary];
-  hours ? [bizDict setObject:hours forKey:@"hours"] : [bizDict setObject:[NSNull null] forKey:@"hours"];
-  reviews ? [bizDict setObject:reviews forKey:@"reviews"] : [bizDict setObject:[NSNull null] forKey:@"reviews"];
+  ([snippets count] > 0) ? [bizDict setObject:snippets forKey:@"snippets"] : [bizDict setObject:[NSNull null] forKey:@"snippets"];
+  ([hours count] > 0) ? [bizDict setObject:hours forKey:@"hours"] : [bizDict setObject:[NSNull null] forKey:@"hours"];
+  ([reviews count] > 0) ? [bizDict setObject:reviews forKey:@"reviews"] : [bizDict setObject:[NSNull null] forKey:@"reviews"];
+  if (bizDetails) {
+    [bizDict setObject:bizDetails forKey:@"bizDetails"];
+    [bizDict setObject:[[bizDetails objectForKey:@"bizSafe"] objectForKey:@"formatted_address"] forKey:@"address"];
+    [bizDict setObject:[[bizDetails objectForKey:@"bizSafe"] objectForKey:@"latitude"] forKey:@"latitude"];
+    [bizDict setObject:[[bizDetails objectForKey:@"bizSafe"] objectForKey:@"longitude"] forKey:@"longitude"];
+  } else {
+    [bizDict setObject:[NSNull null] forKey:@"bizDetails"];
+    [bizDict setObject:[NSNull null] forKey:@"address"];
+    [bizDict setObject:[NSNull null] forKey:@"latitude"];
+    [bizDict setObject:[NSNull null] forKey:@"longitude"];
+  }
   
   [parser release];
   
-  // Hours:[^<]+.*View Photos</a>
   return bizDict;
 }
+
+- (NSDictionary *)scrapeReviewsWithHTMLString:(NSString *)htmlString {
+  // HTML Scraping
+  NSError *parserError = nil;
+  HTMLParser *parser = [[HTMLParser alloc] initWithString:htmlString error:&parserError];
+  HTMLNode *doc = [parser body];
+  
+  // Reviews
+  NSArray *reviewNodes = [doc findChildrenWithAttribute:@"class" matchingName:@"review-content" allowPartial:YES];
+  NSMutableArray *reviews = [NSMutableArray array];
+  for (HTMLNode *reviewNode in reviewNodes) {
+    NSMutableDictionary *reviewDict = [NSMutableDictionary dictionaryWithCapacity:3];
+    
+    // Review Rating
+    NSString *rating = [[[reviewNode findChildWithAttribute:@"alt" matchingName:@"star rating" allowPartial:YES] getAttributeNamed:@"alt"] stringByReplacingOccurrencesOfString:@" star rating" withString:@""];
+    [reviewDict setObject:rating forKey:@"rating"];
+    
+    // Review Date
+    NSString *date = [[[reviewNode findChildWithAttribute:@"class" matchingName:@"dtreviewed" allowPartial:YES] allContents] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    [reviewDict setObject:date forKey:@"date"];
+    
+    // Review Comment
+    NSString *comment = [[reviewNode findChildWithAttribute:@"class" matchingName:@"review_comment" allowPartial:YES] allContents];
+    comment ? [reviewDict setObject:comment forKey:@"comment"] : [reviewDict setObject:[NSNull null] forKey:@"comment"];
+    
+    [reviews addObject:reviewDict];
+  }
+  
+  // Create payload
+  NSMutableDictionary *reviewsDict = [NSMutableDictionary dictionary];
+  ([reviews count] > 0) ? [reviewsDict setObject:reviews forKey:@"reviews"] : [reviewsDict setObject:[NSNull null] forKey:@"reviews"];
+  
+  [parser release];
+  
+  return reviewsDict;
+}
+
+//- (NSDictionary *)scrapeBizWithHTMLString:(NSString *)htmlString {
+//  // HTML Scraping
+//  NSError *parserError = nil;
+//  HTMLParser *parser = [[HTMLParser alloc] initWithString:htmlString error:&parserError];
+//  HTMLNode *doc = [parser body];
+//  
+//  HTMLNode *mainContentNode = [doc findChildWithAttribute:@"id" matchingName:@"mainContent" allowPartial:YES];
+//  //  NSString *mainContent = [mainContentNode rawContents];
+//
+//  NSString *hours = [[[mainContentNode rawContents] stringByMatching:@"(?ms)Hours:[^<]+.*View Photos</a>"] stringByReplacingOccurrencesOfString:@"<br>" withString:@""];
+//  hours = [hours stringByMatching:@"Hours:[^<]+"];
+//  hours = [hours stringByReplacingOccurrencesOfRegex:@"\\s+" withString:@" "];
+//  hours = [hours stringByReplacingOccurrencesOfRegex:@"Hours: " withString:@""];
+//  NSArray *reviews = [NSArray array];
+//  
+//  // Create payload
+//  NSMutableDictionary *bizDict = [NSMutableDictionary dictionary];
+//  hours ? [bizDict setObject:hours forKey:@"hours"] : [bizDict setObject:[NSNull null] forKey:@"hours"];
+//  reviews ? [bizDict setObject:reviews forKey:@"reviews"] : [bizDict setObject:[NSNull null] forKey:@"reviews"];
+//  
+//  [parser release];
+//  
+//  // Hours:[^<]+.*View Photos</a>
+//  return bizDict;
+//}
 
 @end
