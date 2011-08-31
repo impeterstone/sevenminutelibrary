@@ -130,7 +130,6 @@ static dispatch_queue_t _psScrapeQueue = nil;
     NSString *distance = [[node rawContents] stringByMatching:@"\\d+\\.\\d+ miles"];
     if (distance) distance = [distance stringByReplacingOccurrencesOfString:@" miles" withString:@""];
     else distance = @"0.0";
-    NSString *city = [[node rawContents] stringByMatching:@"(?m)^\\w+, \\w{2}"];
     
     // Calculate composite rating
     NSString *score = nil;
@@ -160,7 +159,6 @@ static dispatch_queue_t _psScrapeQueue = nil;
     price ? [placeDict setObject:price forKey:@"price"] : [placeDict setObject:[NSNull null] forKey:@"price"];
     category ? [placeDict setObject:category forKey:@"category"] : [placeDict setObject:[NSNull null] forKey:@"category"];
     distance ? [placeDict setObject:distance forKey:@"distance"] : [placeDict setObject:[NSNull null] forKey:@"distance"];
-    city ? [placeDict setObject:city forKey:@"city"] : [placeDict setObject:[NSNull null] forKey:@"city"];
     score ? [placeDict setObject:score forKey:@"score"] : [placeDict setObject:[NSNull null] forKey:@"score"];
      
     [placeArray addObject:placeDict];
@@ -220,6 +218,9 @@ static dispatch_queue_t _psScrapeQueue = nil;
 //  <p class="hours">Fri-Sat 5:30 pm - 10:30 pm</p>
 //  <p class="hours">Sun 5:30 pm - 9 pm</p></dd>
   
+  // Create output payload
+  NSMutableDictionary *bizDict = [NSMutableDictionary dictionary];
+  
   // Review Summary Snippets
   HTMLNode *summaryNode = [doc findChildWithAttribute:@"id" matchingName:@"review_summaries" allowPartial:NO];
   NSArray *snippetsNodes = [summaryNode findChildrenWithAttribute:@"class" matchingName:@"snippet" allowPartial:NO];
@@ -228,6 +229,7 @@ static dispatch_queue_t _psScrapeQueue = nil;
     NSString *snippet = [[[snippetNode allContents] componentsMatchedByRegex:@"\"(.+)\"" capture:1] lastObject];
     [snippets addObject:snippet];
   }
+  ([snippets count] > 0) ? [bizDict setObject:snippets forKey:@"snippets"] : [bizDict setObject:[NSNull null] forKey:@"snippets"];
   
   // Hours
   NSArray *hourNodes = [doc findChildrenWithAttribute:@"class" matchingName:@"hours" allowPartial:NO];
@@ -235,37 +237,7 @@ static dispatch_queue_t _psScrapeQueue = nil;
   for (HTMLNode *hourNode in hourNodes) {
     [hours addObject:[hourNode contents]];
   }
-  
-//  NSArray *reviewNodes = [doc findChildrenWithAttribute:@"class" matchingName:@"review_comment" allowPartial:YES];
-//  NSMutableArray *reviews = [NSMutableArray array];
-//  for (HTMLNode *reviewNode in reviewNodes) {
-//    [reviews addObject:[reviewNode contents]];
-//  }
-  
-  // Reviews
-  NSArray *reviewNodes = [doc findChildrenWithAttribute:@"class" matchingName:@"review-content" allowPartial:YES];
-  NSMutableArray *reviews = [NSMutableArray array];
-  for (HTMLNode *reviewNode in reviewNodes) {
-    NSMutableDictionary *reviewDict = [NSMutableDictionary dictionaryWithCapacity:3];
-    // Review ID
-    NSString *srid = [[[reviewNode findChildWithAttribute:@"class" matchingName:@"rateReview" allowPartial:NO] getAttributeNamed:@"id"] stringByReplacingOccurrencesOfString:@"ufc_" withString:@""];
-    [reviewDict setObject:srid forKey:@"srid"];
-    
-    // Review Rating
-    NSString *rating = [[[reviewNode findChildWithAttribute:@"alt" matchingName:@"star rating" allowPartial:YES] getAttributeNamed:@"alt"] stringByReplacingOccurrencesOfString:@" star rating" withString:@""];
-    [reviewDict setObject:rating forKey:@"rating"];
-    
-    // Review Date
-    NSString *date = [[[reviewNode findChildWithAttribute:@"class" matchingName:@"dtreviewed" allowPartial:YES] allContents] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-    [reviewDict setObject:date forKey:@"date"];
-    
-    // Review Comment
-    NSString *comment = [[reviewNode findChildWithAttribute:@"class" matchingName:@"review_comment" allowPartial:YES] allContents];
-    [reviewDict setObject:comment forKey:@"comment"];
-    
-    
-    [reviews addObject:reviewDict];
-  }
+  ([hours count] > 0) ? [bizDict setObject:hours forKey:@"hours"] : [bizDict setObject:[NSNull null] forKey:@"hours"];
   
   // Scrape bizdetails json
   NSDictionary *bizDetails = nil;
@@ -274,25 +246,30 @@ static dispatch_queue_t _psScrapeQueue = nil;
     if ([[scriptNode allContents] rangeOfString:@"yelp.init.bizDetails"].location != NSNotFound) {
       NSString *bizDetailsJSON = [[[scriptNode allContents] componentsMatchedByRegex:@"(yelp\\.init\\.wrapper\\(\"yelp\\.init\\.bizDetails\\.page\", )(.+)(\\);)" capture:2] lastObject];
       bizDetails = [bizDetailsJSON JSONValue];
+      NSDictionary *bizSafe = [bizDetails objectForKey:@"bizSafe"];
+      if (bizSafe) {
+        [bizDict setObject:[bizSafe objectForKey:@"formatted_address"] forKey:@"address"];
+        [bizDict setObject:[bizSafe objectForKey:@"city"] forKey:@"city"];
+        [bizDict setObject:[bizSafe objectForKey:@"state"] forKey:@"state"];
+        [bizDict setObject:[bizSafe objectForKey:@"zip"] forKey:@"zip"];
+        [bizDict setObject:[bizSafe objectForKey:@"country"] forKey:@"country"];
+        [bizDict setObject:[bizSafe objectForKey:@"latitude"] forKey:@"latitude"];
+        [bizDict setObject:[bizSafe objectForKey:@"longitude"] forKey:@"longitude"];
+        
+        NSArray *bizPhotos = [bizSafe objectForKey:@"photos"];
+        [bizDict setObject:bizPhotos forKey:@"photos"];
+        
+        NSArray *bizCategories = [bizSafe objectForKey:@"category_yelp_ids"];
+        [bizDict setObject:bizCategories forKey:@"bizcategories"];
+      } else {
+        [bizDict setObject:[NSNull null] forKey:@"address"];
+        [bizDict setObject:[NSNull null] forKey:@"latitude"];
+        [bizDict setObject:[NSNull null] forKey:@"longitude"];
+        [bizDict setObject:[NSNull null] forKey:@"photos"];
+      }
     }
   }
-  
-  // Create payload
-  NSMutableDictionary *bizDict = [NSMutableDictionary dictionary];
-  ([snippets count] > 0) ? [bizDict setObject:snippets forKey:@"snippets"] : [bizDict setObject:[NSNull null] forKey:@"snippets"];
-  ([hours count] > 0) ? [bizDict setObject:hours forKey:@"hours"] : [bizDict setObject:[NSNull null] forKey:@"hours"];
-  ([reviews count] > 0) ? [bizDict setObject:reviews forKey:@"reviews"] : [bizDict setObject:[NSNull null] forKey:@"reviews"];
-  if (bizDetails) {
-    [bizDict setObject:bizDetails forKey:@"bizDetails"];
-    [bizDict setObject:[[bizDetails objectForKey:@"bizSafe"] objectForKey:@"formatted_address"] forKey:@"address"];
-    [bizDict setObject:[[bizDetails objectForKey:@"bizSafe"] objectForKey:@"latitude"] forKey:@"latitude"];
-    [bizDict setObject:[[bizDetails objectForKey:@"bizSafe"] objectForKey:@"longitude"] forKey:@"longitude"];
-  } else {
-    [bizDict setObject:[NSNull null] forKey:@"bizDetails"];
-    [bizDict setObject:[NSNull null] forKey:@"address"];
-    [bizDict setObject:[NSNull null] forKey:@"latitude"];
-    [bizDict setObject:[NSNull null] forKey:@"longitude"];
-  }
+  (bizDetails) ? [bizDict setObject:bizDetails forKey:@"bizDetails"] : [bizDict setObject:[NSNull null] forKey:@"bizDetails"];
   
   [parser release];
   
@@ -310,6 +287,9 @@ static dispatch_queue_t _psScrapeQueue = nil;
   NSMutableArray *reviews = [NSMutableArray array];
   for (HTMLNode *reviewNode in reviewNodes) {
     NSMutableDictionary *reviewDict = [NSMutableDictionary dictionaryWithCapacity:3];
+    // Review ID
+    NSString *srid = [[[reviewNode findChildWithAttribute:@"class" matchingName:@"rateReview" allowPartial:NO] getAttributeNamed:@"id"] stringByReplacingOccurrencesOfString:@"ufc_" withString:@""];
+    [reviewDict setObject:srid forKey:@"srid"];
     
     // Review Rating
     NSString *rating = [[[reviewNode findChildWithAttribute:@"alt" matchingName:@"star rating" allowPartial:YES] getAttributeNamed:@"alt"] stringByReplacingOccurrencesOfString:@" star rating" withString:@""];
