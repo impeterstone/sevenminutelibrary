@@ -26,6 +26,20 @@ static NSInteger _distanceFilter = 100;
   self = [super init];
   if (self) {
     _isUpdating = NO;
+    
+    // Create the location manager if this object does not
+    // already have one.
+    if (!_locationManager) {
+      _locationManager = [[CLLocationManager alloc] init];
+      
+      //    _locationManager.purpose = nil; // Displayed to user
+      
+      _locationManager.delegate = self;
+      _locationManager.desiredAccuracy = kCLLocationAccuracyBest;
+      
+      // Set a movement threshold for new events.
+      _locationManager.distanceFilter = _distanceFilter;
+    }
 
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(startUpdates) name:kApplicationResumed object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(stopUpdates) name:kApplicationSuspended object:nil];
@@ -57,6 +71,7 @@ static NSInteger _distanceFilter = 100;
     
     // Check location capabilities
     if ([CLLocationManager significantLocationChangeMonitoringAvailable]) {
+      [self startStandardUpdates];
       [self startSignificantChangeUpdates];
     } else {
       [self startStandardUpdates];
@@ -74,6 +89,7 @@ static NSInteger _distanceFilter = 100;
   
     // Check location capabilities
     if ([CLLocationManager significantLocationChangeMonitoringAvailable]) {
+      [self stopStandardUpdates];
       [self stopSignificantChangeUpdates];
     } else {
       [self stopStandardUpdates];
@@ -83,20 +99,6 @@ static NSInteger _distanceFilter = 100;
 }
 
 - (void)startStandardUpdates {
-  // Create the location manager if this object does not
-  // already have one.
-  if (!_locationManager) {
-    _locationManager = [[CLLocationManager alloc] init];
-    
-//    _locationManager.purpose = nil; // Displayed to user
-    
-    _locationManager.delegate = self;
-    _locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters;
-    
-    // Set a movement threshold for new events.
-    _locationManager.distanceFilter = _distanceFilter;
-  }
-  
   [self.locationManager startUpdatingLocation];
 }
 
@@ -105,20 +107,6 @@ static NSInteger _distanceFilter = 100;
 }
 
 - (void)startSignificantChangeUpdates {
-  // Create the location manager if this object does not
-  // already have one.
-  if (!_locationManager) {
-    _locationManager = [[CLLocationManager alloc] init];
-    
-//    _locationManager.purpose = nil; // Displayed to user
-    
-    _locationManager.delegate = self;
-    _locationManager.desiredAccuracy = kCLLocationAccuracyHundredMeters;
-    
-    // Set a movement threshold for new events.
-    _locationManager.distanceFilter = _distanceFilter;
-  }
-  
   [self.locationManager startMonitoringSignificantLocationChanges];
 }
 
@@ -163,18 +151,26 @@ static NSInteger _distanceFilter = 100;
   //    if (fabs([newLocation.timestamp timeIntervalSinceDate:oldLocation.timestamp]) > 60) {
   //    }
   
-  if (!oldLocation) {
+  CLLocationAccuracy accuracy = newLocation.horizontalAccuracy;
+  if (accuracy >= _distanceFilter) {
+    // Too much uncertainty
+    DLog(@"Location discarded due to accuracy: %@, oldLocation: %@, accuracy: %g", newLocation, oldLocation, accuracy);
+  } else if (!oldLocation) {
     // If no previous location, always set new location
-    [[NSNotificationCenter defaultCenter] postNotificationName:kLocationAcquired object:nil];
-    DLog(@"Location updated: %@, oldLocation: %@", newLocation, oldLocation);
+    if ([[NSDate date] timeIntervalSinceDate:newLocation.timestamp] < 300) {
+      [[NSNotificationCenter defaultCenter] postNotificationName:kLocationAcquired object:nil];
+      DLog(@"Location updated: %@, oldLocation: %@, accuracy: %g", newLocation, oldLocation, accuracy);
+    } else {
+      DLog(@"Location discarded due to age: %@, oldLocation: %@, accuracy: %g", newLocation, oldLocation, accuracy);
+    }
   } else if (oldLocation && newLocation && [oldLocation distanceFromLocation:newLocation] > 0) {
     // Check if distance changed
     [[NSNotificationCenter defaultCenter] postNotificationName:kLocationAcquired object:nil];
 
-    DLog(@"Location updated: %@, oldLocation: %@", newLocation, oldLocation);
+    DLog(@"Location updated: %@, oldLocation: %@, accuracy: %g", newLocation, oldLocation, accuracy);
   } else {
     // Location unchanged
-    DLog(@"Location discarded: %@, oldLocation: %@", newLocation, oldLocation);
+    DLog(@"Location discarded: %@, oldLocation: %@, accuracy: %g", newLocation, oldLocation, accuracy);
   }
 
 }
