@@ -259,8 +259,10 @@ static dispatch_queue_t _psScrapeQueue = nil;
         NSArray *bizPhotos = [bizSafe objectForKey:@"photos"];
         [bizDict setObject:bizPhotos forKey:@"photos"];
         
-        NSArray *bizCategories = [bizSafe objectForKey:@"category_yelp_ids"];
-        [bizDict setObject:bizCategories forKey:@"bizcategories"];
+        DLog(@"bizPhotos: %@", bizPhotos);
+        
+//        NSArray *bizCategories = [bizSafe objectForKey:@"category_yelp_ids"];
+//        [bizDict setObject:bizCategories forKey:@"bizcategories"];
       } else {
         [bizDict setObject:[NSNull null] forKey:@"address"];
         [bizDict setObject:[NSNull null] forKey:@"latitude"];

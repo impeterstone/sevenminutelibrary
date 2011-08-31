@@ -178,7 +178,7 @@
 
 - (void)downloadImageRequestFailed:(ASIHTTPRequest *)request {
   // something bad happened, retry
-  [[[request copy] autorelease] startAsynchronous];
+  [_requestQueue addOperation:[[request copy] autorelease]];
 }
 
 - (void)cancelDownloadForURLPath:(NSString *)urlPath {

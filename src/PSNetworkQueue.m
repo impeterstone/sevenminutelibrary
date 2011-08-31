@@ -21,18 +21,12 @@
   if (self) {
     [self setDelegate:self];
     [self setQueueDidFinishSelector:@selector(queueDidFinish:)];
-//    [self setRequestDidStartSelector:@selector(requestDidStart:)];
-//    [self setRequestDidFinishSelector:@selector(requestDidFinish:)];
-//    [self setRequestDidFailSelector:@selector(requestDidFail:)];
     [self setSuspended:NO]; // Always enable queue
-    
-    _pendingRequests = [[NSMutableDictionary alloc] initWithCapacity:1];
   }
 	return self;
 }
 
 - (void)dealloc {
-  RELEASE_SAFELY(_pendingRequests);
   [super dealloc];
 }
 
@@ -65,21 +59,6 @@
 //}
 
 #pragma mark - Delegate
-- (void)requestDidStart:(ASIHTTPRequest *)request {
-  NSString *urlPath = [[request originalURL] absoluteString];
-  [_pendingRequests setObject:request forKey:urlPath];
-}
-
-- (void)requestDidFinish:(ASIHTTPRequest *)request {
-  NSString *urlPath = [[request originalURL] absoluteString];
-  [_pendingRequests removeObjectForKey:urlPath];
-}
-
-- (void)requestDidFail:(ASIHTTPRequest *)request {
-  NSString *urlPath = [[request originalURL] absoluteString];
-  [_pendingRequests removeObjectForKey:urlPath];
-}
-
 - (void)queueDidFinish:(ASINetworkQueue *)queue {
   VLog(@"queueDidFinish: %@", queue);
 }

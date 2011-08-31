@@ -14,6 +14,7 @@
 #import "SBJson.h"
 #import "PSCoreDataStack.h"
 #import "PSProgressCenter.h"
+#import "PSNetworkQueue.h"
 #import "NetworkConstants.h"
 
 #define SINCE_SAFETY_NET 300 // 5 minutes

@@ -12,7 +12,6 @@
 #import "PSConstants.h"
 
 @interface PSNetworkQueue : ASINetworkQueue {
-  NSMutableDictionary *_pendingRequests;
 }
 
 // Access shared instance
