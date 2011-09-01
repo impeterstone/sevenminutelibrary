@@ -14,7 +14,6 @@
 @interface PSToastCenter (Private)
 
 - (void)setupToastView;
-- (void)hideToast;
 - (void)showToastFromDictionary:(NSDictionary *)dictionary;
 
 @end
@@ -85,21 +84,25 @@
     // Configure toast button
     [_toastButton setTitle:toastMessage forState:UIControlStateNormal];
     [_toastButton addTarget:toastTarget action:toastAction forControlEvents:UIControlEventTouchUpInside]; // optional
-    [_toastButton setBackgroundImage:[UIImage imageNamed:@"bg_bar_320x44.png"] forState:UIControlStateNormal];
+    [_toastButton setBackgroundImage:[UIImage imageNamed:@"bg_toast.png"] forState:UIControlStateNormal];
     
     [UIView animateWithDuration:_toastAnimationDuration
                      animations:^{
                        _toastView.top -= _toastView.height;
                      }
                      completion:^(BOOL finished) {
-                       // Toast Fully Shown, hide after delay
-                       [self performSelector:@selector(hideToast) withObject:nil afterDelay:toastDuration];
+                       // Toast Fully Shown, hide after delay if delay > 0
+                       if (toastDuration > 0) {
+                         [self performSelector:@selector(hideToast) withObject:nil afterDelay:toastDuration];
+                       }
                      }];
   }
 }
 
 #pragma mark - Private Interface
 - (void)hideToast {
+  if (!_isShowing) return;
+  
   [UIView animateWithDuration:_toastAnimationDuration
                    animations:^{
                      _toastView.top += _toastView.height;

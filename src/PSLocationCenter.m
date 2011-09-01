@@ -7,8 +7,10 @@
 //
 
 #import "PSLocationCenter.h"
+#import "PSToastCenter.h"
 
-static NSInteger _distanceFilter = 100;
+static NSInteger _distanceFilter = 100; // meters
+static NSInteger _ageFilter = 300; // seconds
 
 @implementation PSLocationCenter
 
@@ -31,6 +33,8 @@ static NSInteger _distanceFilter = 100;
     _shouldDisableAfterLocationFix = NO;
     _shouldMonitorSignificantChange = NO;
     
+    _lastLocation = nil;
+    
     // Create the location manager if this object does not
     // already have one.
     if (!_locationManager) {
@@ -49,6 +53,7 @@ static NSInteger _distanceFilter = 100;
 }
 
 - (void)dealloc {  
+  RELEASE_SAFELY(_lastLocation);
   RELEASE_SAFELY(_locationManager);
   [super dealloc];
 }
@@ -58,6 +63,7 @@ static NSInteger _distanceFilter = 100;
   // Force acquiring a new location
   [self stopUpdates];  
   [self startUpdates];
+//  [[PSToastCenter defaultCenter] showToastWithMessage:@"Finding Your Current Location" toastType:PSToastTypeAlert toastDuration:0.0];
 }
 
 - (void)startUpdates {
@@ -136,28 +142,42 @@ static NSInteger _distanceFilter = 100;
 // Delegate method from the CLLocationManagerDelegate protocol.
 - (void)locationManager:(CLLocationManager *)manager didUpdateToLocation:(CLLocation *)newLocation fromLocation:(CLLocation *)oldLocation {
   /**
+   _lastLocation stores the last accepted acquired location whereas oldLocation may contain an unaccepted location
+   
    Reasons to discard location
    1. Accuracy is bad (greater than threshold)
    2. Location is stale (older than 300 seconds)
-   3. Location distance change is less than threshold
+   
+   Reasons to reload interface
+   1. Location distance change from last known location is less than threshold
    */
   CLLocationAccuracy accuracy = newLocation.horizontalAccuracy;
   NSTimeInterval age = [[NSDate date] timeIntervalSinceDate:newLocation.timestamp];
-  CLLocationDistance distance = [newLocation distanceFromLocation:oldLocation];
+  CLLocationDistance distanceChanged = _lastLocation ? [newLocation distanceFromLocation:_lastLocation] : _distanceFilter;
   
-  if ((accuracy >= _distanceFilter) || (age >= 300) || (distance < _distanceFilter)) {
-    // Location Discarded
-    DLog(@"Location discarded: %@, oldLocation: %@, accuracy: %g, age: %g, distanceChanged: %g", newLocation, oldLocation, accuracy, age, distance);
+  if ((accuracy >= _distanceFilter) || (age >= _ageFilter)) {
+    // Bad Location Discarded
+    DLog(@"Location discarded: %@, oldLocation: %@, accuracy: %g, age: %g, distanceChanged: %g", newLocation, oldLocation, accuracy, age, distanceChanged);
   } else {
-    // Location Acquired
-    DLog(@"Location updated: %@, oldLocation: %@, accuracy: %g, age: %g, distanceChanged: %g", newLocation, oldLocation, accuracy, age, distance);
+    // Good Location Acquired
+    DLog(@"Location updated: %@, oldLocation: %@, accuracy: %g, age: %g, distanceChanged: %g", newLocation, oldLocation, accuracy, age, distanceChanged);
+    
+//    [[PSToastCenter defaultCenter] hideToast];
     
     if (_shouldDisableAfterLocationFix) {
       [self stopUpdates];
     }
     
-    // Post Notification
-    [[NSNotificationCenter defaultCenter] postNotificationName:kLocationAcquired object:nil];
+    // Set last known acquired location
+    RELEASE_SAFELY(_lastLocation);
+    _lastLocation = [newLocation copy];
+    
+    // Post Notification to reload interface
+    if (distanceChanged >= _distanceFilter) {
+      [[NSNotificationCenter defaultCenter] postNotificationName:kLocationAcquired object:nil];
+    } else {
+      [[NSNotificationCenter defaultCenter] postNotificationName:kLocationUnchanged object:nil];
+    }
   }
 }
 

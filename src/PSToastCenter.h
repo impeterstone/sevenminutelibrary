@@ -28,5 +28,6 @@ typedef enum {
 
 - (void)showToastWithMessage:(NSString *)toastMessage toastType:(PSToastType)toastType toastDuration:(NSTimeInterval)toastDuration;
 - (void)showToastWithMessage:(NSString *)toastMessage toastType:(PSToastType)toastType toastDuration:(NSTimeInterval)toastDuration toastTarget:(id)toastTarget toastAction:(SEL)toastAction;
+- (void)hideToast;
 
 @end

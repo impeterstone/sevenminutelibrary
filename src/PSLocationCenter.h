@@ -12,6 +12,7 @@
 
 @interface PSLocationCenter : PSObject <CLLocationManagerDelegate> {
   CLLocationManager *_locationManager;
+  CLLocation *_lastLocation;
   
   BOOL _isUpdating;
   BOOL _shouldDisableAfterLocationFix;
