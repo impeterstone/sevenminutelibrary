@@ -15,11 +15,8 @@
 
 + (id)defaultCenter;
 
-- (NSDictionary *)sessionTerms;
-- (NSDictionary *)savedTerms;
-- (NSArray *)searchResultsForTerm:(NSString *)term;
-
-- (BOOL)addTerm:(NSString *)term;
+- (NSArray *)searchResultsForTerm:(NSString *)term inContainer:(NSString *)container;
+- (BOOL)addTerm:(NSString *)term inContainer:(NSString *)container;
 - (void)resetTerms;
 
 @end

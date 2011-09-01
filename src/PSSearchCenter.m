@@ -45,9 +45,13 @@ static NSString *_savedPath = nil;
 }
 
 #pragma mark - Terms
-- (NSArray *)searchResultsForTerm:(NSString *)term {
+- (NSArray *)searchResultsForTerm:(NSString *)term inContainer:(NSString *)container {
+  // Load container, if no container return empty array
+  NSMutableDictionary *containerDict = [_terms objectForKey:container];
+  if (!containerDict) return [NSArray array];
+  
   NSPredicate *searchPredicate = [NSPredicate predicateWithFormat:@"SELF BEGINSWITH[cd] %@", term];
-  NSArray *sortedKeys = [_terms keysSortedByValueUsingComparator:^(id obj1, id obj2) {
+  NSArray *sortedKeys = [containerDict keysSortedByValueUsingComparator:^(id obj1, id obj2) {
     // DESCENDING
     if ([obj1 integerValue] < [obj2 integerValue]) {
       return (NSComparisonResult)NSOrderedDescending;
@@ -61,23 +65,26 @@ static NSString *_savedPath = nil;
   return [sortedKeys filteredArrayUsingPredicate:searchPredicate];
 }
 
-- (NSDictionary *)sessionTerms {
-  return [NSDictionary dictionaryWithDictionary:_terms];
-}
-
-- (NSDictionary *)savedTerms {
-  return [NSDictionary dictionaryWithDictionary:_terms];
-}
-
-- (BOOL)addTerm:(NSString *)term {
+- (BOOL)addTerm:(NSString *)term inContainer:(NSString *)container {
+  // Load Container or create if not exist
+  NSMutableDictionary *containerDict = [_terms objectForKey:container];
+  if (!containerDict) {
+    containerDict = [NSMutableDictionary dictionaryWithCapacity:1];
+    [_terms setObject:containerDict forKey:container];
+  } else {
+    containerDict = [NSMutableDictionary dictionaryWithDictionary:containerDict];
+  }
+  
   id val = nil;
-  val = [_terms objectForKey:term];
+  val = [containerDict objectForKey:term];
   if (val) {
     NSUInteger count = [val integerValue] + 1;
-    [_terms setObject:[NSNumber numberWithInteger:count] forKey:term];
+    [containerDict setObject:[NSNumber numberWithInteger:count] forKey:term];
   } else {
-    [_terms setObject:[NSNumber numberWithInteger:1] forKey:term];
+    [containerDict setObject:[NSNumber numberWithInteger:1] forKey:term];
   }
+  
+  [_terms setObject:containerDict forKey:container];
   
   // Write to disk
   NSError *error = nil;
@@ -87,7 +94,9 @@ static NSString *_savedPath = nil;
 }
 
 - (void)resetTerms {
-  [_terms removeAllObjects];
+  for (NSMutableDictionary *container in [_terms allValues]) {
+    [container removeAllObjects];
+  }
 }
 
 @end
