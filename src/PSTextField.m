@@ -16,19 +16,19 @@
   return [self initWithFrame:frame];
 }
 
-// placeholder position
-- (CGRect)textRectForBounds:(CGRect)bounds {
-  return CGRectInset(bounds, _inset.width ,_inset.height);
-}
-
-- (CGRect)placeholderRectForBounds:(CGRect)bounds {
-  return CGRectInset(bounds, _inset.width ,_inset.height);
-}
-
-// text position
-- (CGRect)editingRectForBounds:(CGRect)bounds {
-  return CGRectInset(bounds, _inset.width , _inset.height);
-}
+//// placeholder position
+//- (CGRect)textRectForBounds:(CGRect)bounds {
+//  return CGRectInset(bounds, _inset.width ,_inset.height);
+//}
+//
+//- (CGRect)placeholderRectForBounds:(CGRect)bounds {
+//  return CGRectInset(bounds, _inset.width ,_inset.height);
+//}
+//
+//// text position
+//- (CGRect)editingRectForBounds:(CGRect)bounds {
+//  return CGRectInset(bounds, _inset.width , _inset.height);
+//}
 
 
 @end
