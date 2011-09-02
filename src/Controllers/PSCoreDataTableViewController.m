@@ -58,11 +58,13 @@
 #pragma mark Data Source
 - (void)loadMore {
   [super loadMore];
+  [super loadDataSource];
   
   // Load more
   _fetchTotal += _fetchLimit;
   [[[self fetchedResultsController] fetchRequest] setFetchLimit:_fetchTotal];
   [self executeFetch:FetchTypeLoadMore];
+  [super dataSourceDidLoad];
 }
 
 //- (void)dataSourceDidLoad {
