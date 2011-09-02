@@ -29,9 +29,10 @@
     _buffer = [[NSCache alloc] init];
     [_buffer setName:@"PSImageCache"];
     [_buffer setDelegate:self];
+    [_buffer setTotalCostLimit:100];
     
     _requestQueue = [[PSNetworkQueue alloc] init];
-    _pendingRequests = [[NSMutableDictionary alloc] init];
+    _requestQueue.maxConcurrentOperationCount = 4;
     
     // Set to NSDocumentDirectory by default
     [self setupCachePathWithCacheDirectory:NSDocumentDirectory];
@@ -64,7 +65,6 @@
 - (void)dealloc {
   RELEASE_SAFELY(_buffer);
   RELEASE_SAFELY(_cachePath);
-  RELEASE_SAFELY(_pendingRequests);
   RELEASE_SAFELY(_requestQueue);
   [super dealloc];
 }
@@ -75,7 +75,7 @@
     UIImage *image = [UIImage imageWithData:imageData];
     if (image) {
       // First put it in the NSCache buffer
-      [_buffer setObject:image forKey:[urlPath stringFromMD5Hash]];
+      [_buffer setObject:image forKey:[urlPath stringFromMD5Hash] cost:1];
       
       // Also write it to file
       [imageData writeToFile:[_cachePath stringByAppendingPathComponent:[urlPath stringFromMD5Hash]] atomically:YES];
@@ -105,7 +105,7 @@
     if (image) {
       VLog(@"PSImageCache DISK HIT: %@", urlPath);
       // Put this image into the buffer also
-      [_buffer setObject:image forKey:[urlPath stringFromMD5Hash]];
+      [_buffer setObject:image forKey:[urlPath stringFromMD5Hash] cost:1];
       return image;
     } else {
       VLog(@"PSImageCache DISK MISS: %@", urlPath);
@@ -135,14 +135,22 @@
 }
 
 #pragma mark Remote Image Load Request
-- (void)downloadImageForURLPath:(NSString *)urlPath withDelegate:(id)delegate {
-  // Check to make sure urlPath is not in a pendingRequest already
-  if ([_pendingRequests objectForKey:urlPath]) return;
+- (BOOL)downloadImageForURLPath:(NSString *)urlPath withDelegate:(id)delegate {
+  // Check to make sure urlPath is not already pending
+  for (ASIHTTPRequest *request in [_requestQueue operations]) {
+    if ([[request.originalURL absoluteString] isEqualToString:urlPath]) {
+      VLog(@"urlpath: %@ already enqueued to download", urlPath);
+      return NO;
+    }
+  }
+  
+  VLog(@"Downloading image at url: %@", urlPath)
   
   ASIHTTPRequest *request = [ASIHTTPRequest requestWithURL:[NSURL URLWithString:urlPath]];
+  request.numberOfTimesToRetryOnTimeout = 3;
   request.requestMethod = @"GET";
   request.allowCompressedResponse = YES;
-//  request.userInfo = [NSDictionary dictionaryWithObject:delegate forKey:@"delegate"];
+  request.userInfo = [NSDictionary dictionaryWithObject:[NSNumber numberWithInteger:0] forKey:@"retryCount"];
   
   // Request Completion Block
   [request setDelegate:self];
@@ -150,8 +158,9 @@
   [request setDidFailSelector:@selector(downloadImageRequestFailed:)];
   
   // Start the Request
-  [_pendingRequests setObject:request forKey:urlPath];
   [_requestQueue addOperation:request];
+  
+  return YES;
 }
 
 - (void)downloadImageRequestFinished:(ASIHTTPRequest *)request {
@@ -162,12 +171,9 @@
     [self cacheImage:[request responseData] forURLPath:urlPath];
     
     // Notify delegate
-//    if ([_pendingRequests objectForKey:urlPath] && delegate && [delegate respondsToSelector:@selector(imageCacheDidLoad:forURLPath:)]) {
+//    if (delegate && [delegate respondsToSelector:@selector(imageCacheDidLoad:forURLPath:)]) {
 //      [delegate performSelector:@selector(imageCacheDidLoad:forURLPath:) withObject:[request responseData] withObject:urlPath];
 //    }
-    
-    // Remove request from pendingRequests
-    [_pendingRequests removeObjectForKey:[[request originalURL] absoluteString]];
     
     // fire notification
     [[NSNotificationCenter defaultCenter] postNotificationName:kPSImageCacheDidCacheImage object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[request responseData], @"imageData", urlPath, @"urlPath", nil]];
@@ -177,12 +183,24 @@
 }
 
 - (void)downloadImageRequestFailed:(ASIHTTPRequest *)request {
-  // something bad happened, retry
-  [_requestQueue addOperation:[[request copy] autorelease]];
+  
+//  NSInteger retryCount = [[request.userInfo objectForKey:@"retryCount"] integerValue];
+//  
+//  // something bad happened, retry if < 3 attempts
+//  if (retryCount < 3) {
+//    ASIHTTPRequest *retryRequest = [[request copy] autorelease];
+//    retryRequest.userInfo = [NSDictionary dictionaryWithObject:[NSNumber numberWithInteger:retryCount + 1] forKey:@"retryCount"];
+//    [_requestQueue addOperation:retryRequest];
+//    DLog(@"Retrying request: %d", retryCount + 1);
+//  }
 }
 
 - (void)cancelDownloadForURLPath:(NSString *)urlPath {
-  [_pendingRequests removeObjectForKey:urlPath];
+  for (ASIHTTPRequest *request in [_requestQueue operations]) {
+    if ([[request.originalURL absoluteString] isEqualToString:urlPath]) {
+      [request clearDelegatesAndCancel];
+    }
+  }
 }
 
 #pragma mark NSCacheDelegate

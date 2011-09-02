@@ -17,7 +17,6 @@
   NSCache *_buffer;
   NSString *_cachePath;
   NSSearchPathDirectory _cacheDirectory;
-  NSMutableDictionary *_pendingRequests;
   PSNetworkQueue *_requestQueue;
 }
 
@@ -34,7 +33,7 @@
 - (void)cacheImageForURLPath:(NSString *)urlPath withDelegate:(id)delegate;
 
 // Remote Request
-- (void)downloadImageForURLPath:(NSString *)urlPath withDelegate:(id)delegate;
+- (BOOL)downloadImageForURLPath:(NSString *)urlPath withDelegate:(id)delegate;
 - (void)downloadImageRequestFinished:(ASIHTTPRequest *)request;
 - (void)downloadImageRequestFailed:(ASIHTTPRequest *)request;
 

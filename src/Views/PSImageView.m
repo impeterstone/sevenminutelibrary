@@ -80,7 +80,7 @@
 
 - (void)animateImageFade:(UIImage *)image {  
   CABasicAnimation *fade = [CABasicAnimation animationWithKeyPath:@"opacity"];
-  fade.duration = 0.4;
+  fade.duration = 0.2;
   fade.fromValue = [NSNumber numberWithFloat:0.0];
   fade.toValue = [NSNumber numberWithFloat:1.0];
   [self.layer addAnimation:fade forKey:@"opacity"];
