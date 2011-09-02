@@ -52,4 +52,9 @@
  */
 - (void)fetchDataSource;
 
+/**
+ Local fetch data
+ */
+- (void)dataSourceDidFetch;
+
 @end

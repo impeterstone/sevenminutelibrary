@@ -65,14 +65,11 @@
   [self executeFetch:FetchTypeLoadMore];
 }
 
-//- (void)dataSourceDidLoad {
-//  [super dataSourceDidLoad];
-//  
-//  // If we aren't using an FRC delegate, refetch/reload the table
-//  if (_frcDelegate == nil) {
-//    [self executeFetch:FetchTypeRefresh];
-//  }
-//}
+- (void)dataSourceDidFetch {
+  // subclass may optionally implement
+  // this is called after a COLD local fetch happens
+  // a good reason to implement this is to initiate a refresh from remote here
+}
 
 #pragma mark Core Data
 - (void)changesSaved:(NSNotification *)notification {
@@ -194,7 +191,13 @@
           }
         }
         _isFetching = NO;
-        [self dataSourceDidLoadMore];
+        if (fetchType == FetchTypeLoadMore) {
+          [self dataSourceDidLoadMore];
+        } else if (fetchType == FetchTypeCold) {
+          [self dataSourceDidFetch];
+        } else {
+          [self dataSourceDidLoad];
+        }
       } else {
         VLog(@"Fetch failed with error: %@", [error localizedDescription]);
       }
