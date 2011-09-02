@@ -11,7 +11,7 @@
 #import "PSDataCenterDelegate.h"
 #import "ASIHTTPRequest.h"
 #import "ASIFormDataRequest.h"
-#import "SBJson.h"
+#import "JSONKit.h"
 #import "PSCoreDataStack.h"
 #import "PSProgressCenter.h"
 #import "PSNetworkQueue.h"

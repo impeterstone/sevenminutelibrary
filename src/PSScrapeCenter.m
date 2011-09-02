@@ -7,10 +7,10 @@
 //
 
 #import "PSScrapeCenter.h"
-#import "TFHpple.h"
+//#import "TFHpple.h"
 #import "RegexKitLite.h"
 #import "HTMLParser.h"
-#import "SBJson.h"
+#import "JSONKit.h"
 #import <math.h>
 
 static dispatch_queue_t _psScrapeQueue = nil;
@@ -245,7 +245,7 @@ static dispatch_queue_t _psScrapeQueue = nil;
   for (HTMLNode *scriptNode in scriptNodes) {
     if ([[scriptNode allContents] rangeOfString:@"yelp.init.bizDetails"].location != NSNotFound) {
       NSString *bizDetailsJSON = [[[scriptNode allContents] componentsMatchedByRegex:@"(yelp\\.init\\.wrapper\\(\"yelp\\.init\\.bizDetails\\.page\", )(.+)(\\);)" capture:2] lastObject];
-      bizDetails = [bizDetailsJSON JSONValue];
+      bizDetails = [bizDetailsJSON objectFromJSONString];
       NSDictionary *bizSafe = [bizDetails objectForKey:@"bizSafe"];
       if (bizSafe) {
         [bizDict setObject:[bizSafe objectForKey:@"formatted_address"] forKey:@"address"];

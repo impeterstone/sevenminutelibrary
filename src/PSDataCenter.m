@@ -44,7 +44,7 @@
 #pragma mark Serialize
 - (id)sanitizeResponse:(NSData *)responseData {
   // Serialize the response
-  id rawResponse = [responseData JSONValue];
+  id rawResponse = [responseData objectFromJSONData];
   id response = nil;
   
   // We should sanitize the response
