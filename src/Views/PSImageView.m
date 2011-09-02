@@ -31,7 +31,7 @@
     [_loadingIndicator startAnimating];
     [self addSubview:_loadingIndicator];
     self.backgroundColor = [UIColor blackColor];
-    self.contentMode = UIViewContentModeScaleAspectFit;
+    self.contentMode = UIViewContentModeScaleAspectFill;
   }
   return self;
 }

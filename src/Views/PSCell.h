@@ -59,4 +59,6 @@ typedef uint32_t PSCellType;
 - (void)fillCellWithObject:(id)object;
 - (void)fillCellWithObject:(id)object shouldLoadImages:(BOOL)shouldLoadImages;
 
+- (void)setShouldAnimate:(NSNumber *)shouldAnimate;
+
 @end

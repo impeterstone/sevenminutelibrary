@@ -366,7 +366,7 @@
 //  [self scrollEndedTrigger];
 }
 
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView{	
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView {
   if (_refreshHeaderView) {
     [_refreshHeaderView egoRefreshScrollViewDidScroll:scrollView];
   }

@@ -184,7 +184,13 @@
           if (self.searchDisplayController.active) {
             [self.searchDisplayController.searchResultsTableView reloadData];
           } else {
+            if ([self dataIsAvailable]) {
+              [[self.tableView visibleCells] makeObjectsPerformSelector:@selector(setShouldAnimate:) withObject:[NSNumber numberWithBool:NO]];
+            }
             [_tableView reloadData];
+            if ([self dataIsAvailable]) {
+              [[self.tableView visibleCells] makeObjectsPerformSelector:@selector(setShouldAnimate:) withObject:[NSNumber numberWithBool:YES]];
+            }
           }
         }
         _isFetching = NO;

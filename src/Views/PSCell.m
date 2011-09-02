@@ -63,17 +63,21 @@
 
 // This is a class method because it is called before the cell has finished its layout
 + (CGFloat)rowHeightForObject:(id)object forInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-  // subclass must override
+  // subclass must implement
   return 0.0;
 }
 
 - (void)fillCellWithObject:(id)object {
-  // Subclasses must override
+  // Subclasses must implement
   [self fillCellWithObject:object shouldLoadImages:NO];
 }
 
 - (void)fillCellWithObject:(id)object shouldLoadImages:(BOOL)shouldLoadImages {
-  // Subclasses must override
+  // Subclasses must implement
+}
+
+- (void)setShouldAnimate:(NSNumber *)shouldAnimate {
+  // Subclass may implement
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {
