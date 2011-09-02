@@ -82,12 +82,33 @@
 }
 
 - (void)resumeAnimations {
-  [self prepareImageArray];
+//  [self prepareImageArray];
+  [self resumeLayer:self.layer];
 }
 
 - (void)pauseAnimations {
-  [self.layer removeAllAnimations];
-  INVALIDATE_TIMER(_animateTimer);
+  [self pauseLayer:self.layer];
+//  [self.layer removeAllAnimations];
+//  INVALIDATE_TIMER(_animateTimer);
+}
+
+- (void)pauseLayer:(CALayer*)layer {
+  if (layer.speed == 0.0) return;
+  
+  CFTimeInterval pausedTime = [layer convertTime:CACurrentMediaTime() fromLayer:nil];
+  layer.speed = 0.0;
+  layer.timeOffset = pausedTime;
+}
+
+- (void)resumeLayer:(CALayer*)layer {
+  if (layer.speed == 1.0) return;
+  
+  CFTimeInterval pausedTime = [layer timeOffset];
+  layer.speed = 1.0;
+  layer.timeOffset = 0.0;
+  layer.beginTime = 0.0;
+  CFTimeInterval timeSincePause = [layer convertTime:CACurrentMediaTime() fromLayer:nil] - pausedTime;
+  layer.beginTime = timeSincePause;
 }
 
 #pragma mark - PSImageCacheNotification
