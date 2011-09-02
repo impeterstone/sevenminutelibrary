@@ -7,10 +7,10 @@
 //
 
 #import "PSScrapeCenter.h"
-#import "TFHpple.h"
+//#import "TFHpple.h"
 #import "RegexKitLite.h"
 #import "HTMLParser.h"
-#import "SBJson.h"
+#import "JSONKit.h"
 #import <math.h>
 
 static dispatch_queue_t _psScrapeQueue = nil;
@@ -137,15 +137,16 @@ static dispatch_queue_t _psScrapeQueue = nil;
       CGFloat rawRating = [rating floatValue];
       CGFloat rawNumReviews = [numreviews floatValue];
       CGFloat baseRating = (rawRating / 5.0) * 100.0;
-      BOOL isPositive = (rawNumReviews >= 100);
-      if (!isPositive) rawNumReviews += 100;
       
-      CGFloat reviewModifier = logf(rawNumReviews);
-      CGFloat adjustedRating = isPositive ? round(baseRating + reviewModifier) : MIN(round(baseRating - reviewModifier), 100);
+      CGFloat reviewModifier = MIN(fabsf(logf(rawNumReviews - 200)), 10);
+      
+      reviewModifier *= (rawNumReviews - 200 > 0) ? 1 : -1;
+      
+      CGFloat adjustedRating = MIN(roundf(baseRating + reviewModifier), 100);
       
       score = [NSString stringWithFormat:@"%.0f", adjustedRating];
     } else {
-      score = @"N/A";
+      score = @"0";
     }
     
     // Create payload, add to array
@@ -245,7 +246,7 @@ static dispatch_queue_t _psScrapeQueue = nil;
   for (HTMLNode *scriptNode in scriptNodes) {
     if ([[scriptNode allContents] rangeOfString:@"yelp.init.bizDetails"].location != NSNotFound) {
       NSString *bizDetailsJSON = [[[scriptNode allContents] componentsMatchedByRegex:@"(yelp\\.init\\.wrapper\\(\"yelp\\.init\\.bizDetails\\.page\", )(.+)(\\);)" capture:2] lastObject];
-      bizDetails = [bizDetailsJSON JSONValue];
+      bizDetails = [bizDetailsJSON objectFromJSONString];
       NSDictionary *bizSafe = [bizDetails objectForKey:@"bizSafe"];
       if (bizSafe) {
         [bizDict setObject:[bizSafe objectForKey:@"formatted_address"] forKey:@"address"];
