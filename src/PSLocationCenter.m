@@ -173,11 +173,12 @@ static NSInteger _ageFilter = 300; // seconds
     _lastLocation = [newLocation copy];
     
     // Post Notification to reload interface
-    if (distanceChanged >= _distanceFilter) {
-      [[NSNotificationCenter defaultCenter] postNotificationName:kLocationAcquired object:nil];
-    } else {
-      [[NSNotificationCenter defaultCenter] postNotificationName:kLocationUnchanged object:nil];
-    }
+    [[NSNotificationCenter defaultCenter] postNotificationName:kLocationAcquired object:nil];
+//    if (distanceChanged >= _distanceFilter) {
+//      [[NSNotificationCenter defaultCenter] postNotificationName:kLocationAcquired object:nil];
+//    } else {
+//      [[NSNotificationCenter defaultCenter] postNotificationName:kLocationUnchanged object:nil];
+//    }
   }
 }
 
