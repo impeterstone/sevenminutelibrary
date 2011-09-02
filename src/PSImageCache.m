@@ -29,7 +29,7 @@
     _buffer = [[NSCache alloc] init];
     [_buffer setName:@"PSImageCache"];
     [_buffer setDelegate:self];
-    [_buffer setTotalCostLimit:100];
+//    [_buffer setTotalCostLimit:100];
     
     _requestQueue = [[PSNetworkQueue alloc] init];
     _requestQueue.maxConcurrentOperationCount = 4;
@@ -71,14 +71,15 @@
 
 // Cache Image Data
 - (void)cacheImage:(NSData *)imageData forURLPath:(NSString *)urlPath {
+  NSString *md5Path = [urlPath stringFromMD5Hash];
   if (imageData) {
     UIImage *image = [UIImage imageWithData:imageData];
     if (image) {
       // First put it in the NSCache buffer
-      [_buffer setObject:image forKey:[urlPath stringFromMD5Hash] cost:1];
+      [_buffer setObject:image forKey:md5Path cost:1];
       
       // Also write it to file
-      [imageData writeToFile:[_cachePath stringByAppendingPathComponent:[urlPath stringFromMD5Hash]] atomically:YES];
+      [imageData writeToFile:[_cachePath stringByAppendingPathComponent:md5Path] atomically:YES];
     }
     
     VLog(@"PSImageCache CACHE: %@", urlPath);
@@ -119,12 +120,13 @@
 }
 
 - (BOOL)hasImageForURLPath:(NSString *)urlPath {
-  if ([_buffer objectForKey:[urlPath stringFromMD5Hash]]) {
+  NSString *md5Path = [urlPath stringFromMD5Hash];
+  if ([_buffer objectForKey:md5Path]) {
     // Image exists in memcache
     return YES;
   } else {
     // Check disk for image
-    return [[NSFileManager defaultManager] fileExistsAtPath:[_cachePath stringByAppendingPathComponent:[urlPath stringFromMD5Hash]]];
+    return [[NSFileManager defaultManager] fileExistsAtPath:[_cachePath stringByAppendingPathComponent:md5Path]];
   }
 }
 
