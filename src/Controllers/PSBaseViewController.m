@@ -121,6 +121,9 @@
 - (void)dataSourceDidLoad {
 }
 
+- (void)dataSourceDidLoadMore {
+}
+
 - (void)updateState {
   if ([self dataIsAvailable]) {
     // We have data to display

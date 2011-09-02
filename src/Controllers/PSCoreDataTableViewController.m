@@ -58,13 +58,11 @@
 #pragma mark Data Source
 - (void)loadMore {
   [super loadMore];
-  [super loadDataSource];
   
   // Load more
   _fetchTotal += _fetchLimit;
   [[[self fetchedResultsController] fetchRequest] setFetchLimit:_fetchTotal];
   [self executeFetch:FetchTypeLoadMore];
-  [super dataSourceDidLoad];
 }
 
 //- (void)dataSourceDidLoad {
@@ -196,7 +194,7 @@
           }
         }
         _isFetching = NO;
-        [self updateState];
+        [self dataSourceDidLoadMore];
       } else {
         VLog(@"Fetch failed with error: %@", [error localizedDescription]);
       }

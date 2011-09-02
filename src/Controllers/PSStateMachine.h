@@ -28,6 +28,7 @@
 - (void)reloadDataSource; // Refresh
 - (void)loadDataSource; // Initial Load
 - (void)dataSourceDidLoad;
+- (void)dataSourceDidLoadMore;
 
 /**
  Tell the state machine to either show a loading/empty view or show data

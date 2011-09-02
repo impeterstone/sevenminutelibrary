@@ -262,7 +262,13 @@
 }
 
 - (void)loadMore {
-  
+  _reloading = YES;
+  [self updateState];
+}
+
+- (void)dataSourceDidLoadMore {
+  _reloading = NO;
+  [self updateState];
 }
 
 #pragma mark UITableViewDelegate
@@ -379,6 +385,7 @@
         CGFloat tableBottom = tableView.contentSize.height - tableView.rowHeight;
         
         if (tableOffset >= tableBottom) {
+          VLog(@"### loadMore");
           [self loadMore];
         }
       }
