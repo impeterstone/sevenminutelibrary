@@ -7,12 +7,10 @@
  *
  */
 
-@class ASIHTTPRequest;
-
 @protocol PSDataCenterDelegate <NSObject>
 
 @optional
-- (void)dataCenterDidFinish:(ASIHTTPRequest *)request withResponse:(id)response;
-- (void)dataCenterDidFail:(ASIHTTPRequest *)request withError:(NSError *)error;
+- (void)dataCenterDidFinishWithResponse:(id)response andUserInfo:(NSDictionary *)userInfo;
+- (void)dataCenterDidFailWithError:(NSError *)error andUserInfo:(NSDictionary *)userInfo;
 
 @end

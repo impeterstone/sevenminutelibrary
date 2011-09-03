@@ -49,10 +49,10 @@
 - (void)imageCacheDidLoad:(NSNotification *)notification {
   NSDictionary *userInfo = [notification userInfo];
   NSString *urlPath = [userInfo objectForKey:@"urlPath"];
-  NSData *imageData = [userInfo objectForKey:@"imageData"];
+  UIImage *image = [userInfo objectForKey:@"image"];
+  
   if ([urlPath isEqualToString:_urlPath]) {
-    if (imageData) {
-      UIImage *image = [UIImage imageWithData:imageData];
+    if (image) {
       if (image && ![image isEqual:self.image]) {
         self.image = image;
       } else {
@@ -63,9 +63,8 @@
 }
 
 #pragma mark - PSImageCacheDelegate
-//- (void)imageCacheDidLoad:(NSData *)imageData forURLPath:(NSString *)urlPath {
-//  if (imageData && [urlPath isEqualToString:_urlPath]) {
-//    UIImage *image = [UIImage imageWithData:imageData];
+//- (void)imageCacheDidLoad:(UIImage *)image forURLPath:(NSString *)urlPath {
+//  if (image && [urlPath isEqualToString:_urlPath]) {
 //    if (image && ![image isEqual:self.image]) {
 //      self.image = image;
 //    } else {

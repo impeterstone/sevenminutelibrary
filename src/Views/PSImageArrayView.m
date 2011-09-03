@@ -115,19 +115,17 @@
 - (void)imageCacheDidLoad:(NSNotification *)notification {
   NSDictionary *userInfo = [notification userInfo];
   NSString *urlPath = [userInfo objectForKey:@"urlPath"];
-  NSData *imageData = [userInfo objectForKey:@"imageData"];
+  UIImage *image = [userInfo objectForKey:@"image"];
   
-  if (imageData && [_urlPathArray containsObject:urlPath]) {
-    UIImage *image = [UIImage imageWithData:imageData];
+  if (image && [_urlPathArray containsObject:urlPath]) {
     [_images addObject:image];
     [self prepareImageArray];
   }
 }
 
 #pragma mark - PSImageCacheDelegate
-//- (void)imageCacheDidLoad:(NSData *)imageData forURLPath:(NSString *)urlPath {
-//  if (imageData && [_urlPathArray containsObject:urlPath]) {
-//    UIImage *image = [UIImage imageWithData:imageData];
+//- (void)imageCacheDidLoad:(UIImage *)image forURLPath:(NSString *)urlPath {
+//  if (image && [_urlPathArray containsObject:urlPath]) {
 //    [_images addObject:image];
 //    [self prepareImageArray];
 //  }

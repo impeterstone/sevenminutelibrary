@@ -73,16 +73,30 @@
 - (void)cacheImage:(NSData *)imageData forURLPath:(NSString *)urlPath {
   NSString *md5Path = [urlPath stringFromMD5Hash];
   if (imageData) {
-    UIImage *image = [UIImage imageWithData:imageData];
-    if (image) {
-      // First put it in the NSCache buffer
-      [_buffer setObject:image forKey:md5Path cost:1];
+    [imageData retain];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0), ^{
+      UIImage *image = [[UIImage alloc] initWithData:imageData];
+      if (image) {
+        // First put it in the NSCache buffer
+        [_buffer setObject:image forKey:md5Path cost:1];
+        
+        // Also write it to file
+        [imageData writeToFile:[_cachePath stringByAppendingPathComponent:md5Path] atomically:YES];
+      }
+      [imageData release];
       
-      // Also write it to file
-      [imageData writeToFile:[_cachePath stringByAppendingPathComponent:md5Path] atomically:YES];
-    }
-    
-    VLog(@"PSImageCache CACHE: %@", urlPath);
+      dispatch_async(dispatch_get_main_queue(), ^{
+        VLog(@"PSImageCache CACHE: %@", urlPath);
+        
+        // fire notification
+        [[NSNotificationCenter defaultCenter] postNotificationName:kPSImageCacheDidCacheImage object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[image autorelease], @"image", urlPath, @"urlPath", nil]];
+        
+        // Notify delegate
+        //    if (delegate && [delegate respondsToSelector:@selector(imageCacheDidLoad:forURLPath:)]) {
+        //      [delegate performSelector:@selector(imageCacheDidLoad:forURLPath:) withObject:[image autorelease] withObject:urlPath];
+        //    }
+      });
+    });
   }
 }
 
@@ -171,14 +185,6 @@
   
   if ([request responseData]) {
     [self cacheImage:[request responseData] forURLPath:urlPath];
-    
-    // Notify delegate
-//    if (delegate && [delegate respondsToSelector:@selector(imageCacheDidLoad:forURLPath:)]) {
-//      [delegate performSelector:@selector(imageCacheDidLoad:forURLPath:) withObject:[request responseData] withObject:urlPath];
-//    }
-    
-    // fire notification
-    [[NSNotificationCenter defaultCenter] postNotificationName:kPSImageCacheDidCacheImage object:nil userInfo:[NSDictionary dictionaryWithObjectsAndKeys:[request responseData], @"imageData", urlPath, @"urlPath", nil]];
   } else {
     // something bad happened
   }

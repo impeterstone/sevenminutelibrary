@@ -12,6 +12,6 @@
 @protocol PSImageCacheDelegate <NSObject>
 
 @optional
-- (void)imageCacheDidLoad:(NSData *)imageData forURLPath:(NSString *)urlPath;
+- (void)imageCacheDidLoad:(UIImage *)image forURLPath:(NSString *)urlPath;
 
 @end

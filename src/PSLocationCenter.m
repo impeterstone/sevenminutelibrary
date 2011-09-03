@@ -9,7 +9,7 @@
 #import "PSLocationCenter.h"
 #import "PSToastCenter.h"
 
-static NSInteger _distanceFilter = 100; // meters
+static NSInteger _distanceFilter = 300; // meters
 static NSInteger _ageFilter = 300; // seconds
 
 @implementation PSLocationCenter

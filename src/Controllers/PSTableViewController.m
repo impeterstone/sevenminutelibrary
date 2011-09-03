@@ -29,7 +29,7 @@
     _selectedIndexes = [[NSMutableDictionary alloc] initWithCapacity:1];
     _reloading = NO;
     _hasMore = YES;
-    _adShowing = NO;
+//    _adShowing = NO;
     _pagingStart = 0;
     _pagingCount = 0;
     _pagingTotal = 0;
@@ -39,9 +39,9 @@
 
 - (void)viewDidUnload {
   [super viewDidUnload];
-  _adShowing = NO;
-  _adView.delegate = nil;
-  RELEASE_SAFELY(_adView);
+//  _adShowing = NO;
+//  _adView.delegate = nil;
+//  RELEASE_SAFELY(_adView);
   RELEASE_SAFELY(_tableView);
   RELEASE_SAFELY(_searchBar);
   RELEASE_SAFELY(_refreshHeaderView);
@@ -57,8 +57,8 @@
   //  [_tableView removeObserver:self forKeyPath:@"contentOffset"];
   
   // Views
-  _adView.delegate = nil;
-  RELEASE_SAFELY(_adView);
+//  _adView.delegate = nil;
+//  RELEASE_SAFELY(_adView);
   RELEASE_SAFELY(_tableView);
   RELEASE_SAFELY(_searchBar);
   RELEASE_SAFELY(_refreshHeaderView);
@@ -410,45 +410,45 @@
 }
 
 #pragma mark - ADBannerViewDelegate
-- (void)bannerViewDidLoadAd:(ADBannerView *)banner {
-  if (_adShowing) {
-    return;
-  } else {
-    _adShowing = YES;
-  }
-  
-  banner.top = self.view.bottom;
-  [self.view addSubview:banner];
-  [UIView animateWithDuration:0.4
-                   animations:^{
-                     banner.top -= banner.height;
-                     _tableView.height -= banner.height;
-                   }
-                   completion:^(BOOL finished) {
-                   }];
-}
-
-- (void)bannerView:(ADBannerView *)banner didFailToReceiveAdWithError:(NSError *)error {
-  DLog(@"iAd failed to load with error: %@", error);
-  if (!_adShowing) return;
-  
-  [UIView animateWithDuration:0.4
-                   animations:^{
-                     banner.top += banner.height;
-                     _tableView.height += banner.height;
-                   }
-                   completion:^(BOOL finished) {
-                     _adShowing = NO;
-                     [banner removeFromSuperview];
-                   }];
-}
-
-- (BOOL)bannerViewActionShouldBegin:(ADBannerView *)banner willLeaveApplication:(BOOL)willLeave {
-  return YES;
-}
-
-- (void)bannerViewActionDidFinish:(ADBannerView *)banner {
-  
-}
+//- (void)bannerViewDidLoadAd:(ADBannerView *)banner {
+//  if (_adShowing) {
+//    return;
+//  } else {
+//    _adShowing = YES;
+//  }
+//  
+//  banner.top = self.view.bottom;
+//  [self.view addSubview:banner];
+//  [UIView animateWithDuration:0.4
+//                   animations:^{
+//                     banner.top -= banner.height;
+//                     _tableView.height -= banner.height;
+//                   }
+//                   completion:^(BOOL finished) {
+//                   }];
+//}
+//
+//- (void)bannerView:(ADBannerView *)banner didFailToReceiveAdWithError:(NSError *)error {
+//  DLog(@"iAd failed to load with error: %@", error);
+//  if (!_adShowing) return;
+//  
+//  [UIView animateWithDuration:0.4
+//                   animations:^{
+//                     banner.top += banner.height;
+//                     _tableView.height += banner.height;
+//                   }
+//                   completion:^(BOOL finished) {
+//                     _adShowing = NO;
+//                     [banner removeFromSuperview];
+//                   }];
+//}
+//
+//- (BOOL)bannerViewActionShouldBegin:(ADBannerView *)banner willLeaveApplication:(BOOL)willLeave {
+//  return YES;
+//}
+//
+//- (void)bannerViewActionDidFinish:(ADBannerView *)banner {
+//  
+//}
 
 @end

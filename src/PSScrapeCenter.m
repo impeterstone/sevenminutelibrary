@@ -115,14 +115,19 @@ static dispatch_queue_t _psScrapeQueue = nil;
   NSMutableArray *placeArray = [NSMutableArray array];
   int i = 0;
   for (HTMLNode *node in addressNodes) {
+    // Check number of reviews
+    NSString *numreviews = [[node rawContents] stringByMatching:@"\\d+ reviews"];
+    if (numreviews) numreviews = [numreviews stringByReplacingOccurrencesOfString:@" reviews" withString:@""];
+    if (!numreviews || [numreviews isEqualToString:@"0"]) {
+      continue;
+    }
+    
     NSNumber *index = [NSNumber numberWithInt:i]; // Popularity index
     HTMLNode *bizNode = [node findChildWithAttribute:@"href" matchingName:@"/biz/" allowPartial:YES];
     NSString *biz = [[bizNode getAttributeNamed:@"href"] stringByReplacingOccurrencesOfString:@"/biz/" withString:@""];
     NSString *name = [[[bizNode contents] stringByUnescapingHTML] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
     NSString *rating = [[[node findChildWithAttribute:@"alt" matchingName:@"star rating" allowPartial:YES] getAttributeNamed:@"alt"] stringByReplacingOccurrencesOfString:@" star rating" withString:@""];
     NSString *phone = [[node findChildWithAttribute:@"title" matchingName:@"Call" allowPartial:YES] contents];
-    NSString *numreviews = [[node rawContents] stringByMatching:@"\\d+ reviews"];
-    if (numreviews) numreviews = [numreviews stringByReplacingOccurrencesOfString:@" reviews" withString:@""];
     NSString *price = [[node rawContents] stringByMatching:@"Price: [$]+"];
     if (price) price = [price stringByReplacingOccurrencesOfString:@"Price: " withString:@""];
     NSString *category = [[node rawContents] stringByMatching:@"Category: [^<]+"];
