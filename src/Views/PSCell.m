@@ -29,6 +29,11 @@
   [super dealloc];
 }
 
+- (void)prepareForReuse {
+  [super prepareForReuse];
+  _isExpanded = NO;
+}
+
 + (NSString *)reuseIdentifier {
   return NSStringFromClass(self);
 }
