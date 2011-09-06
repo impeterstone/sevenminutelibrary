@@ -62,7 +62,7 @@
   
   // Setup Nav Bar
   UIView *navTitleView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.navigationController.navigationBar.width - 160, self.navigationController.navigationBar.height)];
-  navTitleView.autoresizingMask = UIViewAutoresizingFlexibleHeight;
+//  navTitleView.autoresizingMask = UIViewAutoresizingFlexibleHeight;
   _navTitleLabel = [[UILabel alloc] initWithFrame:navTitleView.bounds];
   _navTitleLabel.autoresizingMask = UIViewAutoresizingFlexibleHeight;
   _navTitleLabel.textAlignment = UITextAlignmentCenter;

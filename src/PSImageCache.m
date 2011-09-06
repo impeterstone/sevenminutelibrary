@@ -32,7 +32,7 @@
 //    [_buffer setTotalCostLimit:100];
     
     _requestQueue = [[PSNetworkQueue alloc] init];
-    _requestQueue.maxConcurrentOperationCount = 4;
+    _requestQueue.maxConcurrentOperationCount = 10;
     
     // Set to NSDocumentDirectory by default
     [self setupCachePathWithCacheDirectory:NSDocumentDirectory];
