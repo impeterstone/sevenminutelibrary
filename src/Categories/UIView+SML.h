@@ -36,5 +36,6 @@
 - (void)removeSubviews;
 
 - (void)addGradientLayer;
+- (void)addGradientLayerWithColors:(NSArray *)colors andLocations:(NSArray *)locations;
 
 @end

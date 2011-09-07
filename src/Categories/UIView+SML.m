@@ -163,12 +163,16 @@
 
 #pragma mark - Gradient Layer
 - (void)addGradientLayer {
+  [self addGradientLayerWithColors:[NSArray arrayWithObjects:(id)[[UIColor clearColor] CGColor], (id)[RGBACOLOR(0, 0, 0, 0.1) CGColor], (id)[RGBACOLOR(0, 0, 0, 0.8) CGColor], (id)[RGBACOLOR(0, 0, 0, 1.0) CGColor], nil] andLocations:[NSArray arrayWithObjects:[NSNumber numberWithFloat:0.1], [NSNumber numberWithFloat:0.6], [NSNumber numberWithFloat:0.99], [NSNumber numberWithFloat:1.0], nil]];
+}
+
+- (void)addGradientLayerWithColors:(NSArray *)colors andLocations:(NSArray *)locations {
   // Only add if a gradient layer hasn't already been added
   if (![[[self.layer sublayers] lastObject] isKindOfClass:[CAGradientLayer class]]) {
     CAGradientLayer *gradient = [CAGradientLayer layer];
     gradient.frame = self.bounds;
-    gradient.colors = [NSArray arrayWithObjects:(id)[[UIColor clearColor] CGColor], (id)[RGBACOLOR(0, 0, 0, 0.1) CGColor], (id)[RGBACOLOR(0, 0, 0, 0.8) CGColor], (id)[RGBACOLOR(0, 0, 0, 1.0) CGColor], nil];
-    gradient.locations = [NSArray arrayWithObjects:[NSNumber numberWithFloat:0.1], [NSNumber numberWithFloat:0.6], [NSNumber numberWithFloat:0.99], [NSNumber numberWithFloat:1.0], nil];
+    gradient.colors = colors;
+    gradient.locations = locations;
     [self.layer addSublayer:gradient];
   }
 }
