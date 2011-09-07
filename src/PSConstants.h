@@ -90,7 +90,12 @@
 // Release a CoreFoundation object safely.
 #define RELEASE_CF_SAFELY(__REF) { if (nil != (__REF)) { CFRelease(__REF); __REF = nil; } }
 
-
+/**
+ Is Yelp installed?
+ */
+static BOOL isYelpInstalled() {
+  return [[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"yelp:"]];
+}
 
 /**
  Detect iPad
