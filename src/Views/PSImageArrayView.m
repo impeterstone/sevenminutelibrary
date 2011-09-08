@@ -40,7 +40,7 @@
   // Download all images
   for (NSString *urlPath in _urlPathArray) {
     UIImage *image = [[PSImageCache sharedCache] imageForURLPath:urlPath shouldDownload:YES withDelegate:nil];
-    if (image) {
+    if (image && ![_images containsObject:image]) {
       [_images addObject:image];
       [self prepareImageArray];
     }
@@ -48,9 +48,9 @@
 }
 
 - (void)unloadImageArray {
-  INVALIDATE_TIMER(_animateTimer);
   _animateIndex = 0;
   [_images removeAllObjects];
+  INVALIDATE_TIMER(_animateTimer);
   [self.layer removeAllAnimations];
   self.image = nil;
 }
@@ -59,6 +59,7 @@
   if ([_images count] == 1) {
     [self setImage:[_images objectAtIndex:0] animated:YES];
   } else if ([_images count] > 1 && !_animateTimer) {
+    NSLog(@"animate!");
     _animateTimer = [[NSTimer alloc] initWithFireDate:[NSDate dateWithTimeIntervalSinceNow:3.0] interval:9.0 target:self selector:@selector(animateImages) userInfo:nil repeats:YES];
     [[NSRunLoop currentRunLoop] addTimer:_animateTimer forMode:NSDefaultRunLoopMode];
   }
@@ -67,7 +68,7 @@
 - (void)animateImages {
   if (![_animateTimer isValid]) return;  
   CABasicAnimation *crossFade = [CABasicAnimation animationWithKeyPath:@"contents"];
-  crossFade.duration = 4.0;
+  crossFade.duration = 3.0;
   crossFade.fromValue = (id)[[_images objectAtIndex:_animateIndex] CGImage];
   
   _animateIndex++;
@@ -117,7 +118,7 @@
   NSString *urlPath = [userInfo objectForKey:@"urlPath"];
   UIImage *image = [userInfo objectForKey:@"image"];
   
-  if (image && [_urlPathArray containsObject:urlPath]) {
+  if (image && [_urlPathArray containsObject:urlPath] && ![_images containsObject:image]) {
     [_images addObject:image];
     [self prepareImageArray];
   }
