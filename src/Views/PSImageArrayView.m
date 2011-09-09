@@ -27,7 +27,6 @@
 }
 
 - (void)dealloc {
-  [self.layer removeAllAnimations];
   RELEASE_SAFELY(_urlPathArray);
   RELEASE_SAFELY(_images);
   INVALIDATE_TIMER(_animateTimer);
@@ -51,7 +50,6 @@
   _animateIndex = 0;
   [_images removeAllObjects];
   INVALIDATE_TIMER(_animateTimer);
-  [self.layer removeAllAnimations];
   self.image = nil;
 }
 
@@ -82,14 +80,11 @@
 }
 
 - (void)resumeAnimations {
-//  [self prepareImageArray];
   [self resumeLayer:self.layer];
 }
 
 - (void)pauseAnimations {
   [self pauseLayer:self.layer];
-//  [self.layer removeAllAnimations];
-//  INVALIDATE_TIMER(_animateTimer);
 }
 
 - (void)pauseLayer:(CALayer*)layer {

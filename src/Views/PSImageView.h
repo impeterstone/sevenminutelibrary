@@ -22,9 +22,6 @@
 }
 
 - (void)animateImageFade:(UIImage *)image;
-- (void)stopAnimations;
-
-- (void)setImage:(UIImage *)image animated:(BOOL)animated;
 
 @property (nonatomic, retain) UIImage *placeholderImage;
 @property (nonatomic, assign) BOOL shouldScale;

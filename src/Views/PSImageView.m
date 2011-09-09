@@ -50,16 +50,12 @@
 }
 
 - (void)setImage:(UIImage *)image {
-  [self setImage:image animated:NO];
-}
-
-- (void)setImage:(UIImage *)image animated:(BOOL)animated {
   if (image && image != _placeholderImage) {
     // RETINA
     [_loadingIndicator stopAnimating];
 //    UIImage *newImage = [UIImage imageWithCGImage:image.CGImage scale:2 orientation:image.imageOrientation];
     UIImage *newImage = [image imageScaledForScreen];
-    if (_shouldAnimate && animated) {
+    if (_shouldAnimate) {
       [super setImage:newImage];
       [self animateImageFade:newImage];
     } else {
@@ -79,15 +75,17 @@
 }
 
 - (void)animateImageFade:(UIImage *)image {  
-  CABasicAnimation *fade = [CABasicAnimation animationWithKeyPath:@"opacity"];
-  fade.duration = 0.2;
-  fade.fromValue = [NSNumber numberWithFloat:0.0];
-  fade.toValue = [NSNumber numberWithFloat:1.0];
-  [self.layer addAnimation:fade forKey:@"opacity"];
-}
+//  CABasicAnimation *fade = [CABasicAnimation animationWithKeyPath:@"opacity"];
+//  fade.duration = 0.2;
+//  fade.fromValue = [NSNumber numberWithFloat:0.0];
+//  fade.toValue = [NSNumber numberWithFloat:1.0];
+//  [self.layer addAnimation:fade forKey:@"opacity"];
 
-- (void)stopAnimations {
-  [self.layer removeAllAnimations];
+  self.alpha = 0.0;
+  [UIView beginAnimations:@"psImageViewFade" context:nil];
+  [UIView setAnimationDuration:0.2];
+  self.alpha = 1.0;
+  [UIView commitAnimations];
 }
 
 @end
