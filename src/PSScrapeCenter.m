@@ -103,6 +103,11 @@ static dispatch_queue_t _psScrapeQueue = nil;
   HTMLNode *mainContentNode = [doc findChildWithAttribute:@"id" matchingName:@"mainContent" allowPartial:YES];
 //  NSString *mainContent = [mainContentNode rawContents];
   
+  // Num Results
+  NSString *numResults = [[[mainContentNode rawContents] componentsMatchedByRegex:@"(\\d+) results" capture:1] firstObject];
+  numResults ? [placeDict setObject:numResults forKey:@"numResults"] : [placeDict setObject:@"0" forKey:@"numResults"];
+  
+  // Num Pages
   NSString *pager = [[mainContentNode findChildWithAttribute:@"class" matchingName:@"pager_current" allowPartial:YES] contents];
   NSString *currentPage = [[pager componentsMatchedByRegex:@"(?:Page )(\\d+)(?: of )(\\d+)" capture:1] lastObject];
   NSString *numPages = [[pager componentsMatchedByRegex:@"(?:Page )(\\d+)(?: of )(\\d+)" capture:2] lastObject];
