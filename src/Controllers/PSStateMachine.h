@@ -22,15 +22,6 @@
 - (BOOL)dataIsLoading;
 
 /**
- Initiates loading of the dataSource
- */
-- (void)setupDataSource;
-- (void)reloadDataSource; // Refresh
-- (void)loadDataSource; // Initial Load
-- (void)dataSourceDidLoad;
-- (void)dataSourceDidLoadMore;
-
-/**
  Tell the state machine to either show a loading/empty view or show data
  */
 - (void)updateState;
@@ -41,6 +32,16 @@
 - (void)updateScrollsToTop:(BOOL)isEnabled;
 
 @optional
+/**
+ Initiates loading of the dataSource
+ */
+- (void)setupDataSource;
+- (void)reloadDataSource; // Refresh
+- (void)loadDataSource; // Initial Load
+- (void)dataSourceShouldLoadObjects:(id)objects;
+- (void)dataSourceDidLoad;
+- (void)dataSourceDidLoadMore;
+
 /**
  Used by tableView to page in more data
  */

@@ -215,14 +215,23 @@
 
 #pragma mark PSStateMachine
 - (BOOL)dataIsAvailable {
-  if (_tableView == self.searchDisplayController.searchResultsTableView) {
-    return ([_searchItems count] > 0);
-  } else {
-    if ([_items count] > 0) {
-      return YES;
-    } else {
-      return NO;
+  // Is this a searchResultsTable or just Table?
+  NSArray *items = (_tableView == self.searchDisplayController.searchResultsTableView) ? _searchItems : _items;
+  
+  // Check numSections
+  if ([items count] > 0) {
+    // Has more than 1 section, now check each section for numRows
+    for (NSArray *section in items) {
+      if ([section count] > 0) {
+        // Found a non-empty section
+        return YES;
+      }
     }
+    // All sections are empty
+    return NO;
+  } else {
+    // Has no sections
+    return NO;
   }
 }
 
