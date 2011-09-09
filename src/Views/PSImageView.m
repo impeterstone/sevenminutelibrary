@@ -50,7 +50,7 @@
 }
 
 - (void)setImage:(UIImage *)image {
-  [self setImage:image animated:YES];
+  [self setImage:image animated:NO];
 }
 
 - (void)setImage:(UIImage *)image animated:(BOOL)animated {

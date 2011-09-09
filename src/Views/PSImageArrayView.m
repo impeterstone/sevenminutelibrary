@@ -57,9 +57,8 @@
 
 - (void)prepareImageArray {
   if ([_images count] == 1) {
-    [self setImage:[_images objectAtIndex:0] animated:YES];
+    [self setImage:[_images objectAtIndex:0]];
   } else if ([_images count] > 1 && !_animateTimer) {
-    NSLog(@"animate!");
     _animateTimer = [[NSTimer alloc] initWithFireDate:[NSDate dateWithTimeIntervalSinceNow:3.0] interval:9.0 target:self selector:@selector(animateImages) userInfo:nil repeats:YES];
     [[NSRunLoop currentRunLoop] addTimer:_animateTimer forMode:NSDefaultRunLoopMode];
   }
@@ -79,7 +78,7 @@
   crossFade.toValue = (id)[[_images objectAtIndex:(_animateIndex)] CGImage];
   [self.layer addAnimation:crossFade forKey:@"animateContents"];
   
-  [self setImage:[_images objectAtIndex:_animateIndex] animated:NO];
+  [self setImage:[_images objectAtIndex:_animateIndex]];
 }
 
 - (void)resumeAnimations {
