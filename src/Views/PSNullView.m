@@ -35,6 +35,7 @@
     _titleLabel.shadowOffset = [PSStyleSheet shadowOffsetForStyle:@"nullTitle"];
     
     _subtitleLabel = [[UILabel alloc] initWithFrame:CGRectZero];
+    _subtitleLabel.numberOfLines = 0;
     _subtitleLabel.backgroundColor = [UIColor clearColor];
     _subtitleLabel.textAlignment = UITextAlignmentCenter;
     _subtitleLabel.font = [PSStyleSheet fontForStyle:@"nullSubtitle"];
