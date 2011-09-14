@@ -167,7 +167,7 @@ static NSInteger _ageFilter = 300; // seconds
   NSTimeInterval timeSinceStart = [[NSDate date] timeIntervalSinceDate:_startDate];
   CLLocationDistance distanceChanged = _lastLocation ? [newLocation distanceFromLocation:_lastLocation] : _distanceFilter;
   
-  if (((accuracy <= _distanceFilter) && (age <= _ageFilter)) || (timeSinceStart > 60.0)) {
+  if (((accuracy <= _distanceFilter) && (age <= _ageFilter)) || (timeSinceStart > 15.0)) {
     // Good Location Acquired
     DLog(@"Location updated: %@, oldLocation: %@, accuracy: %g, age: %g, distanceChanged: %g", newLocation, oldLocation, accuracy, age, distanceChanged);
     
