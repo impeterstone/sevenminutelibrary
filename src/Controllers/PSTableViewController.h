@@ -19,6 +19,7 @@
   NSMutableDictionary *_selectedIndexes;
   NSArray *_visibleCells;
   NSArray *_visibleIndexPaths;
+  NSMutableArray *_cellCache;
   
 //  ADBannerView *_adView;
 //  BOOL _adShowing;

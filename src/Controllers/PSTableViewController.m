@@ -27,6 +27,7 @@
     _items = [[NSMutableArray alloc] initWithCapacity:1];
     _sectionTitles = [[NSMutableArray alloc] initWithCapacity:1];
     _selectedIndexes = [[NSMutableDictionary alloc] initWithCapacity:1];
+    _cellCache = [[NSMutableArray alloc] initWithCapacity:1];
     _reloading = NO;
     _hasMore = YES;
 //    _adShowing = NO;
@@ -71,6 +72,7 @@
   RELEASE_SAFELY(_searchItems);
   RELEASE_SAFELY(_visibleCells);
   RELEASE_SAFELY(_visibleIndexPaths);
+  RELEASE_SAFELY(_cellCache);
 
   [super dealloc];
 }
