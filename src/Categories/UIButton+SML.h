@@ -11,6 +11,7 @@
 
 @interface UIButton (SML)
 
-+ (UIButton *)buttonWithFrame:(CGRect)frame;
++ (UIButton *)buttonWithFrame:(CGRect)frame andStyle:(NSString *)style target:(id)target action:(SEL)action;
++ (UIButton *)buttonWithStyle:(NSString *)style;
 
 @end
