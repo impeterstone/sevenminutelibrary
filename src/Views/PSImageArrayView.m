@@ -27,6 +27,9 @@
 }
 
 - (void)dealloc {
+  _animateIndex = 0;
+  self.image = nil;
+  [self.layer removeAllAnimations];
   RELEASE_SAFELY(_urlPathArray);
   RELEASE_SAFELY(_images);
   INVALIDATE_TIMER(_animateTimer);
