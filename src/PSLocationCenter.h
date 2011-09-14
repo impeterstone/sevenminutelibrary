@@ -14,6 +14,8 @@
   CLLocationManager *_locationManager;
   CLLocation *_lastLocation;
   
+  NSDate *_startDate;
+  
   BOOL _isUpdating;
   BOOL _shouldDisableAfterLocationFix;
   BOOL _shouldMonitorSignificantChange;
