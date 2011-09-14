@@ -16,9 +16,12 @@
   UIScrollView *_activeScrollView; // subclasses should set this if they have a scrollView
   UILabel *_navTitleLabel;
   PSNullView *_nullView;
+  
+  BOOL _viewHasLoadedOnce;
 }
 
 @property (nonatomic, retain) UILabel *navTitleLabel;
+@property (nonatomic, assign) BOOL viewHasLoadedOnce;
 
 // View Config
 - (UIView *)backgroundView;

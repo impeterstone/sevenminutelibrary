@@ -34,12 +34,19 @@
     _pagingStart = 0;
     _pagingCount = 0;
     _pagingTotal = 0;
+    
+    // View State
+    _contentOffset = CGPointZero;
   }
   return self;
 }
 
 - (void)viewDidUnload {
   [super viewDidUnload];
+  
+  // Save view state
+  _contentOffset = _tableView.contentOffset;
+  
 //  _adShowing = NO;
 //  _adView.delegate = nil;
 //  RELEASE_SAFELY(_adView);
@@ -87,10 +94,6 @@
 }
 
 #pragma mark - View
-- (void)loadView {
-  [super loadView];
-}
-
 // SUBCLASS CAN OPTIONALLY IMPLEMENT IF THEY WANT A SEARCH BAR
 - (void)setupSearchDisplayControllerWithScopeButtonTitles:(NSArray *)scopeButtonTitles {
   [self setupSearchDisplayControllerWithScopeButtonTitles:scopeButtonTitles andPlaceholder:nil];
@@ -130,6 +133,7 @@
     _tableView.backgroundColor = [UIColor clearColor];
     _tableView.separatorColor = SEPARATOR_COLOR;
   }
+  
   //  [self.view insertSubview:_tableView atIndex:0];
   [self.view addSubview:_tableView];
   
@@ -250,6 +254,12 @@
   } else if (!_hasMore && [self shouldLoadMore]) {
     self.tableView.tableFooterView = nil;
   }
+}
+
+- (void)restoreDataSource {
+  [super restoreDataSource];
+  [_tableView reloadData];
+  _tableView.contentOffset = _contentOffset;
 }
 
 - (void)loadDataSource {

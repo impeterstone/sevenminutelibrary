@@ -34,6 +34,9 @@
   NSInteger _pagingStart;
   NSInteger _pagingCount;
   NSInteger _pagingTotal;
+  
+  // View State
+  CGPoint _contentOffset;
 }
 
 @property (nonatomic, retain) UITableView *tableView;

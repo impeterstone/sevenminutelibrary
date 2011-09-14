@@ -15,11 +15,13 @@
 @implementation PSBaseViewController
 
 @synthesize navTitleLabel = _navTitleLabel;
+@synthesize viewHasLoadedOnce = _viewHasLoadedOnce;
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
   self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
   if (self) {
     _activeScrollView = nil;
+    _viewHasLoadedOnce = NO;
   }
   return self;
 }
@@ -79,6 +81,11 @@
   [navTitleView release];
 }
 
+- (void)viewDidLoad {
+  [super viewDidLoad];
+  _viewHasLoadedOnce = YES;
+}
+
 - (void)viewWillAppear:(BOOL)animated {
   [super viewWillAppear:animated];
   [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(reloadDataSource) name:kApplicationResumed object:nil];
@@ -112,6 +119,10 @@
 }
 
 - (void)reloadDataSource {
+  
+}
+
+- (void)restoreDataSource {
   
 }
 

@@ -36,6 +36,7 @@
  Initiates loading of the dataSource
  */
 - (void)setupDataSource;
+- (void)restoreDataSource; // Restore view after it gets unloaded
 - (void)reloadDataSource; // Refresh
 - (void)loadDataSource; // Initial Load
 - (void)dataSourceShouldLoadObjects:(id)objects;
