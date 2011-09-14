@@ -8,6 +8,9 @@
 
 #import "PSSearchField.h"
 #import "PSStyleSheet.h"
+#import "UIView+SML.h"
+
+#define MARGIN_X 10.0
 
 @implementation PSSearchField
 
@@ -46,13 +49,13 @@
 //- (CGRect)clearButtonRectForBounds:(CGRect)bounds {
 //  return bounds;
 //}
-//
+
 - (CGRect)leftViewRectForBounds:(CGRect)bounds {
-  return CGRectMake(5, 5, 20, 20);
+  return CGRectMake(MARGIN_X, 0, self.leftView.width, 30);
 }
 
 - (CGRect)rightViewRectForBounds:(CGRect)bounds {
-  return CGRectMake(bounds.size.width - 25, 5, 20, 20);
+  return CGRectMake(bounds.size.width - self.rightView.width - MARGIN_X, 0, self.rightView.width, 30);
 }
 
 @end
