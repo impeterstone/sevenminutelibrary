@@ -9,7 +9,7 @@
 #import "PSLocationCenter.h"
 #import "PSToastCenter.h"
 
-static NSInteger _distanceFilter = 300; // meters
+static NSInteger _distanceFilter = 1000; // meters
 static NSInteger _ageFilter = 300; // seconds
 
 @implementation PSLocationCenter
@@ -29,6 +29,7 @@ static NSInteger _ageFilter = 300; // seconds
 - (id)init {
   self = [super init];
   if (self) {
+    _locationRequested = NO;
     _isUpdating = NO;
     _shouldDisableAfterLocationFix = NO;
     _shouldMonitorSignificantChange = NO;
@@ -49,6 +50,8 @@ static NSInteger _ageFilter = 300; // seconds
       // Set a movement threshold for new events.
       _locationManager.distanceFilter = _distanceFilter;
     }
+    
+    [self startUpdates];
   }
   return self;
 }
@@ -62,10 +65,19 @@ static NSInteger _ageFilter = 300; // seconds
 
 #pragma mark - Location Methods
 - (void)getMyLocation {
-  // Force acquiring a new location
-  [self stopUpdates];  
-  [self startUpdates];
-//  [[PSToastCenter defaultCenter] showToastWithMessage:@"Finding Your Current Location" toastType:PSToastTypeAlert toastDuration:0.0];
+  // If a location has been requested and a previous request isn't being fulfilled
+  // Check to see if we already have a lock, if so notify
+  // If we have no lock, start location updates
+  if (!_locationRequested) {
+    _locationRequested = YES;
+    
+    if ([self hasAcquiredLocation]) {
+      _locationRequested = NO;
+      [[NSNotificationCenter defaultCenter] postNotificationName:kLocationAcquired object:nil];
+    } else {
+      [self startUpdates]; // make sure updates is started
+    }
+  }
 }
 
 - (void)startUpdates {
@@ -121,18 +133,21 @@ static NSInteger _ageFilter = 300; // seconds
 }
 
 - (CLLocation *)location {
-  return self.locationManager.location;
+  return _lastLocation;
+//  return self.locationManager.location;
 }
 
 - (CLLocationCoordinate2D)locationCoordinate {
-  return [self.locationManager.location coordinate];
+  return _lastLocation.coordinate;
+//  return [self.locationManager.location coordinate];
 }
 
 - (CGFloat)latitude {
 #if TARGET_IPHONE_SIMULATOR
   return 37.32798;
 #else
-  return self.locationManager.location.coordinate.latitude;
+  return _lastLocation.coordinate.latitude;
+//  return self.locationManager.location.coordinate.latitude;
 #endif
 }
 
@@ -140,7 +155,8 @@ static NSInteger _ageFilter = 300; // seconds
 #if TARGET_IPHONE_SIMULATOR
   return -122.01382;
 #else
-  return self.locationManager.location.coordinate.longitude;
+  return _lastLocation.coordinate.longitude;
+//  return self.locationManager.location.coordinate.longitude;
 #endif
 }
 
@@ -182,7 +198,10 @@ static NSInteger _ageFilter = 300; // seconds
     _lastLocation = [newLocation copy];
     
     // Post Notification to reload interface
-    [[NSNotificationCenter defaultCenter] postNotificationName:kLocationAcquired object:nil];
+    if (_locationRequested) {
+      _locationRequested = NO;
+      [[NSNotificationCenter defaultCenter] postNotificationName:kLocationAcquired object:nil];
+    }
     //    if (distanceChanged >= _distanceFilter) {
     //      [[NSNotificationCenter defaultCenter] postNotificationName:kLocationAcquired object:nil];
     //    } else {

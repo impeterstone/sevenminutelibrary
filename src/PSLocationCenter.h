@@ -12,10 +12,11 @@
 
 @interface PSLocationCenter : PSObject <CLLocationManagerDelegate> {
   CLLocationManager *_locationManager;
-  CLLocation *_lastLocation;
+  CLLocation *_lastLocation; // last known good location
   
   NSDate *_startDate;
   
+  BOOL _locationRequested;
   BOOL _isUpdating;
   BOOL _shouldDisableAfterLocationFix;
   BOOL _shouldMonitorSignificantChange;
