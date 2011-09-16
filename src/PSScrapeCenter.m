@@ -13,18 +13,7 @@
 #import "JSONKit.h"
 #import <math.h>
 
-static dispatch_queue_t _psScrapeQueue = nil;
-
 @implementation PSScrapeCenter
-
-+ (void)initialize {
-  _psScrapeQueue = dispatch_queue_create("com.sevenminutelabs.psScrapeQueue", NULL);
-}
-
-+ (dispatch_queue_t)sharedQueue {
-  return dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH, 0);
-//  return _psScrapeQueue;
-}
 
 + (id)defaultCenter {
   static id defaultCenter = nil;
