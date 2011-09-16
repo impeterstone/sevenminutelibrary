@@ -85,11 +85,7 @@
 }
 
 #pragma mark - View Config
-- (UIView *)rowBackgroundView {
-  return nil;
-}
-
-- (UIView *)rowSelectedBackgroundView {
+- (UIView *)tableView:(UITableView *)tableView rowBackgroundViewForIndexPath:(NSIndexPath *)indexPath selected:(BOOL)selected {
   return nil;
 }
 
@@ -325,10 +321,8 @@
 }
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
-  if (tableView.style == UITableViewStylePlain) {
-    cell.backgroundView = [self rowBackgroundView];
-    cell.selectedBackgroundView = [self rowSelectedBackgroundView];
-  }
+  cell.backgroundView = [self tableView:tableView rowBackgroundViewForIndexPath:indexPath selected:NO];
+  cell.selectedBackgroundView = [self tableView:tableView rowBackgroundViewForIndexPath:indexPath selected:YES];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
