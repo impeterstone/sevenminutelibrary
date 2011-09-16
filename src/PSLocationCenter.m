@@ -9,7 +9,7 @@
 #import "PSLocationCenter.h"
 #import "PSToastCenter.h"
 
-static NSInteger _distanceFilter = 1000; // meters
+static NSInteger _distanceFilter = 300; // meters
 static NSInteger _ageFilter = 300; // seconds
 
 @implementation PSLocationCenter
@@ -83,6 +83,7 @@ static NSInteger _ageFilter = 300; // seconds
 - (void)startUpdates {
 #if TARGET_IPHONE_SIMULATOR
   [[NSNotificationCenter defaultCenter] postNotificationName:kLocationAcquired object:nil];
+  _locationRequested = NO;
 #else
   if (!_isUpdating) {
     _isUpdating = YES;
@@ -178,12 +179,14 @@ static NSInteger _ageFilter = 300; // seconds
    Reasons to reload interface
    1. Location distance change from last known location is less than threshold
    */
+  
+  CLLocationDistance distanceThreshold = 1500; // For some reason, cell tower triangulation is always = 1414
   CLLocationAccuracy accuracy = newLocation.horizontalAccuracy;
   NSTimeInterval age = [[NSDate date] timeIntervalSinceDate:newLocation.timestamp];
   NSTimeInterval timeSinceStart = [[NSDate date] timeIntervalSinceDate:_startDate];
-  CLLocationDistance distanceChanged = _lastLocation ? [newLocation distanceFromLocation:_lastLocation] : _distanceFilter;
+  CLLocationDistance distanceChanged = _lastLocation ? [newLocation distanceFromLocation:_lastLocation] : distanceThreshold;
   
-  if (((accuracy <= _distanceFilter) && (age <= _ageFilter)) || (timeSinceStart > 15.0)) {
+  if (((accuracy <= distanceThreshold) && (age <= _ageFilter)) || (timeSinceStart > 15.0)) {
     // Good Location Acquired
     DLog(@"Location updated: %@, oldLocation: %@, accuracy: %g, age: %g, distanceChanged: %g", newLocation, oldLocation, accuracy, age, distanceChanged);
     
@@ -202,7 +205,7 @@ static NSInteger _ageFilter = 300; // seconds
       _locationRequested = NO;
       [[NSNotificationCenter defaultCenter] postNotificationName:kLocationAcquired object:nil];
     }
-    //    if (distanceChanged >= _distanceFilter) {
+    //    if (distanceChanged >= distanceThreshold) {
     //      [[NSNotificationCenter defaultCenter] postNotificationName:kLocationAcquired object:nil];
     //    } else {
     //      [[NSNotificationCenter defaultCenter] postNotificationName:kLocationUnchanged object:nil];
