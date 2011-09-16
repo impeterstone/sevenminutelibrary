@@ -7,16 +7,25 @@
 //
 
 #import "UIBarButtonItem+SML.h"
+#import "PSStyleSheet.h"
 
 @implementation UIBarButtonItem (SML)
 
-+ (UIBarButtonItem *)barButtonWithTitle:(NSString *)title withTarget:(id)target action:(SEL)action width:(CGFloat)width height:(CGFloat)height buttonType:(BarButtonType)buttonType {
++ (UIBarButtonItem *)barButtonWithTitle:(NSString *)title withTarget:(id)target action:(SEL)action width:(CGFloat)width height:(CGFloat)height buttonType:(BarButtonType)buttonType style:(NSString *)style {
   UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
   button.frame = CGRectMake(0, 0, width, height);
   [button setTitle:title forState:UIControlStateNormal];
-  button.titleLabel.font = [UIFont fontWithName:@"HelveticaNeue-Bold" size:12.0];
-  button.titleLabel.shadowColor = [UIColor blackColor];
-  button.titleLabel.shadowOffset = CGSizeMake(0, 1);
+  
+  if (style) {
+    [button.titleLabel setFont:[PSStyleSheet fontForStyle:style]];
+    [button setTitleColor:[PSStyleSheet textColorForStyle:style] forState:UIControlStateNormal];
+    [button.titleLabel setShadowColor:[PSStyleSheet shadowColorForStyle:style]];
+    [button.titleLabel setShadowOffset:[PSStyleSheet shadowOffsetForStyle:style]];
+  } else {
+    button.titleLabel.font = [UIFont fontWithName:@"HelveticaNeue-Bold" size:12.0];
+    button.titleLabel.shadowColor = [UIColor blackColor];
+    button.titleLabel.shadowOffset = CGSizeMake(0, 1);
+  }
   
   UIImage *bg = nil;
   UIImage *bgHighlighted = nil;
@@ -41,6 +50,10 @@
       bg = [[UIImage imageNamed:@"navbar_focus_button.png"] stretchableImageWithLeftCapWidth:4 topCapHeight:0];
       bgHighlighted = [[UIImage imageNamed:@"navbar_focus_highlighted_button.png"] stretchableImageWithLeftCapWidth:4 topCapHeight:0];
       break;
+    case BarButtonTypeGray:
+      bg = [[UIImage imageNamed:@"btn_bar_gray.png"] stretchableImageWithLeftCapWidth:14 topCapHeight:14];
+      bgHighlighted = [[UIImage imageNamed:@"btn_bar_gray_highlighted.png"] stretchableImageWithLeftCapWidth:14 topCapHeight:14];
+      break;
     default:
       bg = [[UIImage imageNamed:@"navbar_normal_button.png"] stretchableImageWithLeftCapWidth:4 topCapHeight:0];
       bgHighlighted = [[UIImage imageNamed:@"navbar_normal_highlighted_button.png"] stretchableImageWithLeftCapWidth:4 topCapHeight:0];
@@ -52,6 +65,10 @@
   [button addTarget:target action:action forControlEvents:UIControlEventTouchUpInside];  
   UIBarButtonItem *navButton = [[[UIBarButtonItem alloc] initWithCustomView:button] autorelease];
   return navButton;
+}
+
++ (UIBarButtonItem *)barButtonWithTitle:(NSString *)title withTarget:(id)target action:(SEL)action width:(CGFloat)width height:(CGFloat)height buttonType:(BarButtonType)buttonType {
+  return [[self class] barButtonWithTitle:title withTarget:target action:action width:width height:height buttonType:buttonType style:nil];
 }
 
 + (UIBarButtonItem *)barButtonWithImage:(UIImage *)image withTarget:(id)target action:(SEL)action width:(CGFloat)width height:(CGFloat)height buttonType:(BarButtonType)buttonType {
