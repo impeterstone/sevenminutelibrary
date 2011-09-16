@@ -127,6 +127,8 @@
   _tableView.separatorStyle = separatorStyle;
   _tableView.separatorColor = SEPARATOR_COLOR;
   _tableView.backgroundColor = [UIColor clearColor];
+  _tableView.backgroundView = nil;
+  _tableView.opaque = NO;
   
   //  [self.view insertSubview:_tableView atIndex:0];
   [self.view addSubview:_tableView];
