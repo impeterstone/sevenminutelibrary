@@ -61,6 +61,9 @@
 // Cell Selection State
 - (BOOL)cellIsSelected:(NSIndexPath *)indexPath;
 
+// Cell Type
+- (Class)cellClassAtIndexPath:(NSIndexPath *)indexPath;
+
 // ScrollView Stuff
 - (void)scrollEndedTrigger;
 

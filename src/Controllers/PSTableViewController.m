@@ -126,13 +126,11 @@
 - (void)setupTableViewWithFrame:(CGRect)frame andStyle:(UITableViewStyle)style andSeparatorStyle:(UITableViewCellSeparatorStyle)separatorStyle {
   _tableView = [[UITableView alloc] initWithFrame:frame style:style];
   _tableView.autoresizingMask = UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth;
-  _tableView.separatorStyle = separatorStyle;
   _tableView.delegate = self;
   _tableView.dataSource = self;
-  if (style == UITableViewStylePlain) {
-    _tableView.backgroundColor = [UIColor clearColor];
-    _tableView.separatorColor = SEPARATOR_COLOR;
-  }
+  _tableView.separatorStyle = separatorStyle;
+  _tableView.separatorColor = SEPARATOR_COLOR;
+  _tableView.backgroundColor = [UIColor clearColor];
   
   //  [self.view insertSubview:_tableView atIndex:0];
   [self.view addSubview:_tableView];
@@ -219,7 +217,7 @@
   [_loadMoreView addSubview:av];
 }
 
-#pragma mark PSStateMachine
+#pragma mark - PSStateMachine
 - (BOOL)dataIsAvailable {
   // Is this a searchResultsTable or just Table?
   NSArray *items = (_tableView == self.searchDisplayController.searchResultsTableView) ? _searchItems : _items;
@@ -292,9 +290,10 @@
   }
 }
 
-#pragma mark UITableViewDelegate
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-  [tableView deselectRowAtIndexPath:indexPath animated:YES];
+#pragma mark - Custom TableView Methods
+- (Class)cellClassAtIndexPath:(NSIndexPath *)indexPath {
+  // Subclass should/may implement
+  return [PSCell class];
 }
 
 - (BOOL)cellIsSelected:(NSIndexPath *)indexPath {
@@ -303,7 +302,12 @@
 	return selectedIndex == nil ? NO : [selectedIndex boolValue];
 }
 
-#pragma mark UITableViewDataSource
+#pragma mark - UITableViewDelegate
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
+  [tableView deselectRowAtIndexPath:indexPath animated:YES];
+}
+
+#pragma mark - UITableViewDataSource
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
   if (tableView == self.searchDisplayController.searchResultsTableView) {
     return [_searchItems count];
@@ -321,8 +325,10 @@
 }
 
 - (void)tableView:(UITableView *)tableView willDisplayCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath {
-  cell.backgroundView = [self rowBackgroundView];
-  cell.selectedBackgroundView = [self rowSelectedBackgroundView];
+  if (tableView.style == UITableViewStylePlain) {
+    cell.backgroundView = [self rowBackgroundView];
+    cell.selectedBackgroundView = [self rowSelectedBackgroundView];
+  }
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -338,7 +344,7 @@
   return cell;
 }
 
-#pragma mark UISearchDisplayDelegate
+#pragma mark - UISearchDisplayDelegate
 - (void)filterContentForSearchText:(NSString*)searchText scope:(NSString*)scope {
   // SUBCLASS MUST IMPLEMENT
 }
@@ -377,7 +383,7 @@
   // Subclass may implement
 }
 
-#pragma mark UIScrollViewDelegate
+#pragma mark - UIScrollViewDelegate
 - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
   if (!decelerate) {
 //    [self scrollEndedTrigger];
