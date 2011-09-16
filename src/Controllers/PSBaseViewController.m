@@ -20,7 +20,9 @@
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil {
   self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
   if (self) {
+    _reloading = NO;
     _activeScrollView = nil;
+    _dataDidError = NO;
     _viewHasLoadedOnce = NO;
   }
   return self;
@@ -110,7 +112,11 @@
 }
 
 - (BOOL)dataIsLoading {
-  return NO;
+  return _reloading;
+}
+
+- (BOOL)dataDidError {
+  return _dataDidError;
 }
 
 // DataSource
@@ -127,12 +133,25 @@
 }
 
 - (void)loadDataSource {
+  _reloading = YES;
+  _dataDidError = NO;
+  [self updateState];
 }
 
 - (void)dataSourceDidLoad {
+  _reloading = NO;
+  [self updateState];
 }
 
 - (void)dataSourceDidLoadMore {
+  _reloading = NO;
+  [self updateState];
+}
+
+- (void)dataSourceDidError {
+  _reloading = NO;
+  _dataDidError = YES;
+  [self updateState];
 }
 
 - (void)updateState {
@@ -147,8 +166,13 @@
       // We are loading for the first time
       _nullView.state = PSNullViewStateLoading;
     } else {
-      // We have no data to display, show the empty screen
-      _nullView.state = PSNullViewStateEmpty;
+      if ([self dataDidError]) {
+        // There was a dataSource error, show the error screen
+        _nullView.state = PSNullViewStateError;
+      } else {
+        // We have no data to display, show the empty screen
+        _nullView.state = PSNullViewStateEmpty;
+      }
     }
   }
 }

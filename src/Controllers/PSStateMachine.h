@@ -20,6 +20,7 @@
  */
 - (BOOL)dataIsAvailable;
 - (BOOL)dataIsLoading;
+- (BOOL)dataDidError;
 
 /**
  Tell the state machine to either show a loading/empty view or show data
@@ -42,6 +43,7 @@
 - (void)dataSourceShouldLoadObjects:(id)objects;
 - (void)dataSourceDidLoad;
 - (void)dataSourceDidLoadMore;
+- (void)dataSourceDidError;
 
 /**
  Used by tableView to page in more data

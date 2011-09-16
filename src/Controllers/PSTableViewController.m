@@ -23,13 +23,11 @@
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
   self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-  if (self) {    
+  if (self) {
     _items = [[NSMutableArray alloc] initWithCapacity:1];
     _sectionTitles = [[NSMutableArray alloc] initWithCapacity:1];
     _selectedIndexes = [[NSMutableDictionary alloc] initWithCapacity:1];
     _cellCache = [[NSMutableArray alloc] initWithCapacity:1];
-    _reloading = NO;
-    _hasMore = YES;
 //    _adShowing = NO;
     _pagingStart = 0;
     _pagingCount = 0;
@@ -37,6 +35,8 @@
     
     // View State
     _contentOffset = CGPointZero;
+    
+    _hasMore = YES;
   }
   return self;
 }
@@ -241,8 +241,44 @@
   }
 }
 
-- (BOOL)dataIsLoading {
-  return _reloading;
+- (BOOL)shouldLoadMore {
+  return NO;
+}
+
+- (void)restoreDataSource {
+  [super restoreDataSource];
+  [_tableView reloadData];
+  _tableView.contentOffset = _contentOffset;
+}
+
+- (void)loadDataSource {
+  [super loadDataSource];
+  if (_refreshHeaderView) {
+    [_refreshHeaderView setState:EGOOPullRefreshLoading];
+  }
+}
+
+- (void)dataSourceDidLoad {
+  [super dataSourceDidLoad];
+  if (_refreshHeaderView) {
+    [_refreshHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_tableView];
+  }
+}
+
+- (void)dataSourceDidLoadMore {
+  [super dataSourceDidLoadMore];
+}
+
+- (void)dataSourceDidError {
+  [super dataSourceDidError];
+  if (_refreshHeaderView) {
+    [_refreshHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_tableView];
+  }
+}
+
+- (void)loadMore {
+  _reloading = YES;
+  [self updateState];
 }
 
 - (void)updateState {
@@ -254,42 +290,6 @@
   } else if (!_hasMore && [self shouldLoadMore]) {
     self.tableView.tableFooterView = nil;
   }
-}
-
-- (void)restoreDataSource {
-  [super restoreDataSource];
-  [_tableView reloadData];
-  _tableView.contentOffset = _contentOffset;
-}
-
-- (void)loadDataSource {
-  _reloading = YES;
-  if (_refreshHeaderView) {
-    [_refreshHeaderView setState:EGOOPullRefreshLoading];
-  }
-  [self updateState];
-}
-
-- (void)dataSourceDidLoad {
-  _reloading = NO;
-  if (_refreshHeaderView) {
-    [_refreshHeaderView egoRefreshScrollViewDataSourceDidFinishedLoading:_tableView];
-  }
-  [self updateState];
-}
-
-- (BOOL)shouldLoadMore {
-  return NO;
-}
-
-- (void)loadMore {
-  _reloading = YES;
-  [self updateState];
-}
-
-- (void)dataSourceDidLoadMore {
-  _reloading = NO;
-  [self updateState];
 }
 
 #pragma mark UITableViewDelegate

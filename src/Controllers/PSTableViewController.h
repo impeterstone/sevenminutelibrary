@@ -27,8 +27,6 @@
   UISearchBar *_searchBar;
   EGORefreshTableHeaderView *_refreshHeaderView;
   UIView *_loadMoreView;
-  BOOL _reloading;
-  BOOL _hasMore;
   
   // Paging
   NSInteger _pagingStart;
@@ -37,6 +35,8 @@
   
   // View State
   CGPoint _contentOffset;
+  
+  BOOL _hasMore;  
 }
 
 @property (nonatomic, retain) UITableView *tableView;

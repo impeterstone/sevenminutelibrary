@@ -17,6 +17,8 @@
   UILabel *_navTitleLabel;
   PSNullView *_nullView;
   
+  BOOL _reloading;
+  BOOL _dataDidError;
   BOOL _viewHasLoadedOnce;
 }
 

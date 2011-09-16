@@ -8,6 +8,8 @@
 
 #import "PSNullView.h"
 
+#define MARGIN_X 10.0
+
 @interface PSNullView (Private)
 
 @end
@@ -15,9 +17,15 @@
 @implementation PSNullView
 
 @synthesize state = _state;
-@synthesize titleLabel = _titleLabel;
-@synthesize subtitleLabel = _subtitleLabel;
-@synthesize imageView = _imageView;
+@synthesize loadingTitle = _loadingTitle;
+@synthesize loadingSubtitle = _loadingSubtitle;
+@synthesize emptyTitle = _emptyTitle;
+@synthesize emptySubtitle = _emptySubtitle;
+@synthesize errorTitle = _errorTitle;
+@synthesize errorSubtitle = _errorSubtitle;
+@synthesize loadingImage = _loadingImage;
+@synthesize emptyImage = _emptyImage;
+@synthesize errorImage = _errorImage;
 
 - (id)initWithFrame:(CGRect)frame {
   self = [super initWithFrame:frame];
@@ -54,13 +62,32 @@
   return self;
 }
 
+- (void)dealloc {
+  RELEASE_SAFELY(_aiv);
+  RELEASE_SAFELY(_imageView);
+  RELEASE_SAFELY(_titleLabel);
+  RELEASE_SAFELY(_subtitleLabel);
+  
+  RELEASE_SAFELY(_loadingTitle);
+  RELEASE_SAFELY(_loadingSubtitle)
+  RELEASE_SAFELY(_emptyTitle);
+  RELEASE_SAFELY(_emptySubtitle);
+  RELEASE_SAFELY(_errorTitle);
+  RELEASE_SAFELY(_errorSubtitle);
+  RELEASE_SAFELY(_loadingImage);
+  RELEASE_SAFELY(_emptyImage);
+  RELEASE_SAFELY(_errorImage);
+  
+  [super dealloc];
+}
+
 - (void)layoutSubviews
 {
   [super layoutSubviews];
   
   CGFloat top = floorf(self.height / 2);
   
-  if (_imageView.image && (self.state == PSNullViewStateEmpty)) {
+  if (_imageView.image && (self.state == PSNullViewStateEmpty || self.state == PSNullViewStateError)) {
     _imageView.hidden = NO;
     _imageView.left = floorf(self.width / 2) - floorf(_imageView.width / 2);
     _imageView.top = top - floorf(_imageView.height / 2) - 30;
@@ -75,25 +102,17 @@
     top -= 20;
   }
 
-  _titleLabel.width = self.width;
+  _titleLabel.left = MARGIN_X;
+  _titleLabel.width = self.width - MARGIN_X * 2;
   _titleLabel.top = top;
   top = _titleLabel.bottom;
   
-  _subtitleLabel.width = self.width;
+  _subtitleLabel.left = MARGIN_X;
+  _subtitleLabel.width = self.width - MARGIN_X * 2;
   _subtitleLabel.top = top;
 }
 
 #pragma mark - State
-- (void)setLoadingTitle:(NSString *)loadingTitle loadingSubtitle:(NSString *)loadingSubtitle emptyTitle:(NSString *)emptyTitle emptySubtitle:(NSString *)emptySubtitle image:(UIImage *)image {
-  _loadingTitle = [loadingTitle retain];
-  _loadingSubtitle = [loadingSubtitle retain];
-  _emptyTitle = [emptyTitle retain];
-  _emptySubtitle = [emptySubtitle retain];
-  if (image) {
-    [_imageView setImage:image];
-  }
-}
-
 - (void)setState:(PSNullViewState)state
 {
   _state = state;
@@ -102,24 +121,35 @@
     case PSNullViewStateDisabled:
       _titleLabel.text = nil;
       _subtitleLabel.text = nil;
+      _imageView.image = nil;
       _imageView.hidden = YES;
-      [_aiv stopAnimating];
-      break;
-    case PSNullViewStateEmpty:
-      _titleLabel.text = _emptyTitle;
-      _subtitleLabel.text = _emptySubtitle;
-      _imageView.hidden = NO;
       [_aiv stopAnimating];
       break;
     case PSNullViewStateLoading:
       _titleLabel.text = _loadingTitle;
       _subtitleLabel.text = _loadingSubtitle;
+      _imageView.image = _loadingImage;
       _imageView.hidden = NO;
       [_aiv startAnimating];
+      break;
+    case PSNullViewStateEmpty:
+      _titleLabel.text = _emptyTitle;
+      _subtitleLabel.text = _emptySubtitle;
+      _imageView.image = _emptyImage;
+      _imageView.hidden = NO;
+      [_aiv stopAnimating];
+      break;
+    case PSNullViewStateError:
+      _titleLabel.text = _errorTitle;
+      _subtitleLabel.text = _errorSubtitle;
+      _imageView.image = _errorImage;
+      _imageView.hidden = NO;
+      [_aiv stopAnimating];
       break;
     default:
       _titleLabel.text = nil;
       _subtitleLabel.text = nil;
+      _imageView.image = nil;
       _imageView.hidden = YES;
       [_aiv stopAnimating];
       break;
@@ -127,18 +157,7 @@
   [_titleLabel sizeToFit];
   [_subtitleLabel sizeToFit];
   [_imageView sizeToFit];
-  [self setNeedsLayout];
-}
-- (void)dealloc {
-  RELEASE_SAFELY(_titleLabel);
-  RELEASE_SAFELY(_subtitleLabel);
-  RELEASE_SAFELY(_imageView);
-  RELEASE_SAFELY(_loadingTitle);
-  RELEASE_SAFELY(_loadingSubtitle)
-  RELEASE_SAFELY(_emptyTitle);
-  RELEASE_SAFELY(_emptySubtitle);
-  
-  [super dealloc];
+  [self layoutIfNeeded];
 }
 
 @end
