@@ -16,6 +16,7 @@
   
   NSDate *_startDate;
   
+  BOOL _hasGPSLock;
   BOOL _locationRequested;
   BOOL _isUpdating;
   BOOL _shouldDisableAfterLocationFix;
@@ -25,6 +26,7 @@
 @property (nonatomic, retain) CLLocationManager *locationManager;
 @property (nonatomic, assign) BOOL shouldDisableAfterLocationFix;
 @property (nonatomic, assign) BOOL shouldMonitorSignificantChange;
+@property (nonatomic, readonly) BOOL hasGPSLock;
 
 + (id)defaultCenter;
 

@@ -17,6 +17,7 @@ static NSInteger _ageFilter = 60; // seconds
 @synthesize locationManager = _locationManager;
 @synthesize shouldDisableAfterLocationFix = _shouldDisableAfterLocationFix;
 @synthesize shouldMonitorSignificantChange = _shouldMonitorSignificantChange;
+@synthesize hasGPSLock = _hasGPSLock;
 
 + (id)defaultCenter {
   static id defaultCenter = nil;
@@ -29,6 +30,7 @@ static NSInteger _ageFilter = 60; // seconds
 - (id)init {
   self = [super init];
   if (self) {
+    _hasGPSLock = NO;
     _locationRequested = NO;
     _isUpdating = NO;
     _shouldDisableAfterLocationFix = NO;
@@ -185,7 +187,7 @@ static NSInteger _ageFilter = 60; // seconds
   CLLocationDistance distanceThreshold = 1500; // For some reason, cell tower triangulation is always = 1414
   CLLocationAccuracy accuracy = newLocation.horizontalAccuracy;
   NSTimeInterval age = fabs([[NSDate date] timeIntervalSinceDate:newLocation.timestamp]);
-  NSTimeInterval timeSinceStart = [[NSDate date] timeIntervalSinceDate:_startDate];
+//  NSTimeInterval timeSinceStart = [[NSDate date] timeIntervalSinceDate:_startDate];
   CLLocationDistance distanceChanged = _lastLocation ? [newLocation distanceFromLocation:_lastLocation] : distanceThreshold;
   
   // Give it 3 seconds to acquire a good lock unless the accuracy is already really good
@@ -208,6 +210,14 @@ static NSInteger _ageFilter = 60; // seconds
       _locationRequested = NO;
       [[NSNotificationCenter defaultCenter] postNotificationName:kLocationAcquired object:nil];
     }
+    
+    // See if we have a good GPS lock
+    if (accuracy < 250) {
+      _hasGPSLock = YES;
+    } else {
+      _hasGPSLock = NO;
+    }
+    
     //    if (distanceChanged >= distanceThreshold) {
     //      [[NSNotificationCenter defaultCenter] postNotificationName:kLocationAcquired object:nil];
     //    } else {
