@@ -15,7 +15,7 @@
 - (id)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(NSString *)reuseIdentifier {
   self = [super initWithStyle:style reuseIdentifier:reuseIdentifier];
   if (self) {
-    DLog(@"Called by class: %@", [self class]);
+    VLog(@"Called by class: %@", [self class]);
     
     _isExpanded = NO;
     self.opaque = YES;
@@ -25,7 +25,7 @@
 }
 
 - (void)dealloc {
-  DLog(@"Called by class: %@", [self class]);
+  VLog(@"Called by class: %@", [self class]);
   [super dealloc];
 }
 

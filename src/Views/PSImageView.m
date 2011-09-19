@@ -19,7 +19,7 @@
 - (id)initWithFrame:(CGRect)frame {
   self = [super initWithFrame:frame];
   if (self) {
-    DLog(@"Called by class: %@", [self class]);
+    VLog(@"Called by class: %@", [self class]);
     _shouldScale = NO;
     _shouldAnimate = NO;
     _placeholderImage = nil;
@@ -40,7 +40,7 @@
   RELEASE_SAFELY(_loadingIndicator);
   RELEASE_SAFELY(_placeholderImage);
   
-  DLog(@"Called by class: %@", [self class]);
+  VLog(@"Called by class: %@", [self class]);
   [super dealloc];
 }
 

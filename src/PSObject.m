@@ -14,13 +14,13 @@
 - (id)init {
   self = [super init];
   if (self) {
-    DLog(@"Called by class: %@", [self class]);
+    VLog(@"Called by class: %@", [self class]);
   }
   return self;
 }
 
 - (void)dealloc {
-  DLog(@"Called by class: %@", [self class]);
+  VLog(@"Called by class: %@", [self class]);
   [super dealloc];
 }
 
