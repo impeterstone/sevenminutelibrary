@@ -10,7 +10,7 @@
 #import "PSToastCenter.h"
 
 static NSInteger _distanceFilter = 300; // meters
-static NSInteger _ageFilter = 300; // seconds
+static NSInteger _ageFilter = 60; // seconds
 
 @implementation PSLocationCenter
 
@@ -70,6 +70,8 @@ static NSInteger _ageFilter = 300; // seconds
   // If we have no lock, start location updates
   if (!_locationRequested) {
     _locationRequested = YES;
+    
+//    [self startUpdates]; // make sure updates is started
     
     if ([self hasAcquiredLocation]) {
       _locationRequested = NO;
@@ -182,11 +184,12 @@ static NSInteger _ageFilter = 300; // seconds
   
   CLLocationDistance distanceThreshold = 1500; // For some reason, cell tower triangulation is always = 1414
   CLLocationAccuracy accuracy = newLocation.horizontalAccuracy;
-  NSTimeInterval age = [[NSDate date] timeIntervalSinceDate:newLocation.timestamp];
+  NSTimeInterval age = fabs([[NSDate date] timeIntervalSinceDate:newLocation.timestamp]);
   NSTimeInterval timeSinceStart = [[NSDate date] timeIntervalSinceDate:_startDate];
   CLLocationDistance distanceChanged = _lastLocation ? [newLocation distanceFromLocation:_lastLocation] : distanceThreshold;
   
-  if (((accuracy <= distanceThreshold) && (age <= _ageFilter)) || (timeSinceStart > 15.0)) {
+  // Give it 3 seconds to acquire a good lock unless the accuracy is already really good
+  if (age <= _ageFilter) {
     // Good Location Acquired
     DLog(@"Location updated: %@, oldLocation: %@, accuracy: %g, age: %g, distanceChanged: %g", newLocation, oldLocation, accuracy, age, distanceChanged);
     
