@@ -15,6 +15,7 @@
   CLLocation *_lastLocation; // last known good location
   
   NSDate *_startDate;
+  NSTimer *_pollTimer;
   
   BOOL _hasGPSLock;
   BOOL _locationRequested;
@@ -41,5 +42,6 @@
 // Private Methods
 - (void)startUpdates;
 - (void)stopUpdates;
+- (void)pollLocation:(NSTimer *)timer;
 
 @end

@@ -54,11 +54,17 @@ static NSInteger _ageFilter = 60; // seconds
     }
     
     [self startUpdates];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(startUpdates) name:kApplicationResumed object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(stopUpdates) name:kApplicationSuspended object:nil];
   }
   return self;
 }
 
-- (void)dealloc {  
+- (void)dealloc {
+  [[NSNotificationCenter defaultCenter] removeObserver:self name:kApplicationResumed object:nil];
+  [[NSNotificationCenter defaultCenter] removeObserver:self name:kApplicationSuspended object:nil];
+  INVALIDATE_TIMER(_pollTimer);
   RELEASE_SAFELY(_startDate);
   RELEASE_SAFELY(_lastLocation);
   RELEASE_SAFELY(_locationManager);
@@ -73,12 +79,18 @@ static NSInteger _ageFilter = 60; // seconds
   if (!_locationRequested) {
     _locationRequested = YES;
     
-//    [self startUpdates]; // make sure updates is started
-    
     if ([self hasAcquiredLocation]) {
       _locationRequested = NO;
       [[NSNotificationCenter defaultCenter] postNotificationName:kLocationAcquired object:nil];
     } else {
+      // Start Date
+      RELEASE_SAFELY(_startDate);
+      _startDate = [[NSDate date] retain];
+      
+      INVALIDATE_TIMER(_pollTimer);
+      _pollTimer = [NSTimer timerWithTimeInterval:1.0 target:self selector:@selector(pollLocation:) userInfo:nil repeats:YES];
+      [[NSRunLoop currentRunLoop] addTimer:_pollTimer forMode:NSDefaultRunLoopMode];
+      
       [self startUpdates]; // make sure updates is started
     }
   }
@@ -92,17 +104,10 @@ static NSInteger _ageFilter = 60; // seconds
   if (!_isUpdating) {
     _isUpdating = YES;
     
-    // Start Date
-    RELEASE_SAFELY(_startDate);
-    _startDate = [[NSDate date] retain];
-    
     // Check location capabilities
     if ([CLLocationManager significantLocationChangeMonitoringAvailable] && _shouldMonitorSignificantChange) {
       [self.locationManager startUpdatingLocation];
       [self.locationManager startMonitoringSignificantLocationChanges];
-      
-      [[NSNotificationCenter defaultCenter] addObserver:self.locationManager selector:@selector(startMonitoringSignificantLocationChanges) name:kApplicationResumed object:nil];
-      [[NSNotificationCenter defaultCenter] addObserver:self.locationManager selector:@selector(stopMonitoringSignificantLocationChanges) name:kApplicationSuspended object:nil];
     } else {
       [self.locationManager startUpdatingLocation];
     }
@@ -122,8 +127,8 @@ static NSInteger _ageFilter = 60; // seconds
       [self.locationManager stopUpdatingLocation];
       [self.locationManager stopMonitoringSignificantLocationChanges];
       
-      [[NSNotificationCenter defaultCenter] removeObserver:self.locationManager name:kApplicationResumed object:nil];
-      [[NSNotificationCenter defaultCenter] removeObserver:self.locationManager name:kApplicationSuspended object:nil];
+//      [[NSNotificationCenter defaultCenter] removeObserver:self.locationManager name:kApplicationResumed object:nil];
+//      [[NSNotificationCenter defaultCenter] removeObserver:self.locationManager name:kApplicationSuspended object:nil];
     } else {
       [self.locationManager stopUpdatingLocation];
     }
@@ -133,7 +138,7 @@ static NSInteger _ageFilter = 60; // seconds
 
 #pragma mark - Public Accessors
 - (BOOL)hasAcquiredLocation {
-  if ([self location]) return YES;
+  if ([self location] && _hasGPSLock) return YES;
   else return NO;
 }
 
@@ -187,45 +192,45 @@ static NSInteger _ageFilter = 60; // seconds
   CLLocationDistance distanceThreshold = 1500; // For some reason, cell tower triangulation is always = 1414
   CLLocationAccuracy accuracy = newLocation.horizontalAccuracy;
   NSTimeInterval age = fabs([[NSDate date] timeIntervalSinceDate:newLocation.timestamp]);
-//  NSTimeInterval timeSinceStart = [[NSDate date] timeIntervalSinceDate:_startDate];
   CLLocationDistance distanceChanged = _lastLocation ? [newLocation distanceFromLocation:_lastLocation] : distanceThreshold;
   
-  // Give it 3 seconds to acquire a good lock unless the accuracy is already really good
   if (age <= _ageFilter) {
     // Good Location Acquired
     DLog(@"Location updated: %@, oldLocation: %@, accuracy: %g, age: %g, distanceChanged: %g", newLocation, oldLocation, accuracy, age, distanceChanged);
-    
-    //    [[PSToastCenter defaultCenter] hideToast];
-    
-    if (_shouldDisableAfterLocationFix) {
-      [self stopUpdates];
-    }
     
     // Set last known acquired location
     RELEASE_SAFELY(_lastLocation);
     _lastLocation = [newLocation copy];
     
-    // Post Notification to reload interface
-    if (_locationRequested) {
-      _locationRequested = NO;
-      [[NSNotificationCenter defaultCenter] postNotificationName:kLocationAcquired object:nil];
-    }
-    
     // See if we have a good GPS lock
-    if (accuracy < 250) {
+    if (accuracy < 300) {
       _hasGPSLock = YES;
     } else {
       _hasGPSLock = NO;
     }
     
-    //    if (distanceChanged >= distanceThreshold) {
-    //      [[NSNotificationCenter defaultCenter] postNotificationName:kLocationAcquired object:nil];
-    //    } else {
-    //      [[NSNotificationCenter defaultCenter] postNotificationName:kLocationUnchanged object:nil];
-    //    }
+    if (_shouldDisableAfterLocationFix) {
+      [self stopUpdates];
+    }
   } else {
     // Bad Location Discarded
     DLog(@"Location discarded: %@, oldLocation: %@, accuracy: %g, age: %g, distanceChanged: %g", newLocation, oldLocation, accuracy, age, distanceChanged);
+  }
+}
+
+- (void)pollLocation:(NSTimer *)timer {
+  if (!_lastLocation) return;
+  
+  NSTimeInterval timeSinceStart = [[NSDate date] timeIntervalSinceDate:_startDate];
+
+  // Give it at least 3 seconds or override if has GPS lock
+  if (timeSinceStart > 3.0 || _hasGPSLock) {
+    // Post Notification to reload interface
+    if (_locationRequested) {
+      _locationRequested = NO;
+      INVALIDATE_TIMER(_pollTimer);
+      [[NSNotificationCenter defaultCenter] postNotificationName:kLocationAcquired object:_lastLocation];
+    }
   }
 }
 
