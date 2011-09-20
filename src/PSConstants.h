@@ -86,7 +86,7 @@
  */
 #define RELEASE_SAFELY(__POINTER) { [__POINTER release]; __POINTER = nil; }
 #define INVALIDATE_TIMER(__TIMER) { [__TIMER invalidate]; __TIMER = nil; }
-
+#define INVALIDATE_AND_RELEASE_TIMER(__TIMER) { [__TIMER invalidate]; [__TIMER release]; __TIMER = nil; }
 // Release a CoreFoundation object safely.
 #define RELEASE_CF_SAFELY(__REF) { if (nil != (__REF)) { CFRelease(__REF); __REF = nil; } }
 
