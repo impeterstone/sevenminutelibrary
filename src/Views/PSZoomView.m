@@ -72,6 +72,10 @@
   return _zoomImageView;
 }
 
+- (void)scrollViewDidEndZooming:(UIScrollView *)scrollView withView:(UIView *)view atScale:(float)scale {
+  [_zoomImageView setShouldScale:scale];
+}
+
 - (void)showZoom {
   _captionLabel.text = _caption;
   _captionLabel.height = _oldCaptionFrame.size.height;

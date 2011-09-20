@@ -98,6 +98,13 @@ static BOOL isYelpInstalled() {
 }
 
 /**
+ Is Multitasking supported?
+ */
+static BOOL isMultitaskingSupported() {
+  return [UIDevice currentDevice].multitaskingSupported;
+}
+
+/**
  Detect iPad
  */
 static BOOL isDeviceIPad() {
