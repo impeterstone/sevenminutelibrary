@@ -98,8 +98,10 @@ static NSInteger _ageFilter = 60; // seconds
 
 - (void)startUpdates {
 #if TARGET_IPHONE_SIMULATOR
-  [[NSNotificationCenter defaultCenter] postNotificationName:kLocationAcquired object:nil];
-  _locationRequested = NO;
+  if (_locationRequested) {
+    _locationRequested = NO;
+    [[NSNotificationCenter defaultCenter] postNotificationName:kLocationAcquired object:nil];
+  }
 #else
   if (!_isUpdating) {
     _isUpdating = YES;
