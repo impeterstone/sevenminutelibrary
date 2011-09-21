@@ -73,7 +73,7 @@ valistArray;\
 @implementation EGODatabase
 @synthesize sqliteHandle=handle;
 
-#define DEG2RAD(degrees) (degrees * 0.01745327) // degrees * pi over 180
+#define RADIANS(degrees) ((degrees * M_PI) / 180.0)
 
 static void distanceFunc(sqlite3_context *context, int argc, sqlite3_value **argv)
 {
@@ -90,11 +90,20 @@ static void distanceFunc(sqlite3_context *context, int argc, sqlite3_value **arg
   double lat2 = sqlite3_value_double(argv[2]);
   double lon2 = sqlite3_value_double(argv[3]);
   // convert lat1 and lat2 into radians now, to avoid doing it twice below
-  double lat1rad = DEG2RAD(lat1);
-  double lat2rad = DEG2RAD(lat2);
+  double lat1rad = RADIANS(lat1);
+  double lat2rad = RADIANS(lat2);
+  
   // apply the spherical law of cosines to our latitudes and longitudes, and set the result appropriately
-  // 6378.1 is the approximate radius of the earth in kilometres
-  sqlite3_result_double(context, acos(sin(lat1rad) * sin(lat2rad) + cos(lat1rad) * cos(lat2rad) * cos(DEG2RAD(lon2) - DEG2RAD(lon1))) * 6378.1);
+  // Haversine Formula
+  
+  // From Google
+  // To search by kilometers instead of miles, replace 3959 with 6371. 
+  // SELECT id, ( 3959 * acos( cos( radians(37) ) * cos( radians( lat ) ) * cos( radians( lng ) - radians(-122) ) + sin( radians(37) ) * sin( radians( lat ) ) ) ) AS distance FROM markers HAVING distance < 25 ORDER BY distance LIMIT 0 , 20;
+  
+  // R varies from 6356.78 km at the poles to 6378.14 km at the equator.
+  double r = 3959; // miles
+//  double r = 6371; // km
+  sqlite3_result_double(context, acos(sin(lat1rad) * sin(lat2rad) + cos(lat1rad) * cos(lat2rad) * cos(RADIANS(lon2) - RADIANS(lon1))) * r);
 }
 
 + (id)databaseWithPath:(NSString*)aPath {
