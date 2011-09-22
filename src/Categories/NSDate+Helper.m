@@ -30,18 +30,11 @@
 
 #import "NSDate+Helper.h"
 
-static NSCalendar *calendar;
-static NSDateFormatter *displayFormatter;
 
 @implementation NSDate (Helper)
 
-+ (void)load {
-    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-    
-    calendar = [[NSCalendar currentCalendar] retain];
-    displayFormatter = [[NSDateFormatter alloc] init];
-    
-	[pool drain];
++ (void)initialize {
+//  displayFormatter = [[NSDateFormatter alloc] init];
 }
 
 /*
@@ -49,6 +42,8 @@ static NSDateFormatter *displayFormatter;
  * you're better off using daysAgoAgainstMidnight
  */
 - (NSUInteger)daysAgo {
+  static NSCalendar *calendar = nil;
+  if (!calendar) calendar = [[NSCalendar currentCalendar] retain];
     NSDateComponents *components = [calendar components:(NSDayCalendarUnit) 
 											   fromDate:self
 												 toDate:[NSDate date]
@@ -87,6 +82,8 @@ static NSDateFormatter *displayFormatter;
 }
 
 - (NSUInteger)weekday {
+  static NSCalendar *calendar = nil;
+  if (!calendar) calendar = [[NSCalendar currentCalendar] retain];
     NSDateComponents *weekdayComponents = [calendar components:(NSWeekdayCalendarUnit) fromDate:self];
 	return [weekdayComponents weekday];
 }
@@ -113,6 +110,11 @@ static NSDateFormatter *displayFormatter;
 
 + (NSString *)stringForDisplayFromDate:(NSDate *)date prefixed:(BOOL)prefixed alwaysDisplayTime:(BOOL)displayTime
 {
+  static NSCalendar *calendar = nil;
+  if (!calendar) calendar = [[NSCalendar currentCalendar] retain];
+  
+  static NSDateFormatter *displayFormatter = nil;
+  if (!displayFormatter) displayFormatter = [[NSDateFormatter alloc] init];
     /* 
 	 * if the date is in today, display 12-hour time with meridian,
 	 * if it is within the last 7 days, display weekday name (Friday)
@@ -208,6 +210,9 @@ static NSDateFormatter *displayFormatter;
 }
 
 - (NSDate *)beginningOfWeek {
+  static NSCalendar *calendar = nil;
+  if (!calendar) calendar = [[NSCalendar currentCalendar] retain];
+  
 	// largely borrowed from "Date and Time Programming Guide for Cocoa"
 	// we'll use the default calendar and hope for the best
 	
@@ -239,6 +244,8 @@ static NSDateFormatter *displayFormatter;
 }
 
 - (NSDate *)beginningOfDay {
+  static NSCalendar *calendar = nil;
+  if (!calendar) calendar = [[NSCalendar currentCalendar] retain];
     // Get the weekday component of the current date
 	NSDateComponents *components = [calendar components:(NSYearCalendarUnit | NSMonthCalendarUnit | NSDayCalendarUnit) 
 											   fromDate:self];
@@ -246,6 +253,8 @@ static NSDateFormatter *displayFormatter;
 }
 
 - (NSDate *)endOfWeek {
+  static NSCalendar *calendar = nil;
+  if (!calendar) calendar = [[NSCalendar currentCalendar] retain];
     // Get the weekday component of the current date
 	NSDateComponents *weekdayComponents = [calendar components:NSWeekdayCalendarUnit fromDate:self];
 	NSDateComponents *componentsToAdd = [[NSDateComponents alloc] init];

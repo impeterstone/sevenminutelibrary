@@ -61,12 +61,12 @@
     NSString *caption = [node getAttributeNamed:@"alt"];
     
     // Create payload
-    NSMutableDictionary *photoDict = [[NSMutableDictionary alloc] initWithCapacity:2];
-    src ? [photoDict setObject:src forKey:@"src"] : [photoDict setObject:[NSNull null] forKey:@"src"];
-    caption ? [photoDict setObject:caption forKey:@"caption"] : [photoDict setObject:[NSNull null] forKey:@"caption"];
+    NSMutableDictionary *photo = [[NSMutableDictionary alloc] initWithCapacity:2];
+    src ? [photo setObject:src forKey:@"src"] : [photo setObject:[NSNull null] forKey:@"src"];
+    caption ? [photo setObject:caption forKey:@"caption"] : [photo setObject:[NSNull null] forKey:@"caption"];
     
-    [photos addObject:photoDict];
-    [photoDict release];
+    [photos addObject:photo];
+    [photo release];
     
     [pool drain];
   }
