@@ -172,6 +172,14 @@ static NSInteger _ageFilter = 60; // seconds
 #endif
 }
 
+- (NSString *)locationString {
+  if ([self hasAcquiredLocation]) {
+    return [NSString stringWithFormat:@"%f,%f", [self latitude], [self longitude]];
+  } else {
+    return @"";
+  }
+}
+
 #pragma mark CLLocationManagerDelegate
 // Delegate method from the CLLocationManagerDelegate protocol.
 - (void)locationManager:(CLLocationManager *)manager didUpdateToLocation:(CLLocation *)newLocation fromLocation:(CLLocation *)oldLocation {

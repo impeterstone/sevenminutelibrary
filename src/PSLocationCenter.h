@@ -38,6 +38,7 @@
 - (CLLocationCoordinate2D)locationCoordinate;
 - (CGFloat)latitude;
 - (CGFloat)longitude;
+- (NSString *)locationString;
 
 // Private Methods
 - (void)startUpdates;
