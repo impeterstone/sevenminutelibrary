@@ -59,6 +59,7 @@
 
 // Cell Selection State
 - (BOOL)cellIsSelected:(NSIndexPath *)indexPath;
+- (BOOL)cellIsSelected:(NSIndexPath *)indexPath withObject:(id)object;
 
 // Cell Type
 - (Class)cellClassAtIndexPath:(NSIndexPath *)indexPath;

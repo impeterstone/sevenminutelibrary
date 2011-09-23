@@ -300,6 +300,10 @@
 	return selectedIndex == nil ? NO : [selectedIndex boolValue];
 }
 
+- (BOOL)cellIsSelected:(NSIndexPath *)indexPath withObject:(id)object {
+  // subclass should implement
+}
+
 #pragma mark - UITableViewDelegate
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
   [tableView deselectRowAtIndexPath:indexPath animated:YES];
