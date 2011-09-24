@@ -22,9 +22,9 @@
     [button.titleLabel setShadowColor:[PSStyleSheet shadowColorForStyle:style]];
     [button.titleLabel setShadowOffset:[PSStyleSheet shadowOffsetForStyle:style]];
   } else {
-    button.titleLabel.font = [UIFont fontWithName:@"HelveticaNeue-Bold" size:12.0];
+    button.titleLabel.font = [UIFont fontWithName:@"HelveticaNeue-Bold" size:13.0];
     button.titleLabel.shadowColor = [UIColor blackColor];
-    button.titleLabel.shadowOffset = CGSizeMake(0, 1);
+    button.titleLabel.shadowOffset = CGSizeMake(0, -1);
   }
   
   UIImage *bg = nil;
@@ -117,10 +117,10 @@
   UIButton *back = [UIButton buttonWithType:UIButtonTypeCustom];
   back.frame = CGRectMake(0, 0, 60, 44 - 14);
   [back setTitle:@"Back" forState:UIControlStateNormal];
-  [back setTitleEdgeInsets:UIEdgeInsetsMake(0, 9, 0, 0)];
-  back.titleLabel.font = [UIFont fontWithName:@"HelveticaNeue-Bold" size:12.0];
+  [back setTitleEdgeInsets:UIEdgeInsetsMake(0, 10, 0, 0)];
+  back.titleLabel.font = [UIFont fontWithName:@"HelveticaNeue-Bold" size:13.0];
   back.titleLabel.shadowColor = [UIColor blackColor];
-  back.titleLabel.shadowOffset = CGSizeMake(0, 1);
+  back.titleLabel.shadowOffset = CGSizeMake(0, -1);
   UIImage *backImage = [[UIImage imageNamed:@"navbar_back_button.png"] stretchableImageWithLeftCapWidth:19 topCapHeight:0];
   UIImage *backHighlightedImage = [[UIImage imageNamed:@"navbar_back_highlighted_button.png"] stretchableImageWithLeftCapWidth:19 topCapHeight:0];  
   [back setBackgroundImage:backImage forState:UIControlStateNormal];
