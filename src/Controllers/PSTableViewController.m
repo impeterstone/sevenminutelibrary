@@ -302,6 +302,7 @@
 
 - (BOOL)cellIsSelected:(NSIndexPath *)indexPath withObject:(id)object {
   // subclass should implement
+  return NO;
 }
 
 #pragma mark - UITableViewDelegate
