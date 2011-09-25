@@ -26,10 +26,13 @@
 @synthesize loadingImage = _loadingImage;
 @synthesize emptyImage = _emptyImage;
 @synthesize errorImage = _errorImage;
+@synthesize isFullScreen = _isFullScreen;
 
 - (id)initWithFrame:(CGRect)frame {
   self = [super initWithFrame:frame];
   if (self) {    
+    _isFullScreen = NO;
+    
     _state = PSNullViewStateDisabled;
     
     _imageView = [[UIImageView alloc] initWithFrame:CGRectZero];
@@ -85,31 +88,37 @@
 {
   [super layoutSubviews];
   
-  CGFloat top = floorf(self.height / 2);
-  
-  if (_imageView.image && (self.state == PSNullViewStateEmpty || self.state == PSNullViewStateError)) {
+  if (_isFullScreen && (self.state == PSNullViewStateEmpty || self.state == PSNullViewStateError)) {
     _imageView.hidden = NO;
-    _imageView.left = floorf(self.width / 2) - floorf(_imageView.width / 2);
-    _imageView.top = top - floorf(_imageView.height / 2) - 30;
-    top = _imageView.bottom + 20;
-  } else if (self.state == PSNullViewStateLoading) {
-    _imageView.hidden = YES;
-    _aiv.left = floorf(self.width / 2) - floorf(_aiv.width / 2);
-    _aiv.top = top - floorf(_aiv.height / 2) - 30;
-    top = _aiv.bottom + 10;
+    _imageView.top = 0;
+    _imageView.left = 0;
   } else {
-    _imageView.hidden = YES;
-    top -= 20;
+    CGFloat top = floorf(self.height / 2);
+    
+    if (_imageView.image && (self.state == PSNullViewStateEmpty || self.state == PSNullViewStateError)) {
+      _imageView.hidden = NO;
+      _imageView.left = floorf(self.width / 2) - floorf(_imageView.width / 2);
+      _imageView.top = top - floorf(_imageView.height / 2) - 30;
+      top = _imageView.bottom + 20;
+    } else if (self.state == PSNullViewStateLoading) {
+      _imageView.hidden = YES;
+      _aiv.left = floorf(self.width / 2) - floorf(_aiv.width / 2);
+      _aiv.top = top - floorf(_aiv.height / 2) - 30;
+      top = _aiv.bottom + 10;
+    } else {
+      _imageView.hidden = YES;
+      top -= 20;
+    }
+    
+    _titleLabel.left = MARGIN_X;
+    _titleLabel.width = self.width - MARGIN_X * 2;
+    _titleLabel.top = top;
+    top = _titleLabel.bottom;
+    
+    _subtitleLabel.left = MARGIN_X;
+    _subtitleLabel.width = self.width - MARGIN_X * 2;
+    _subtitleLabel.top = top; 
   }
-
-  _titleLabel.left = MARGIN_X;
-  _titleLabel.width = self.width - MARGIN_X * 2;
-  _titleLabel.top = top;
-  top = _titleLabel.bottom;
-  
-  _subtitleLabel.left = MARGIN_X;
-  _subtitleLabel.width = self.width - MARGIN_X * 2;
-  _subtitleLabel.top = top;
 }
 
 #pragma mark - State

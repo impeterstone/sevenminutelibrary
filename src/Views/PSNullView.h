@@ -35,6 +35,8 @@ typedef enum {
   UIImage *_loadingImage;
   UIImage *_emptyImage;
   UIImage *_errorImage;
+  
+  BOOL _isFullScreen;
 }
 
 @property (nonatomic, assign) PSNullViewState state;
@@ -47,5 +49,6 @@ typedef enum {
 @property (nonatomic, retain) UIImage *loadingImage;
 @property (nonatomic, retain) UIImage *emptyImage;
 @property (nonatomic, retain) UIImage *errorImage;
+@property (nonatomic, assign) BOOL isFullScreen;
 
 @end
