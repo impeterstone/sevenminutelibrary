@@ -12,6 +12,8 @@
 
 @interface PSNullView (Private)
 
+- (void)didTapNullView:(UITapGestureRecognizer *)gr;
+
 @end
 
 @implementation PSNullView
@@ -27,6 +29,7 @@
 @synthesize emptyImage = _emptyImage;
 @synthesize errorImage = _errorImage;
 @synthesize isFullScreen = _isFullScreen;
+@synthesize delegate = _delegate;
 
 - (id)initWithFrame:(CGRect)frame {
   self = [super initWithFrame:frame];
@@ -61,6 +64,10 @@
     [self addSubview:_titleLabel];
     [self addSubview:_subtitleLabel];
     [self addSubview:_aiv];
+    
+    UITapGestureRecognizer *gr = [[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(didTapNullView:)] autorelease];
+    gr.numberOfTapsRequired = 1;
+    [self addGestureRecognizer:gr];
   }
   return self;
 }
@@ -82,6 +89,12 @@
   RELEASE_SAFELY(_errorImage);
   
   [super dealloc];
+}
+
+- (void)didTapNullView:(UITapGestureRecognizer *)gr {
+  if (self.delegate && [self.delegate respondsToSelector:@selector(nullViewTapped:)] && self.state == PSNullViewStateError) {
+    [self.delegate nullViewTapped:self];
+  }
 }
 
 - (void)layoutSubviews

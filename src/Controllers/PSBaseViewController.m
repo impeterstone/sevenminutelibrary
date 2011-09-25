@@ -106,6 +106,11 @@
   [self.navigationController popViewControllerAnimated:YES];
 }
 
+#pragma mark - PSNullViewDelegate
+- (void)nullViewTapped:(id)sender {
+  [self reloadDataSource];
+}
+
 #pragma mark - PSStateMachine
 - (BOOL)dataIsAvailable {
   return NO;
@@ -157,11 +162,11 @@
 - (void)updateState {
   if ([self dataIsAvailable]) {
     // We have data to display
-//    [self.view sendSubviewToBack:_nullView];
+    [self.view sendSubviewToBack:_nullView];
     _nullView.state = PSNullViewStateDisabled;
   } else {
     // We don't have data available to display
-//    [self.view bringSubviewToFront:_nullView];
+    [self.view bringSubviewToFront:_nullView];
     if ([self dataIsLoading]) {
       // We are loading for the first time
       _nullView.state = PSNullViewStateLoading;

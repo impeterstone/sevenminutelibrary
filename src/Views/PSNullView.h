@@ -9,6 +9,12 @@
 #import <UIKit/UIKit.h>
 #import "PSView.h"
 
+@protocol PSNullViewDelegate <NSObject>
+
+- (void)nullViewTapped:(id)sender;
+
+@end
+
 typedef enum {
   PSNullViewStateDisabled = -1,
   PSNullViewStateEmpty = 0,
@@ -37,6 +43,7 @@ typedef enum {
   UIImage *_errorImage;
   
   BOOL _isFullScreen;
+  id <PSNullViewDelegate> _delegate;
 }
 
 @property (nonatomic, assign) PSNullViewState state;
@@ -50,5 +57,6 @@ typedef enum {
 @property (nonatomic, retain) UIImage *emptyImage;
 @property (nonatomic, retain) UIImage *errorImage;
 @property (nonatomic, assign) BOOL isFullScreen;
+@property (nonatomic, assign) id <PSNullViewDelegate> delegate;
 
 @end
