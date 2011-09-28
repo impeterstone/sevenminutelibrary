@@ -272,6 +272,122 @@
   }
 }
 
+- (void)dataSourceShouldLoadObjects:(id)objects shouldAnimate:(BOOL)shouldAnimate {
+  // If we have no items, just return now
+  BOOL hasData = NO;
+  for (NSArray *rows in objects) {
+    if ([rows count] > 0) {
+      hasData = YES;
+    }
+  }
+  
+  if (!hasData) {
+    [self dataSourceDidLoad];
+    return;
+  }
+  
+  // Delete all existing data
+  NSIndexSet *newSectionIndexSet = nil;
+  NSIndexSet *deleteSectionIndexSet = nil;
+  NSMutableArray *newRowIndexPaths = [NSMutableArray arrayWithCapacity:1];
+  NSMutableArray *deleteRowIndexPaths = [NSMutableArray arrayWithCapacity:1];
+  //  NSMutableArray *updateRowIndexPaths = [NSMutableArray arrayWithCapacity:1];
+  
+  // Delete all sections
+  if ([self.items count] > 0) {
+    deleteSectionIndexSet = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, [self.items count])];
+  }
+  
+  // Delete all rows
+  for (int section = 0; section < [self.items count]; section++) {
+    for (int row = 0; row < [[self.items objectAtIndex:section] count]; row++) {
+      [deleteRowIndexPaths addObject:[NSIndexPath indexPathForRow:row inSection:section]];
+    }
+  }
+  
+  // Set new items
+  self.items = objects;
+  
+  // Add new sections
+  newSectionIndexSet = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, [objects count])];
+  
+  // Add new rows
+  for (int section = 0; section < [self.items count]; section++) {
+    for (int row = 0; row < [[self.items objectAtIndex:section] count]; row++) {
+      [newRowIndexPaths addObject:[NSIndexPath indexPathForRow:row inSection:section]];
+    }
+  }
+  
+  if (shouldAnimate) {
+    //
+    // BEGIN TABLEVIEW ANIMATION BLOCK
+    //
+    [_tableView beginUpdates];
+    
+    // These are the sections that need to be inserted
+    if (deleteSectionIndexSet) {
+      [_tableView deleteSections:deleteSectionIndexSet withRowAnimation:UITableViewRowAnimationNone];
+    }
+    
+    if (newSectionIndexSet) {
+      [_tableView insertSections:newSectionIndexSet withRowAnimation:UITableViewRowAnimationNone];
+    }
+    
+    // These are the rows that need to be deleted
+    if ([deleteRowIndexPaths count] > 0) {
+      [_tableView deleteRowsAtIndexPaths:deleteRowIndexPaths withRowAnimation:UITableViewRowAnimationNone];
+    }
+    
+    // These are the new rows that need to be inserted
+    if ([newRowIndexPaths count] > 0) {
+      [_tableView insertRowsAtIndexPaths:newRowIndexPaths withRowAnimation:UITableViewRowAnimationNone];
+    }
+    
+    [_tableView endUpdates];
+    //
+    // END TABLEVIEW ANIMATION BLOCK
+    //
+  } else {
+    [_tableView reloadData];
+  }
+
+  [self dataSourceDidLoad];
+
+}
+         
+- (void)dataSourceShouldLoadMoreObjects:(id)objects forSection:(NSInteger)section shouldAnimate:(BOOL)shouldAnimate {
+  
+  // This is a load more
+  NSMutableArray *newRowIndexPaths = [NSMutableArray arrayWithCapacity:1];
+  
+  int rowStart = [[self.items objectAtIndex:section] count]; // row starting offset for inserting
+  [[self.items objectAtIndex:section] addObjectsFromArray:objects];
+  for (int row = rowStart; row < [[self.items objectAtIndex:section] count]; row++) {
+    [newRowIndexPaths addObject:[NSIndexPath indexPathForRow:row inSection:0]];
+  }
+  
+  if (shouldAnimate) {
+    //
+    // BEGIN TABLEVIEW ANIMATION BLOCK
+    //
+    [_tableView beginUpdates];
+    
+    // These are the new rows that need to be inserted
+    if ([newRowIndexPaths count] > 0) {
+      [_tableView insertRowsAtIndexPaths:newRowIndexPaths withRowAnimation:UITableViewRowAnimationNone];
+    }
+    
+    [_tableView endUpdates];
+    //
+    // END TABLEVIEW ANIMATION BLOCK
+    //
+  } else {
+    [_tableView reloadData];
+  }
+  
+  [self dataSourceDidLoad];
+}
+
 - (void)loadMore {
   _reloading = YES;
   [self updateState];

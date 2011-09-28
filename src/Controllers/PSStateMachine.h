@@ -40,7 +40,8 @@
 - (void)restoreDataSource; // Restore view after it gets unloaded
 - (void)reloadDataSource; // Refresh
 - (void)loadDataSource; // Initial Load
-- (void)dataSourceShouldLoadObjects:(id)objects;
+- (void)dataSourceShouldLoadObjects:(id)objects shouldAnimate:(BOOL)shouldAnimate;
+- (void)dataSourceShouldLoadMoreObjects:(id)objects forSection:(NSInteger)section shouldAnimate:(BOOL)shouldAnimate;
 - (void)dataSourceDidLoad;
 - (void)dataSourceDidLoadMore;
 - (void)dataSourceDidError;

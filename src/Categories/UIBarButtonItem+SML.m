@@ -62,6 +62,7 @@
   
   [button setBackgroundImage:bg forState:UIControlStateNormal];
   [button setBackgroundImage:bgHighlighted forState:UIControlStateHighlighted];
+  [button setBackgroundImage:bgHighlighted forState:UIControlStateSelected];
   [button addTarget:target action:action forControlEvents:UIControlEventTouchUpInside];  
   UIBarButtonItem *navButton = [[[UIBarButtonItem alloc] initWithCustomView:button] autorelease];
   return navButton;
