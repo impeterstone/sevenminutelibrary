@@ -274,20 +274,20 @@
 
 - (void)dataSourceShouldLoadObjects:(id)objects shouldAnimate:(BOOL)shouldAnimate {
   // If we have no items, just return now
-  BOOL hasData = NO;
-  for (NSArray *rows in objects) {
-    if ([rows count] > 0) {
-      hasData = YES;
-    }
-  }
-  
-  if (!hasData) {
-    [self.items removeAllObjects];
-    [self dataSourceDidLoad];
-    return;
-  } else {
-//    [self.tableView scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:NO];
-  }
+//  BOOL hasData = NO;
+//  for (NSArray *rows in objects) {
+//    if ([rows count] > 0) {
+//      hasData = YES;
+//    }
+//  }
+//  
+//  if (!hasData) {
+//    [self.items removeAllObjects];
+//    [self dataSourceDidLoad];
+//    return;
+//  } else {
+////    [self.tableView scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:NO];
+//  }
   
   if (shouldAnimate) {
     // Delete all existing data
