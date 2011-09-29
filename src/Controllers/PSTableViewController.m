@@ -286,42 +286,42 @@
     [self dataSourceDidLoad];
     return;
   } else {
-    [self.tableView scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:NO];
-  }
-  
-  // Delete all existing data
-  NSIndexSet *newSectionIndexSet = nil;
-  NSIndexSet *deleteSectionIndexSet = nil;
-  NSMutableArray *newRowIndexPaths = [NSMutableArray arrayWithCapacity:1];
-  NSMutableArray *deleteRowIndexPaths = [NSMutableArray arrayWithCapacity:1];
-  //  NSMutableArray *updateRowIndexPaths = [NSMutableArray arrayWithCapacity:1];
-  
-  // Delete all sections
-  if ([self.items count] > 0) {
-    deleteSectionIndexSet = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, [self.items count])];
-  }
-  
-  // Delete all rows
-  for (int section = 0; section < [self.items count]; section++) {
-    for (int row = 0; row < [[self.items objectAtIndex:section] count]; row++) {
-      [deleteRowIndexPaths addObject:[NSIndexPath indexPathForRow:row inSection:section]];
-    }
-  }
-  
-  // Set new items
-  self.items = objects;
-  
-  // Add new sections
-  newSectionIndexSet = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, [objects count])];
-  
-  // Add new rows
-  for (int section = 0; section < [self.items count]; section++) {
-    for (int row = 0; row < [[self.items objectAtIndex:section] count]; row++) {
-      [newRowIndexPaths addObject:[NSIndexPath indexPathForRow:row inSection:section]];
-    }
+//    [self.tableView scrollRectToVisible:CGRectMake(0, 0, 1, 1) animated:NO];
   }
   
   if (shouldAnimate) {
+    // Delete all existing data
+    NSIndexSet *newSectionIndexSet = nil;
+    NSIndexSet *deleteSectionIndexSet = nil;
+    NSMutableArray *newRowIndexPaths = [NSMutableArray arrayWithCapacity:1];
+    NSMutableArray *deleteRowIndexPaths = [NSMutableArray arrayWithCapacity:1];
+    //  NSMutableArray *updateRowIndexPaths = [NSMutableArray arrayWithCapacity:1];
+    
+    // Delete all sections
+    if ([self.items count] > 0) {
+      deleteSectionIndexSet = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, [self.items count])];
+    }
+    
+    // Delete all rows
+    for (int section = 0; section < [self.items count]; section++) {
+      for (int row = 0; row < [[self.items objectAtIndex:section] count]; row++) {
+        [deleteRowIndexPaths addObject:[NSIndexPath indexPathForRow:row inSection:section]];
+      }
+    }
+    
+    // Set new items
+    self.items = objects;
+    
+    // Add new sections
+    newSectionIndexSet = [NSIndexSet indexSetWithIndexesInRange:NSMakeRange(0, [objects count])];
+    
+    // Add new rows
+    for (int section = 0; section < [self.items count]; section++) {
+      for (int row = 0; row < [[self.items objectAtIndex:section] count]; row++) {
+        [newRowIndexPaths addObject:[NSIndexPath indexPathForRow:row inSection:section]];
+      }
+    }
+    
     //
     // BEGIN TABLEVIEW ANIMATION BLOCK
     //
@@ -351,6 +351,7 @@
     // END TABLEVIEW ANIMATION BLOCK
     //
   } else {
+    self.items = objects;
     [_tableView reloadData];
   }
 
