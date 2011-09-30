@@ -163,7 +163,7 @@
     
     // Price and Distance
     HTMLNode *priceDistance = [placeNode findChildWithAttribute:@"class" matchingName:@"price-distance" allowPartial:YES];
-    NSString *distance = [[[[priceDistance findChildTags:@"li"] firstObject] contents] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    NSString *distance = [[[[[priceDistance findChildTags:@"li"] firstObject] contents] stringByReplacingOccurrencesOfString:@"mi" withString:@""] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
     NSString *price = [[[[priceDistance findChildTags:@"li"] lastObject] contents] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
     [placeDict setObject:distance forKey:@"distance"];
     [placeDict setObject:price forKey:@"price"];
@@ -173,6 +173,10 @@
     ratingString = [[ratingString componentsMatchedByRegex:@"(stars-)([^ ]+)" capture:2] firstObject];
     ratingString = [ratingString stringByReplacingOccurrencesOfString:@"_half" withString:@".5"];
     [placeDict setObject:ratingString forKey:@"rating"];
+    
+    // Score
+    double score = [ratingString doubleValue] / 5.0;
+    [placeDict setObject:[NSNumber numberWithDouble:score] forKey:@"score"];
     
     // Number of Reviews
     NSString *numReviews = [[[placeNode findChildWithAttribute:@"class" matchingName:@"review-count" allowPartial:YES] contents] stringByReplacingOccurrencesOfString:@" Reviews" withString:@""];
@@ -193,8 +197,17 @@
       NSDictionary *pageData = [[yConfigJSON objectFromJSONString] objectForKey:@"pageData"];
       
       // Total results
-      NSString *numResults = [[pageData objectForKey:@"pager"] objectForKey:@"total"];
+      NSNumber *numResults = [[pageData objectForKey:@"pager"] objectForKey:@"total"];
       [response setObject:numResults forKey:@"numResults"];
+      
+      // Paging
+      // Num pages
+      NSNumber *currentPage = [[pageData objectForKey:@"pager"] objectForKey:@"current_page"];
+      
+      NSNumber *numPages = [[pageData objectForKey:@"pager"] objectForKey:@"num_pages"];
+      
+      NSDictionary *pagingDict = [NSDictionary dictionaryWithObjectsAndKeys:currentPage, @"currentPage", numPages, @"numPages", nil];
+      [response setObject:pagingDict forKey:@"paging"];
       
       // Process markers
       int i = 0;
@@ -217,13 +230,17 @@
         NSNumber *rating = [bizMarker objectForKey:@"rating"];
         [placeDict setObject:rating forKey:@"rating"];
         
+        // Score
+        double score = [rating doubleValue] / 5.0;
+        [placeDict setObject:[NSNumber numberWithDouble:score] forKey:@"score"];
+        
         // Alias
         NSString *alias = [bizMarker objectForKey:@"alias"];
         [placeDict setObject:alias forKey:@"alias"];
         
         // Categories
-        NSString *categories = [bizMarker objectForKey:@"categories"];
-        [placeDict setObject:categories forKey:@"categories"];
+        NSString *category = [bizMarker objectForKey:@"categories"];
+        [placeDict setObject:category forKey:@"category"];
         
         // Name
         NSString *name = [bizMarker objectForKey:@"name"];
@@ -237,6 +254,7 @@
       }
     }
   }
+  
   
   // Prepare Response
   [response setObject:placeArray forKey:@"places"];
