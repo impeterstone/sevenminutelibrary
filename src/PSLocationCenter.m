@@ -64,6 +64,8 @@ static NSInteger _ageFilter = 60; // seconds
 - (void)dealloc {
   [[NSNotificationCenter defaultCenter] removeObserver:self name:kApplicationResumed object:nil];
   [[NSNotificationCenter defaultCenter] removeObserver:self name:kApplicationSuspended object:nil];
+  
+  _locationManager.delegate = nil;
   INVALIDATE_TIMER(_pollTimer);
   RELEASE_SAFELY(_startDate);
   RELEASE_SAFELY(_lastLocation);

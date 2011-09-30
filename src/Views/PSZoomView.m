@@ -68,6 +68,17 @@
   return self;
 }
 
+- (void)dealloc {
+  _containerView.delegate = nil;
+  
+  RELEASE_SAFELY(_zoomImageView);
+  RELEASE_SAFELY(_shadeView);
+  RELEASE_SAFELY(_caption);
+  RELEASE_SAFELY(_captionLabel);
+  RELEASE_SAFELY(_containerView);
+  [super dealloc];
+}
+
 - (UIView *)viewForZoomingInScrollView:(UIScrollView *)scrollView {
   return _zoomImageView;
 }
@@ -116,15 +127,6 @@
 
 - (void)removeZoomView {
   [self removeFromSuperview];
-}
-
-- (void)dealloc {
-  RELEASE_SAFELY(_zoomImageView);
-  RELEASE_SAFELY(_shadeView);
-  RELEASE_SAFELY(_caption);
-  RELEASE_SAFELY(_captionLabel);
-  RELEASE_SAFELY(_containerView);
-  [super dealloc];
 }
 
 @end

@@ -47,6 +47,10 @@
   // Save view state
   _contentOffset = _tableView.contentOffset;
   
+  if (_searchBar) _searchBar.delegate = nil;
+  if (_tableView) _tableView.delegate = nil, _tableView.dataSource = nil;
+  if (_refreshHeaderView) _refreshHeaderView.delegate = nil;
+  
 //  _adShowing = NO;
 //  _adView.delegate = nil;
 //  RELEASE_SAFELY(_adView);
@@ -64,8 +68,13 @@
   // Remove scrolling observer
   //  [_tableView removeObserver:self forKeyPath:@"contentOffset"];
   
-  // Views
+  // Delegates
 //  _adView.delegate = nil;
+  if (_searchBar) _searchBar.delegate = nil;
+  if (_tableView) _tableView.delegate = nil, _tableView.dataSource = nil;
+  if (_refreshHeaderView) _refreshHeaderView.delegate = nil;
+  
+  // Views
 //  RELEASE_SAFELY(_adView);
   RELEASE_SAFELY(_tableView);
   RELEASE_SAFELY(_searchBar);

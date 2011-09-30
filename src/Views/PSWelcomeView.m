@@ -37,6 +37,8 @@
 }
 
 - (void)dealloc {
+  _scrollView.delegate = nil;
+  
   RELEASE_SAFELY(_viewArray);
   RELEASE_SAFELY(_scrollView);
   [super dealloc];
