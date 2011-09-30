@@ -36,8 +36,10 @@
 - (BOOL)hasAcquiredLocation;
 - (CLLocation *)location;
 - (CLLocationCoordinate2D)locationCoordinate;
-- (CGFloat)latitude;
-- (CGFloat)longitude;
+- (CLLocationDegrees)latitude;
+- (CLLocationDegrees)longitude;
+- (CLLocationAccuracy)accuracy;
+
 - (NSString *)locationString;
 
 // Private Methods

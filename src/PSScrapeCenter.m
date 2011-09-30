@@ -129,6 +129,123 @@
 
 - (NSDictionary *)scrapePlacesWithHTMLString:(NSString *)htmlString {
   // Prepare response container
+  NSMutableDictionary *response = [NSMutableDictionary dictionary];
+  
+  // Array of places
+  NSMutableArray *placeArray = [NSMutableArray array];
+  
+  // HTML Scraping
+  NSError *parserError = nil;
+  HTMLParser *parser = [[HTMLParser alloc] initWithString:htmlString error:&parserError];
+  HTMLNode *doc = [parser body];
+  
+  HTMLNode *searchResults = [doc findChildWithAttribute:@"class" matchingName:@"search-results" allowPartial:YES];
+  
+  NSArray *placeNodes = [searchResults findChildrenWithAttribute:@"class" matchingName:@"biz-listing" allowPartial:YES];
+  for (HTMLNode *placeNode in placeNodes) {
+    NSMutableDictionary *placeDict = [[NSMutableDictionary alloc] initWithCapacity:8];
+    
+    // Biz
+    NSString *biz = [[placeNode getAttributeNamed:@"data-url"] stringByReplacingOccurrencesOfString:@"/biz/" withString:@""];
+    [placeDict setObject:biz forKey:@"biz"];
+    
+    // Name
+    NSString *name = [[[[[placeNode findChildTag:@"h3"] contents] componentsMatchedByRegex:@"(?ms)(\\d+\\.)(.+)" capture:2] firstObject] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    [placeDict setObject:name forKey:@"name"];
+    
+    // Cover Photo
+    NSString *coverPhoto = [[[placeNode findChildTag:@"img"] getAttributeNamed:@"src"] stringByReplacingOccurrencesOfString:@"ms.jpg" withString:@"l.jpg"];
+    [placeDict setObject:coverPhoto forKey:@"coverPhoto"];
+    
+    // Category
+    NSString *category = [[placeNode findChildTag:@"dd"] contents];
+    [placeDict setObject:category forKey:@"category"];
+    
+    // Price and Distance
+    HTMLNode *priceDistance = [placeNode findChildWithAttribute:@"class" matchingName:@"price-distance" allowPartial:YES];
+    NSString *distance = [[[[priceDistance findChildTags:@"li"] firstObject] contents] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    NSString *price = [[[[priceDistance findChildTags:@"li"] lastObject] contents] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    [placeDict setObject:distance forKey:@"distance"];
+    [placeDict setObject:price forKey:@"price"];
+    
+    // Rating
+    NSString *ratingString = [[placeNode findChildWithAttribute:@"class" matchingName:@"stars" allowPartial:YES] getAttributeNamed:@"class"];
+    ratingString = [[ratingString componentsMatchedByRegex:@"(stars-)([^ ]+)" capture:2] firstObject];
+    ratingString = [ratingString stringByReplacingOccurrencesOfString:@"_half" withString:@".5"];
+    [placeDict setObject:ratingString forKey:@"rating"];
+    
+    // Number of Reviews
+    NSString *numReviews = [[[placeNode findChildWithAttribute:@"class" matchingName:@"review-count" allowPartial:YES] contents] stringByReplacingOccurrencesOfString:@" Reviews" withString:@""];
+    [placeDict setObject:numReviews forKey:@"numReviews"];
+    
+    [placeArray addObject:placeDict];
+    [placeDict release];
+  }
+  
+  // Scrape the scripts
+  NSArray *scriptNodes = [doc findChildrenWithAttribute:@"type" matchingName:@"text/javascript" allowPartial:NO];
+  
+  for (HTMLNode *scriptNode in scriptNodes) {
+    if ([scriptNode contents] && [[scriptNode contents] rangeOfString:@"yConfig = "].location != NSNotFound) {
+      NSString *yConfigJSON = [scriptNode contents];
+      yConfigJSON = [[yConfigJSON componentsMatchedByRegex:@"(yConfig = )([^;]+)" capture:2] firstObject];
+      
+      NSDictionary *pageData = [[yConfigJSON objectFromJSONString] objectForKey:@"pageData"];
+      
+      // Total results
+      NSString *numResults = [[pageData objectForKey:@"pager"] objectForKey:@"total"];
+      [response setObject:numResults forKey:@"numResults"];
+      
+      // Process markers
+      int i = 0;
+      for (NSDictionary *marker in [pageData objectForKey:@"markers"]) {
+        NSMutableDictionary *placeDict = [placeArray objectAtIndex:i];
+        
+        // Lat
+        NSNumber *lat = [[[pageData objectForKey:@"markers"] firstObject] objectForKey:@"lat"];
+        [placeDict setObject:lat forKey:@"latitude"];
+        
+        // Lng
+        NSNumber *lng = [[[pageData objectForKey:@"markers"] firstObject] objectForKey:@"lng"];
+        [placeDict setObject:lng forKey:@"longitude"];
+        
+        // Biz
+        // Stuff scraped here will override previous scraped data if it exists because it's more accurate
+        NSDictionary *bizMarker = [marker objectForKey:@"biz"];
+        
+        // Raw Rating
+        NSNumber *rating = [bizMarker objectForKey:@"rating"];
+        [placeDict setObject:rating forKey:@"rating"];
+        
+        // Alias
+        NSString *alias = [bizMarker objectForKey:@"alias"];
+        [placeDict setObject:alias forKey:@"alias"];
+        
+        // Categories
+        NSString *categories = [bizMarker objectForKey:@"categories"];
+        [placeDict setObject:categories forKey:@"categories"];
+        
+        // Name
+        NSString *name = [bizMarker objectForKey:@"name"];
+        [placeDict setObject:name forKey:@"name"];
+        
+        // Num Reviews
+        NSNumber *numReviews = [bizMarker objectForKey:@"review_count"];
+        [placeDict setObject:numReviews forKey:@"numReviews"];
+        
+        i++;
+      }
+    }
+  }
+  
+  // Prepare Response
+  [response setObject:placeArray forKey:@"places"];
+  
+  return response;
+}
+
+- (NSDictionary *)oldscrapePlacesWithHTMLString:(NSString *)htmlString {
+  // Prepare response container
   NSMutableDictionary *placeDict = [NSMutableDictionary dictionary];
   
   // HTML Scraping

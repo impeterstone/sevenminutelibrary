@@ -156,7 +156,7 @@ static NSInteger _ageFilter = 60; // seconds
 //  return [self.locationManager.location coordinate];
 }
 
-- (CGFloat)latitude {
+- (CLLocationDegrees)latitude {
 #if TARGET_IPHONE_SIMULATOR
   return 37.32798;
 #else
@@ -165,13 +165,17 @@ static NSInteger _ageFilter = 60; // seconds
 #endif
 }
 
-- (CGFloat)longitude {
+- (CLLocationDegrees)longitude {
 #if TARGET_IPHONE_SIMULATOR
   return -122.01382;
 #else
   return _lastLocation.coordinate.longitude;
 //  return self.locationManager.location.coordinate.longitude;
 #endif
+}
+
+- (CLLocationAccuracy)accuracy {
+  return _lastLocation.horizontalAccuracy;
 }
 
 - (NSString *)locationString {
