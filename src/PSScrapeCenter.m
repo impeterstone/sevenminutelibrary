@@ -274,7 +274,11 @@
   HTMLNode *doc = [parser body];
   
   // Get Biz
-  NSString *biz = [[[[doc findChildWithAttribute:@"href" matchingName:@"src_bizid" allowPartial:YES] getAttributeNamed:@"href"] stringByMatching:@"(src_bizid=)([^&]+)"] stringByReplacingOccurrencesOfString:@"src_bizid=" withString:@""];
+  HTMLNode *bizNode = [doc findChildWithAttribute:@"href" matchingName:@"src_bizid" allowPartial:YES];
+  if (!bizNode) {
+    return nil;
+  }
+  NSString *biz = [[[bizNode getAttributeNamed:@"href"] stringByMatching:@"(src_bizid=)([^&]+)"] stringByReplacingOccurrencesOfString:@"src_bizid=" withString:@""];
   [response setObject:biz forKey:@"biz"];
 
   // Hours
