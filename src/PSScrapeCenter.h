@@ -15,6 +15,7 @@
 
 + (id)defaultCenter;
 
+- (NSDictionary *)scrapePhotosFromProxyWithHTMLString:(NSString *)htmlString;
 - (NSDictionary *)scrapePhotosWithHTMLString:(NSString *)htmlString;
 - (NSDictionary *)scrapePlacesWithHTMLString:(NSString *)htmlString;
 - (NSDictionary *)scrapeMapWithHTMLString:(NSString *)htmlString;

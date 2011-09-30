@@ -35,6 +35,53 @@
 }
 
 #pragma mark - Public Methods
+- (NSDictionary *)scrapePhotosFromProxyWithHTMLString:(NSString *)htmlString {
+  // HTML Scraping
+  NSError *parserError = nil;
+  HTMLParser *parser = [[HTMLParser alloc] initWithString:htmlString error:&parserError];
+  HTMLNode *doc = [parser body];
+  
+  NSString *numphotos = [[doc rawContents] stringByMatching:@"\\d+ Photos from"];
+  if (numphotos) {
+    numphotos = [numphotos stringByReplacingOccurrencesOfString:@" Photos from" withString:@""];
+  } else {
+    numphotos = @"0";
+  }
+  
+  NSArray *photoNodes = [doc findChildrenWithAttribute:@"src" matchingName:@"yelpcdn" allowPartial:YES];
+  
+  // Parse page
+  NSMutableArray *photos = [NSMutableArray array];
+  for (HTMLNode *node in photoNodes) {
+    NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
+    NSString *rawSrc = [node getAttributeNamed:@"src"];
+    rawSrc = [rawSrc stringByMatching:@"http[^&]+"]; // strip gwt
+    rawSrc = [rawSrc stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding]; // replace percent escapes
+    rawSrc = [rawSrc stringByReplacingOccurrencesOfString:@"ms.jpg" withString:@"l.jpg"];
+    
+    NSString *src = rawSrc;
+    NSString *caption = [node getAttributeNamed:@"alt"];
+    
+    // Create payload
+    NSMutableDictionary *photo = [[NSMutableDictionary alloc] initWithCapacity:2];
+    src ? [photo setObject:src forKey:@"src"] : [photo setObject:[NSNull null] forKey:@"src"];
+    caption ? [photo setObject:caption forKey:@"caption"] : [photo setObject:[NSNull null] forKey:@"caption"];
+    
+    [photos addObject:photo];
+    [photo release];
+    
+    [pool drain];
+  }
+  
+  [parser release];
+  
+  NSDictionary *photoDict = [NSDictionary dictionaryWithObjectsAndKeys:numphotos, @"numphotos", photos, @"photos", nil];
+  
+  VLog(@"Photos: %@", photoDict);
+  
+  return photoDict;
+}
+
 - (NSDictionary *)scrapePhotosWithHTMLString:(NSString *)htmlString {
   // HTML Scraping
   NSError *parserError = nil;
