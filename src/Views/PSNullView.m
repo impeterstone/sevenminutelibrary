@@ -179,7 +179,7 @@
   [_titleLabel sizeToFit];
   [_subtitleLabel sizeToFit];
   [_imageView sizeToFit];
-  [self setNeedsLayout];
+  [self layoutIfNeeded];
 }
 
 @end
