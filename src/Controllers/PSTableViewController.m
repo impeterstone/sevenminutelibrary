@@ -225,6 +225,12 @@
   [_loadMoreView addSubview:av];
 }
 
+- (void)reloadDataSafely {
+  [_cellCache makeObjectsPerformSelector:@selector(setShouldAnimate:) withObject:[NSNumber numberWithBool:NO]];
+  [_tableView reloadData];
+  [_cellCache makeObjectsPerformSelector:@selector(setShouldAnimate:) withObject:[NSNumber numberWithBool:YES]];
+}
+
 #pragma mark - PSStateMachine
 - (BOOL)dataIsAvailable {
   // Is this a searchResultsTable or just Table?
@@ -253,7 +259,7 @@
 
 - (void)restoreDataSource {
   [super restoreDataSource];
-  [_tableView reloadData];
+  [self reloadDataSafely];
   _tableView.contentOffset = _contentOffset;
 }
 
@@ -336,6 +342,7 @@
     //
     // BEGIN TABLEVIEW ANIMATION BLOCK
     //
+    [_cellCache makeObjectsPerformSelector:@selector(setShouldAnimate:) withObject:[NSNumber numberWithBool:NO]];
     [_tableView beginUpdates];
     
     // These are the sections that need to be inserted
@@ -358,12 +365,13 @@
     }
     
     [_tableView endUpdates];
+    [_cellCache makeObjectsPerformSelector:@selector(setShouldAnimate:) withObject:[NSNumber numberWithBool:YES]];
     //
     // END TABLEVIEW ANIMATION BLOCK
     //
   } else {
     self.items = objects;
-    [_tableView reloadData];
+    [self reloadDataSafely];
   }
 
   [self dataSourceDidLoad];
@@ -397,7 +405,7 @@
     // END TABLEVIEW ANIMATION BLOCK
     //
   } else {
-    [_tableView reloadData];
+    [self reloadDataSafely];
   }
   
   [self dataSourceDidLoad];

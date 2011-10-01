@@ -68,4 +68,6 @@
 // ScrollView Stuff
 - (void)scrollEndedTrigger;
 
+- (void)reloadDataSafely;
+
 @end

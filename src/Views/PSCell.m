@@ -82,7 +82,7 @@
 }
 
 - (void)setShouldAnimate:(NSNumber *)shouldAnimate {
-  // Subclass may implement
+  _cellShouldAnimate = [shouldAnimate boolValue];
 }
 
 - (void)setSelected:(BOOL)selected animated:(BOOL)animated {

@@ -28,6 +28,7 @@ typedef uint32_t PSCellType;
 
 @interface PSCell : UITableViewCell {
   BOOL _isExpanded;
+  BOOL _cellShouldAnimate;
 }
 
 @property (nonatomic, assign) BOOL isExpanded;
