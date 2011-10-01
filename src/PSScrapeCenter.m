@@ -157,28 +157,51 @@
     
     // Category
     NSString *category = [[placeNode findChildTag:@"dd"] contents];
-    [placeDict setObject:category forKey:@"category"];
+    [placeDict setObject:(category ? category : [NSNull null]) forKey:@"category"];
     
     // Price and Distance
     HTMLNode *priceDistance = [placeNode findChildWithAttribute:@"class" matchingName:@"price-distance" allowPartial:YES];
-    NSString *distance = [[[[[priceDistance findChildTags:@"li"] firstObject] contents] stringByReplacingOccurrencesOfString:@"mi" withString:@""] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-    NSString *price = [[[[priceDistance findChildTags:@"li"] lastObject] contents] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-    [placeDict setObject:distance forKey:@"distance"];
-    [placeDict setObject:price forKey:@"price"];
+    NSArray *pdChildren = [priceDistance findChildTags:@"li"];
+    if ([pdChildren count] > 0) {
+      NSString *distance = [[[[[priceDistance findChildTags:@"li"] firstObject] contents] stringByReplacingOccurrencesOfString:@"mi" withString:@""] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+      [placeDict setObject:distance forKey:@"distance"];
+      
+      if ([pdChildren count] > 1) {
+        NSString *price = [[[[priceDistance findChildTags:@"li"] lastObject] contents] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+        [placeDict setObject:price forKey:@"price"];
+      } else {
+        [placeDict setObject:[NSNull null] forKey:@"price"];
+      }
+    } else {
+      [placeDict setObject:[NSNull null] forKey:@"distance"];
+      [placeDict setObject:[NSNull null] forKey:@"price"];
+    }
     
     // Rating
-    NSString *ratingString = [[placeNode findChildWithAttribute:@"class" matchingName:@"stars" allowPartial:YES] getAttributeNamed:@"class"];
-    ratingString = [[ratingString componentsMatchedByRegex:@"(stars-)([^ ]+)" capture:2] firstObject];
-    ratingString = [ratingString stringByReplacingOccurrencesOfString:@"_half" withString:@".5"];
-    [placeDict setObject:ratingString forKey:@"rating"];
+    HTMLNode *ratingNode = [placeNode findChildWithAttribute:@"class" matchingName:@"stars" allowPartial:YES];
+    if (ratingNode) {
+      NSString *ratingString = [ratingNode getAttributeNamed:@"class"];
+      ratingString = [[ratingString componentsMatchedByRegex:@"(stars-)([^ ]+)" capture:2] firstObject];
+      ratingString = [ratingString stringByReplacingOccurrencesOfString:@"_half" withString:@".5"];
+      [placeDict setObject:ratingString forKey:@"rating"];
+      
+      // Score
+      double score = ([ratingString doubleValue] / 5.0) * 100.0;
+      [placeDict setObject:[NSNumber numberWithDouble:score] forKey:@"score"];
+    } else {
+      [placeDict setObject:@"0" forKey:@"rating"];
+      [placeDict setObject:[NSNumber numberWithDouble:0] forKey:@"score"];
+    }
     
-    // Score
-    double score = ([ratingString doubleValue] / 5.0) * 100.0;
-    [placeDict setObject:[NSNumber numberWithDouble:score] forKey:@"score"];
     
     // Number of Reviews
-    NSString *numReviews = [[[placeNode findChildWithAttribute:@"class" matchingName:@"review-count" allowPartial:YES] contents] stringByReplacingOccurrencesOfString:@" Reviews" withString:@""];
-    [placeDict setObject:numReviews forKey:@"numReviews"];
+    HTMLNode *numReviewsNode = [placeNode findChildWithAttribute:@"class" matchingName:@"review-count" allowPartial:YES];
+    if (numReviewsNode) {
+      NSString *numReviews = [[numReviewsNode contents] stringByReplacingOccurrencesOfString:@" Reviews" withString:@""];
+      [placeDict setObject:numReviews forKey:@"numReviews"];
+    } else {
+      [placeDict setObject:@"0" forKey:@"numReviews"];
+    }
     
     [placeArray addObject:placeDict];
     [placeDict release];
@@ -274,12 +297,34 @@
   HTMLNode *doc = [parser body];
   
   // Get Biz
-  HTMLNode *bizNode = [doc findChildWithAttribute:@"href" matchingName:@"src_bizid" allowPartial:YES];
-  if (!bizNode) {
-    return nil;
+  NSString *biz = nil;
+  HTMLNode *bizPhotos = [doc findChildWithAttribute:@"class" matchingName:@"biz-photos" allowPartial:YES];
+  if (bizPhotos) {
+    NSArray *pageLinks = [doc findChildrenWithAttribute:@"data-url" matchingName:@"biz_photos" allowPartial:YES];
+    if ([pageLinks count] > 0) {
+      NSString *dataUrl = [[pageLinks firstObject] getAttributeNamed:@"data-url"];
+      biz = [[dataUrl componentsMatchedByRegex:@"(/biz_photos/)([^?]+)" capture:2] firstObject];
+      if (biz) {
+        [response setObject:biz forKey:@"biz"];
+      }
+    }
+  } else {
+    [response setObject:[NSNull null] forKey:@"biz"];
   }
-  NSString *biz = [[[bizNode getAttributeNamed:@"href"] stringByMatching:@"(src_bizid=)([^&]+)"] stringByReplacingOccurrencesOfString:@"src_bizid=" withString:@""];
-  [response setObject:biz forKey:@"biz"];
+  
+  // Biz wasn't found, try fallback #1
+//  if (!biz) {
+//    HTMLNode *bizNode = [doc findChildWithAttribute:@"href" matchingName:@"src_bizid" allowPartial:YES];
+//    if (bizNode) {
+//      biz = [[[bizNode getAttributeNamed:@"href"] stringByMatching:@"(src_bizid=)([^&]+)"] stringByReplacingOccurrencesOfString:@"src_bizid=" withString:@""];
+//      if (biz) {
+//        [response setObject:biz forKey:@"biz"];
+//      }
+//    }
+//  }
+  
+  // No Biz means no photos
+  // respond accordingly
 
   // Hours
   NSArray *hoursNodes = [doc findChildrenWithAttribute:@"class" matchingName:@"hours" allowPartial:NO];
@@ -308,12 +353,24 @@
   // Phone
   HTMLNode *phoneNode = [doc findChildWithAttribute:@"href" matchingName:@"tel:" allowPartial:YES];
   NSString *phone = [phoneNode getAttributeNamed:@"href"];
-  NSString *phoneString = [phoneNode contents];
+  NSString *formattedPhone = [phoneNode contents];
   [response setObject:phone forKey:@"phone"];
-  [response setObject:phoneString forKey:@"phoneString"];
+  [response setObject:formattedPhone forKey:@"formattedPhone"];
   
-  // Photo
-    
+  // Scrape the scripts
+  NSArray *scriptNodes = [doc findChildrenWithAttribute:@"type" matchingName:@"text/javascript" allowPartial:NO];
+  
+  for (HTMLNode *scriptNode in scriptNodes) {
+    if ([scriptNode contents] && [[scriptNode contents] rangeOfString:@"yConfig = "].location != NSNotFound) {
+      NSString *yConfigJSON = [[scriptNode contents] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+      yConfigJSON = [yConfigJSON substringWithRange:NSMakeRange(10, [yConfigJSON length] - 11)];
+      
+      NSDictionary *pageData = [[yConfigJSON objectFromJSONString] objectForKey:@"pageData"];
+      NSDictionary *attrs = [pageData objectForKey:@"googlead_attrs"];
+      [response setObject:attrs forKey:@"attrs"];
+    }
+  }
+  
   [parser release];
   
   return response;
