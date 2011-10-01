@@ -235,11 +235,11 @@
         NSMutableDictionary *placeDict = [placeArray objectAtIndex:i];
         
         // Lat
-        NSNumber *lat = [[[pageData objectForKey:@"markers"] firstObject] objectForKey:@"lat"];
+        NSNumber *lat = [marker objectForKey:@"lat"];
         [placeDict setObject:lat forKey:@"latitude"];
         
         // Lng
-        NSNumber *lng = [[[pageData objectForKey:@"markers"] firstObject] objectForKey:@"lng"];
+        NSNumber *lng = [marker objectForKey:@"lng"];
         [placeDict setObject:lng forKey:@"longitude"];
         
         // Biz
