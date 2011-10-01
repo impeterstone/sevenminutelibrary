@@ -157,7 +157,9 @@
     
     // Category
     NSString *category = [[placeNode findChildTag:@"dd"] contents];
-    [placeDict setObject:(category ? category : [NSNull null]) forKey:@"category"];
+    if (category) {
+      [placeDict setObject:category forKey:@"category"];
+    }
     
     // Price and Distance
     HTMLNode *priceDistance = [placeNode findChildWithAttribute:@"class" matchingName:@"price-distance" allowPartial:YES];
@@ -169,12 +171,7 @@
       if ([pdChildren count] > 1) {
         NSString *price = [[[[priceDistance findChildTags:@"li"] lastObject] contents] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
         [placeDict setObject:price forKey:@"price"];
-      } else {
-        [placeDict setObject:[NSNull null] forKey:@"price"];
       }
-    } else {
-      [placeDict setObject:[NSNull null] forKey:@"distance"];
-      [placeDict setObject:[NSNull null] forKey:@"price"];
     }
     
     // Rating
@@ -308,8 +305,6 @@
         [response setObject:biz forKey:@"biz"];
       }
     }
-  } else {
-    [response setObject:[NSNull null] forKey:@"biz"];
   }
   
   // Biz wasn't found, try fallback #1
@@ -352,10 +347,12 @@
   
   // Phone
   HTMLNode *phoneNode = [doc findChildWithAttribute:@"href" matchingName:@"tel:" allowPartial:YES];
-  NSString *phone = [phoneNode getAttributeNamed:@"href"];
-  NSString *formattedPhone = [phoneNode contents];
-  [response setObject:phone forKey:@"phone"];
-  [response setObject:formattedPhone forKey:@"formattedPhone"];
+  if (phoneNode) {
+    NSString *phone = [phoneNode getAttributeNamed:@"href"];
+    NSString *formattedPhone = [phoneNode contents];
+    [response setObject:phone forKey:@"phone"];
+    [response setObject:formattedPhone forKey:@"formattedPhone"];
+  }
   
   // Scrape the scripts
   NSArray *scriptNodes = [doc findChildrenWithAttribute:@"type" matchingName:@"text/javascript" allowPartial:NO];
@@ -367,7 +364,9 @@
       
       NSDictionary *pageData = [[yConfigJSON objectFromJSONString] objectForKey:@"pageData"];
       NSDictionary *attrs = [pageData objectForKey:@"googlead_attrs"];
-      [response setObject:attrs forKey:@"attrs"];
+      if (attrs) {
+        [response setObject:attrs forKey:@"attrs"];
+      }
     }
   }
   
@@ -377,42 +376,53 @@
 }
 
 - (NSDictionary *)scrapeReviewsWithHTMLString:(NSString *)htmlString {
+  // Prepare response container
+  NSMutableDictionary *response = [NSMutableDictionary dictionary];
+  
   // HTML Scraping
   NSError *parserError = nil;
   HTMLParser *parser = [[HTMLParser alloc] initWithString:htmlString error:&parserError];
   HTMLNode *doc = [parser body];
   
   // Reviews
-  NSArray *reviewNodes = [doc findChildrenWithAttribute:@"class" matchingName:@"review-content" allowPartial:YES];
+  NSArray *fullReviewNodes = [doc findChildrenWithAttribute:@"class" matchingName:@"review-full" allowPartial:YES];
   NSMutableArray *reviews = [NSMutableArray array];
-  for (HTMLNode *reviewNode in reviewNodes) {
-    NSMutableDictionary *reviewDict = [NSMutableDictionary dictionaryWithCapacity:3];
-    // Review ID
-    NSString *srid = [[[reviewNode findChildWithAttribute:@"class" matchingName:@"rateReview" allowPartial:NO] getAttributeNamed:@"id"] stringByReplacingOccurrencesOfString:@"ufc_" withString:@""];
-    [reviewDict setObject:srid forKey:@"srid"];
-    
-    // Review Rating
-    NSString *rating = [[[reviewNode findChildWithAttribute:@"alt" matchingName:@"star rating" allowPartial:YES] getAttributeNamed:@"alt"] stringByReplacingOccurrencesOfString:@" star rating" withString:@""];
-    [reviewDict setObject:rating forKey:@"rating"];
-    
-    // Review Date
-    NSString *date = [[[reviewNode findChildWithAttribute:@"class" matchingName:@"dtreviewed" allowPartial:YES] allContents] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-    [reviewDict setObject:date forKey:@"date"];
-    
-    // Review Comment
-    NSString *comment = [[reviewNode findChildWithAttribute:@"class" matchingName:@"review_comment" allowPartial:YES] allContents];
-    comment ? [reviewDict setObject:comment forKey:@"comment"] : [reviewDict setObject:[NSNull null] forKey:@"comment"];
-    
-    [reviews addObject:reviewDict];
+  for (HTMLNode *fullReviewNode in fullReviewNodes) {
+    NSString *reviewString = [[fullReviewNode allContents] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    [reviews addObject:reviewString];
   }
+  [response setObject:reviews forKey:@"reviews"];
   
-  // Create payload
-  NSMutableDictionary *reviewsDict = [NSMutableDictionary dictionary];
-  ([reviews count] > 0) ? [reviewsDict setObject:reviews forKey:@"reviews"] : [reviewsDict setObject:[NSNull null] forKey:@"reviews"];
+//  NSArray *reviewNodes = [doc findChildrenWithAttribute:@"class" matchingName:@"review-content" allowPartial:YES];
+//  NSMutableArray *reviews = [NSMutableArray array];
+//  for (HTMLNode *reviewNode in reviewNodes) {
+//    NSMutableDictionary *reviewDict = [NSMutableDictionary dictionaryWithCapacity:3];
+//    // Review ID
+//    NSString *srid = [[[reviewNode findChildWithAttribute:@"class" matchingName:@"rateReview" allowPartial:NO] getAttributeNamed:@"id"] stringByReplacingOccurrencesOfString:@"ufc_" withString:@""];
+//    [reviewDict setObject:srid forKey:@"srid"];
+//    
+//    // Review Rating
+//    NSString *rating = [[[reviewNode findChildWithAttribute:@"alt" matchingName:@"star rating" allowPartial:YES] getAttributeNamed:@"alt"] stringByReplacingOccurrencesOfString:@" star rating" withString:@""];
+//    [reviewDict setObject:rating forKey:@"rating"];
+//    
+//    // Review Date
+//    NSString *date = [[[reviewNode findChildWithAttribute:@"class" matchingName:@"dtreviewed" allowPartial:YES] allContents] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+//    [reviewDict setObject:date forKey:@"date"];
+//    
+//    // Review Comment
+//    NSString *comment = [[reviewNode findChildWithAttribute:@"class" matchingName:@"review_comment" allowPartial:YES] allContents];
+//    comment ? [reviewDict setObject:comment forKey:@"comment"] : [reviewDict setObject:[NSNull null] forKey:@"comment"];
+//    
+//    [reviews addObject:reviewDict];
+//  }
+//  
+//  // Create payload
+//  NSMutableDictionary *reviewsDict = [NSMutableDictionary dictionary];
+//  ([reviews count] > 0) ? [reviewsDict setObject:reviews forKey:@"reviews"] : [reviewsDict setObject:[NSNull null] forKey:@"reviews"];
   
   [parser release];
   
-  return reviewsDict;
+  return response;
 }
 
 @end
