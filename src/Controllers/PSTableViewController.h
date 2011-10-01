@@ -27,6 +27,7 @@
   UISearchBar *_searchBar;
   EGORefreshTableHeaderView *_refreshHeaderView;
   UIView *_loadMoreView;
+  UIView *_footerView; // just a pointer
   
   // Paging
   NSInteger _pagingStart;

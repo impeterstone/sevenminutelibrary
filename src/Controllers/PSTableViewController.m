@@ -186,6 +186,7 @@
 
 // Optional footer view
 - (void)setupFooterWithView:(UIView *)footerView {
+  _footerView = footerView;
   _nullView.frame = CGRectMake(_nullView.left, _nullView.top, _nullView.width, _nullView.height - footerView.height);
   _tableView.frame = CGRectMake(_tableView.left, _tableView.top, _tableView.width, _tableView.height - footerView.height);
   footerView.top = self.view.height - footerView.height; // 44 navbar
