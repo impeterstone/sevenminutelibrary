@@ -11,6 +11,22 @@
 
 @implementation NSDate (SML)
 
+#pragma mark - Other
++ (NSInteger)minutesSinceBeginningOfWeek {
+  NSInteger dayOfWeek = [[[NSCalendar currentCalendar] components:NSWeekdayCalendarUnit fromDate:[NSDate date]] weekday];
+  
+  // Convert gregorian to american
+   // Monday is start of week (not Sunday)
+  dayOfWeek -= 1;
+  if (dayOfWeek == 0) dayOfWeek = 7;
+  
+  // Calculate minutes since beginning of week to the beginning of today
+  NSInteger minutes = (60 * 24 * (dayOfWeek - 1));
+  NSInteger minutesSinceToday = [[[NSCalendar currentCalendar] components:NSMinuteCalendarUnit fromDate:[NSDate date]] minute];
+  minutesSinceToday += 60 * 7; // offset by 7hrs
+  return minutes + minutesSinceToday;
+}
+
 #pragma mark - Facebook
 + (NSDate *)dateFromFacebookTimestamp:(NSString *)timestamp {
   //2010-12-01T21:35:43+0000  

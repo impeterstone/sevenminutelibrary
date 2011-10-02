@@ -10,6 +10,9 @@
 
 @interface NSDate (SML)
 
+#pragma mark - Other
++ (NSInteger)minutesSinceBeginningOfWeek;
+
 #pragma mark - Facebook
 + (NSDate *)dateFromFacebookTimestamp:(NSString *)timestamp;
 
