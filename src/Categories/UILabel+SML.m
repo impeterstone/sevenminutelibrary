@@ -7,7 +7,7 @@
 //
 
 #import "UILabel+SML.h"
-
+#import "PSStyleSheet.h"
 
 @implementation UILabel (SML)
 
@@ -18,6 +18,17 @@
   
   CGFloat lineHeight = [@"A" sizeWithFont:font].height;
   return [text sizeWithFont:font constrainedToSize:CGSizeMake(width, numberOfLines*lineHeight) lineBreakMode:lineBreakMode];
+}
+
++ (UILabel *)labelWithText:(NSString *)text style:(NSString *)style {
+  UILabel *l = [[[UILabel alloc] initWithFrame:CGRectZero] autorelease];
+  l.backgroundColor = [UIColor clearColor];
+  l.font = [PSStyleSheet fontForStyle:style];
+  l.textColor = [PSStyleSheet textColorForStyle:style];
+  l.shadowColor = [PSStyleSheet shadowColorForStyle:style];
+  l.shadowOffset = [PSStyleSheet shadowOffsetForStyle:style];
+  l.text = text;
+  return l;
 }
 
 @end
