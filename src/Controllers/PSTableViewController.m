@@ -289,6 +289,10 @@
 }
 
 - (void)dataSourceShouldLoadObjects:(id)objects shouldAnimate:(BOOL)shouldAnimate {
+  [self dataSourceShouldLoadObjects:objects sortBy:nil ascending:YES shouldAnimate:shouldAnimate];
+}
+
+- (void)dataSourceShouldLoadObjects:(id)objects sortBy:(NSString *)sortBy ascending:(BOOL)ascending shouldAnimate:(BOOL)shouldAnimate {
   // If we have no items, just return now
   BOOL hasData = NO;
   for (NSArray *rows in objects) {
@@ -408,7 +412,7 @@
     [self reloadDataSafely];
   }
   
-  [self dataSourceDidLoad];
+  [self dataSourceDidLoadMore];
 }
 
 - (void)loadMore {
