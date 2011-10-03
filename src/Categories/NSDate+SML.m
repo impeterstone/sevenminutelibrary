@@ -22,8 +22,9 @@
   
   // Calculate minutes since beginning of week to the beginning of today
   NSInteger minutes = (60 * 24 * (dayOfWeek - 1));
+  NSInteger hoursSinceToday = [[[NSCalendar currentCalendar] components:NSHourCalendarUnit fromDate:[NSDate date]] hour];
   NSInteger minutesSinceToday = [[[NSCalendar currentCalendar] components:NSMinuteCalendarUnit fromDate:[NSDate date]] minute];
-  minutesSinceToday += 60 * 7; // offset by 7hrs
+  minutesSinceToday += 60 * hoursSinceToday; // offset by 7hrs
   return minutes + minutesSinceToday;
 }
 
