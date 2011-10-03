@@ -205,14 +205,14 @@ static NSInteger _ageFilter = 60; // seconds
    1. Location distance change from last known location is less than threshold
    */
   
-  CLLocationDistance distanceThreshold = 1500; // For some reason, cell tower triangulation is always = 1414
+//  CLLocationDistance distanceThreshold = 1500; // For some reason, cell tower triangulation is always = 1414
   CLLocationAccuracy accuracy = newLocation.horizontalAccuracy;
   NSTimeInterval age = fabs([[NSDate date] timeIntervalSinceDate:newLocation.timestamp]);
-  CLLocationDistance distanceChanged = _lastLocation ? [newLocation distanceFromLocation:_lastLocation] : distanceThreshold;
+//  CLLocationDistance distanceChanged = _lastLocation ? [newLocation distanceFromLocation:_lastLocation] : distanceThreshold;
   
   if (age <= _ageFilter) {
     // Good Location Acquired
-    DLog(@"Location updated: %@, oldLocation: %@, accuracy: %g, age: %g, distanceChanged: %g", newLocation, oldLocation, accuracy, age, distanceChanged);
+    DLog(@"Location updated: %@, oldLocation: %@, accuracy: %g, age: %g, distanceChanged: %g", newLocation, oldLocation, accuracy, age, [newLocation distanceFromLocation:_lastLocation]);
     
     // Set last known acquired location
     RELEASE_SAFELY(_lastLocation);
@@ -230,7 +230,7 @@ static NSInteger _ageFilter = 60; // seconds
     }
   } else {
     // Bad Location Discarded
-    DLog(@"Location discarded: %@, oldLocation: %@, accuracy: %g, age: %g, distanceChanged: %g", newLocation, oldLocation, accuracy, age, distanceChanged);
+    DLog(@"Location discarded: %@, oldLocation: %@, accuracy: %g, age: %g, distanceChanged: %g", newLocation, oldLocation, accuracy, age, [newLocation distanceFromLocation:_lastLocation]);
   }
 }
 
