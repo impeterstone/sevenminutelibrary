@@ -190,7 +190,6 @@
       [placeDict setObject:[NSNumber numberWithDouble:0] forKey:@"score"];
     }
     
-    
     // Number of Reviews
     HTMLNode *numReviewsNode = [placeNode findChildWithAttribute:@"class" matchingName:@"review-count" allowPartial:YES];
     if (numReviewsNode) {
