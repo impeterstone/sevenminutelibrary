@@ -251,8 +251,12 @@
         [placeDict setObject:rating forKey:@"rating"];
         
         // Score
-        double score = ([rating doubleValue] / 5.0) * 100.0;
-        [placeDict setObject:[NSNumber numberWithDouble:score] forKey:@"score"];
+        if ([rating notNil]) {
+          double score = ([rating doubleValue] / 5.0) * 100.0;
+          [placeDict setObject:[NSNumber numberWithDouble:score] forKey:@"score"];
+        } else {
+          [placeDict setObject:[NSNumber numberWithInt:0] forKey:@"score"];
+        }
         
         // Alias
         NSString *alias = [bizMarker objectForKey:@"alias"];
