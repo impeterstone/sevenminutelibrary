@@ -146,6 +146,7 @@
       _imageView.image = nil;
       _imageView.hidden = YES;
       [_aiv stopAnimating];
+      self.userInteractionEnabled = NO;
       break;
     case PSNullViewStateLoading:
       _titleLabel.text = _loadingTitle;
@@ -153,6 +154,7 @@
       _imageView.image = _loadingImage;
       _imageView.hidden = NO;
       [_aiv startAnimating];
+      self.userInteractionEnabled = YES;
       break;
     case PSNullViewStateEmpty:
       _titleLabel.text = _emptyTitle;
@@ -160,6 +162,7 @@
       _imageView.image = _emptyImage;
       _imageView.hidden = NO;
       [_aiv stopAnimating];
+      self.userInteractionEnabled = YES;
       break;
     case PSNullViewStateError:
       _titleLabel.text = _errorTitle;
@@ -167,6 +170,7 @@
       _imageView.image = _errorImage;
       _imageView.hidden = NO;
       [_aiv stopAnimating];
+      self.userInteractionEnabled = YES;
       break;
     default:
       _titleLabel.text = nil;
@@ -174,6 +178,7 @@
       _imageView.image = nil;
       _imageView.hidden = YES;
       [_aiv stopAnimating];
+      self.userInteractionEnabled = NO;
       break;
   }
   [_titleLabel sizeToFit];
