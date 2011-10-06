@@ -14,17 +14,31 @@
 
 @implementation PSSearchField
 
-- (id)initWithFrame:(CGRect)frame {
+- (id)initWithFrame:(CGRect)frame style:(PSSearchFieldStyle)style {
   self = [super initWithFrame:frame];
   if (self) {
-    self.background = [[UIImage imageNamed:@"bg_searchfield.png"] stretchableImageWithLeftCapWidth:18 topCapHeight:15];
+    if (style == PSSearchFieldStyleBlack) {
+      self.background = [[UIImage imageNamed:@"bg_searchfield.png"] stretchableImageWithLeftCapWidth:18 topCapHeight:15];
+      self.font = [PSStyleSheet fontForStyle:@"searchField"];
+      self.textColor = [PSStyleSheet textColorForStyle:@"searchField"];
+    } else if (style == PSSearchFieldStyleWhite) {
+      self.background = [[UIImage imageNamed:@"bg_searchfield.png"] stretchableImageWithLeftCapWidth:18 topCapHeight:15];
+      self.font = [PSStyleSheet fontForStyle:@"searchField"];
+      self.textColor = [PSStyleSheet textColorForStyle:@"searchField"];
+    } else if (style == PSSearchFieldStyleCell) {
+      self.background = [[UIImage imageNamed:@"grouped_full_cell.png"] stretchableImageWithLeftCapWidth:6 topCapHeight:6];
+      self.font = [PSStyleSheet fontForStyle:@"searchField"];
+      self.textColor = [PSStyleSheet textColorForStyle:@"searchField"];
+    }
     self.returnKeyType = UIReturnKeySearch;
     self.contentVerticalAlignment = UIControlContentVerticalAlignmentCenter;
-    self.font = [PSStyleSheet fontForStyle:@"searchField"];
-    self.textColor = [PSStyleSheet textColorForStyle:@"searchField"];
     self.keyboardAppearance = UIKeyboardAppearanceAlert;
   }
   return self;
+}
+
+- (id)initWithFrame:(CGRect)frame {
+  return [self initWithFrame:frame style:PSSearchFieldStyleBlack];
 }
 
 // This overrides the default image for a clear button
@@ -35,27 +49,27 @@
 }
 
 - (CGRect)textRectForBounds:(CGRect)bounds {
-  return CGRectInset(bounds, 30, 0);
+  return CGRectInset(bounds, 35, 0);
 }
 
 - (CGRect)placeholderRectForBounds:(CGRect)bounds {
-  return CGRectInset(bounds, 30, 0);
+  return CGRectInset(bounds, 35, 0);
 }
 
 - (CGRect)editingRectForBounds:(CGRect)bounds {
-  return CGRectInset(bounds, 30, 0);
+  return CGRectInset(bounds, 35, 0);
 }
 
-//- (CGRect)clearButtonRectForBounds:(CGRect)bounds {
-//  return bounds;
-//}
+- (CGRect)clearButtonRectForBounds:(CGRect)bounds {
+  return CGRectMake(bounds.size.width - 20 - MARGIN_X, 0, 20, self.height);
+}
 
 - (CGRect)leftViewRectForBounds:(CGRect)bounds {
-  return CGRectMake(MARGIN_X, 0, self.leftView.width, 30);
+  return CGRectMake(MARGIN_X, 0, 20, self.height);
 }
 
 - (CGRect)rightViewRectForBounds:(CGRect)bounds {
-  return CGRectMake(bounds.size.width - self.rightView.width - MARGIN_X, 0, self.rightView.width, 30);
+  return CGRectMake(bounds.size.width - 20 - MARGIN_X, 0, 20, self.height);
 }
 
 @end
