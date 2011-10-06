@@ -278,7 +278,6 @@
       transform = CGAffineTransformTranslate(transform, newSize.width, newSize.height);
       transform = CGAffineTransformRotate(transform, M_PI);
       break;
-      
     case UIImageOrientationLeft:           // EXIF = 6
     case UIImageOrientationLeftMirrored:   // EXIF = 5
       transform = CGAffineTransformTranslate(transform, newSize.width, 0);
@@ -290,6 +289,8 @@
       transform = CGAffineTransformTranslate(transform, 0, newSize.height);
       transform = CGAffineTransformRotate(transform, -M_PI_2);
       break;
+    default:
+      break;
   }
   
   switch (self.imageOrientation) {
@@ -298,11 +299,12 @@
       transform = CGAffineTransformTranslate(transform, newSize.width, 0);
       transform = CGAffineTransformScale(transform, -1, 1);
       break;
-      
     case UIImageOrientationLeftMirrored:   // EXIF = 5
     case UIImageOrientationRightMirrored:  // EXIF = 7
       transform = CGAffineTransformTranslate(transform, newSize.height, 0);
       transform = CGAffineTransformScale(transform, -1, 1);
+      break;
+    default:
       break;
   }
   

@@ -22,6 +22,13 @@
     
     UINavigationBar *bar = [[[UINavigationBar alloc] initWithFrame:CGRectMake(0, 0, frame.size.width, 44)] autorelease];
     [bar setAutoresizingMask:UIViewAutoresizingFlexibleWidth];
+    if([bar respondsToSelector:@selector(setBackgroundImage:forBarMetrics:)] ) {
+      //iOS 5 new UINavigationBar custom background
+      [bar setBackgroundImage:[UIImage imageNamed:@"bg_navbar.png"] forBarMetrics:UIBarMetricsDefault];
+    } else {
+      UIImageView *bg = [[[UIImageView alloc] initWithImage:[UIImage imageNamed:@"bg_navbar.png"]] autorelease];
+      [bar insertSubview:bg atIndex:0];
+    }
     
     UINavigationItem *navItem = [[[UINavigationItem alloc] init] autorelease];
     bar.items = [NSArray arrayWithObject:navItem];
