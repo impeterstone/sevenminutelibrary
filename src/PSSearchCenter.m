@@ -50,7 +50,7 @@ static NSString *_savedPath = nil;
   NSMutableDictionary *containerDict = [_terms objectForKey:container];
   if (!containerDict) return [NSArray array];
   
-  NSPredicate *searchPredicate = [NSPredicate predicateWithFormat:@"SELF BEGINSWITH[cd] %@", term];
+  NSPredicate *searchPredicate = [NSPredicate predicateWithFormat:@"SELF CONTAINS[cd] %@", term];
   NSArray *sortedKeys = [containerDict keysSortedByValueUsingComparator:^(id obj1, id obj2) {
     // DESCENDING
     if ([obj1 integerValue] < [obj2 integerValue]) {
