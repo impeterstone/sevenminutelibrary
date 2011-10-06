@@ -49,15 +49,15 @@
 }
 
 - (CGRect)textRectForBounds:(CGRect)bounds {
-  return CGRectInset(bounds, 35, 0);
+  return CGRectInset(bounds, 36, 0);
 }
 
 - (CGRect)placeholderRectForBounds:(CGRect)bounds {
-  return CGRectInset(bounds, 35, 0);
+  return CGRectInset(bounds, 36, 0);
 }
 
 - (CGRect)editingRectForBounds:(CGRect)bounds {
-  return CGRectInset(bounds, 35, 0);
+  return CGRectInset(bounds, 36, 0);
 }
 
 - (CGRect)clearButtonRectForBounds:(CGRect)bounds {
