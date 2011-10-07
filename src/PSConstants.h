@@ -7,8 +7,6 @@
 //
 
 // Import any project-specific constants here
-#import "Constants.h"
-#import "PSStyleSheet.h"
 
 #ifdef __APPLE__
 #include "TargetConditionals.h"
