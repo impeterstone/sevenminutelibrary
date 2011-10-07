@@ -138,12 +138,16 @@
 
 + (NSString *)filePathForURLPath:(NSString *)urlPath {
   NSString *encodedURLPath = [(NSString *)CFURLCreateStringByAddingPercentEscapes(kCFAllocatorDefault, (CFStringRef)urlPath, NULL, CFSTR(":/=,!$&'()*+;[]@#?"), kCFStringEncodingUTF8) autorelease];
-  NSString *filePath = [NSString stringWithFormat:@"%@/%@.plist", [[self class] applicationDocumentsDirectory], encodedURLPath];
+  NSString *filePath = [NSString stringWithFormat:@"%@/%@.plist", [[self class] applicationCachesDirectory], encodedURLPath];
   return filePath;
 }
 
 + (NSString *)applicationDocumentsDirectory {
   return [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) lastObject];
+}
+
++ (NSString *)applicationCachesDirectory {
+  return [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject];
 }
 
 @end

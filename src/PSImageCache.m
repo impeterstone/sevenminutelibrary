@@ -35,7 +35,7 @@
     _requestQueue.maxConcurrentOperationCount = 10;
     
     // Set to NSDocumentDirectory by default
-    [self setupCachePathWithCacheDirectory:NSDocumentDirectory];
+    [self setupCachePathWithCacheDirectory:NSCachesDirectory];
   }
   return self;
 }

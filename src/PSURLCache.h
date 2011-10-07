@@ -21,5 +21,6 @@
 // Convenience Methods
 + (NSString *)filePathForURLPath:(NSString *)urlPath;
 + (NSString *)applicationDocumentsDirectory;
++ (NSString *)applicationCachesDirectory;
 
 @end
