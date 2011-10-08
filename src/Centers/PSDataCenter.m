@@ -205,8 +205,8 @@
   [request setDidFailSelector:@selector(dataCenterRequestFailed:)];
   
   // Progress
-  [request setUploadProgressDelegate:[PSProgressCenter defaultCenter]];
-  [[PSProgressCenter defaultCenter] setMessage:@"Uploading Photo..."];
+//  [request setUploadProgressDelegate:[PSProgressCenter defaultCenter]];
+//  [[PSProgressCenter defaultCenter] setMessage:@"Uploading Photo..."];
   
   // Start the Request
   [request startAsynchronous];

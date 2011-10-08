@@ -12,7 +12,6 @@
 #import "ASIHTTPRequest.h"
 #import "ASIFormDataRequest.h"
 #import "JSONKit.h"
-#import "PSProgressCenter.h"
 #import "PSNetworkQueue.h"
 #import "NetworkConstants.h"
 
