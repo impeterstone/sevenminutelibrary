@@ -13,7 +13,13 @@
 #import "JSONKit.h"
 #import <math.h>
 
+static NSSet *_categories = nil;
+
 @implementation PSScrapeCenter
+
++ (void)initialize {
+  _categories = [[NSSet setWithArray:[CATEGORIES componentsSeparatedByString:@"|"]] retain];
+}
 
 + (id)defaultCenter {
   static id defaultCenter = nil;
@@ -143,6 +149,36 @@
   for (HTMLNode *placeNode in placeNodes) {
     NSMutableDictionary *placeDict = [[NSMutableDictionary alloc] initWithCapacity:8];
     
+    [placeDict setObject:[NSNumber numberWithBool:YES] forKey:@"valid"];
+    
+    // Category (Primary)
+    NSArray *nc = [placeNode findChildTags:@"dd"];
+    NSString *category = [[nc lastObject] contents];
+    if (category) {
+      // IMPORTANT
+      // If category is not a food category, discard it
+      NSSet *filteredSet = [_categories filteredSetUsingPredicate:[NSPredicate predicateWithFormat:@"SELF CONTAINS[cd] %@", category]];
+      if ([filteredSet count] > 0) {
+        [placeDict setObject:category forKey:@"category"];
+      } else {
+        NSLog(@"discarding category: %@", category);
+        [placeDict setObject:[NSNull null] forKey:@"category"];
+        [placeDict setObject:[NSNumber numberWithBool:NO] forKey:@"valid"];
+      }
+    }
+    
+    // IMPORTANT
+    // Cover Photo
+    NSString *coverPhoto = [[[placeNode findChildTag:@"img"] getAttributeNamed:@"src"] stringByReplacingOccurrencesOfString:@"ms.jpg" withString:@"l.jpg"];
+    
+    // IF coverphoto is a placeholder, discard it
+    if ([coverPhoto rangeOfString:@"blank"].location == NSNotFound) {
+      [placeDict setObject:coverPhoto forKey:@"coverPhoto"];
+    } else {
+      [placeDict setObject:[NSNull null] forKey:@"coverPhoto"];
+      [placeDict setObject:[NSNumber numberWithBool:NO] forKey:@"valid"];
+    }
+    
     // Biz alias
     NSString *alias = [[placeNode getAttributeNamed:@"data-url"] stringByReplacingOccurrencesOfString:@"/biz/" withString:@""];
     [placeDict setObject:alias forKey:@"alias"];
@@ -151,15 +187,7 @@
     NSString *name = [[[[[placeNode findChildTag:@"h3"] contents] componentsMatchedByRegex:@"(?ms)(\\d+\\.)(.+)" capture:2] firstObject] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
     [placeDict setObject:name forKey:@"name"];
     
-    // Cover Photo
-    NSString *coverPhoto = [[[placeNode findChildTag:@"img"] getAttributeNamed:@"src"] stringByReplacingOccurrencesOfString:@"ms.jpg" withString:@"l.jpg"];
-    [placeDict setObject:coverPhoto forKey:@"coverPhoto"];
-    
-    // Category
-    NSString *category = [[placeNode findChildTag:@"dd"] contents];
-    if (category) {
-      [placeDict setObject:category forKey:@"category"];
-    }
+
     
     // Price and Distance
     HTMLNode *priceDistance = [placeNode findChildWithAttribute:@"class" matchingName:@"price-distance" allowPartial:YES];
@@ -278,6 +306,7 @@
     }
   }
   
+  [placeArray filterUsingPredicate:[NSPredicate predicateWithFormat:@"valid == 1"]];
   
   // Prepare Response
   [response setObject:placeArray forKey:@"places"];
