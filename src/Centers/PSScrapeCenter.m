@@ -366,16 +366,25 @@ static NSSet *_categories = nil;
   }
   [response setObject:hours forKey:@"hours"];
   
-  // Address
+  // Address  
   NSString *rawAddress = [[doc findChildTag:@"address"] rawContents];
-  rawAddress = [rawAddress stringByReplacingOccurrencesOfString:@"<address class=\"flex-box\">" withString:@""];
-  rawAddress = [rawAddress stringByReplacingOccurrencesOfString:@"</address>" withString:@""];
-  rawAddress = [rawAddress stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
   
-  NSArray *addressArray = [rawAddress componentsSeparatedByString:@"<br>"];
-  NSString *address = [rawAddress stringByReplacingOccurrencesOfString:@"<br>" withString:@" "];
+  NSString *doubleTrimmed = [rawAddress stringByReplacingOccurrencesOfString:@"[ \r\n\t]+" withString:@" " options:NSRegularExpressionSearch range:NSMakeRange(0, rawAddress.length)];
+  NSString *foundationTrimmed = [doubleTrimmed stringByReplacingOccurrencesOfString:@"^[ \r\n\t]+(.*)[ \r\n\t]+$" withString:@"$1" options:NSRegularExpressionSearch range:NSMakeRange(0, doubleTrimmed.length)];
+  
+  NSString *cleanAddress = nil;
+  cleanAddress = [foundationTrimmed stringByReplacingOccurrencesOfString:@"<address class=\"flex-box\">" withString:@""];
+  cleanAddress = [cleanAddress stringByReplacingOccurrencesOfString:@"</address>" withString:@""];
+  
+  NSArray *rawAddressArray = [cleanAddress componentsSeparatedByString:@"<br>"];
+  NSMutableArray *addressArray = [NSMutableArray arrayWithCapacity:1];
+  for (NSString *a in rawAddressArray) {
+    [addressArray addObject:[[a stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]] stringByUnescapingHTML]];
+  }
+  NSString *formattedAddress = [addressArray componentsJoinedByString:@", "];
+  
   [response setObject:addressArray forKey:@"address"];
-  [response setObject:address forKey:@"formattedAddress"];
+  [response setObject:formattedAddress forKey:@"formattedAddress"];
   
   // Phone
   HTMLNode *phoneNode = [doc findChildWithAttribute:@"href" matchingName:@"tel:" allowPartial:YES];
