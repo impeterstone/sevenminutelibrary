@@ -10,6 +10,9 @@
 #import "PSObject.h"
 #import "Facebook.h"
 
+#define kPSFacebookCenterDialogDidSucceed @"PSFacebookCenterDialogDidSucceed"
+#define kPSFacebookCenterDialogDidFail @"PSFacebookCenterDialogDidFail"
+
 @interface PSFacebookCenter : PSObject <FBDialogDelegate, FBSessionDelegate, UIAlertViewDelegate> {
   Facebook *_facebook;
   NSArray *_newPermissions;
@@ -19,7 +22,11 @@
 
 - (BOOL)handleOpenURL:(NSURL *)url;
 
+// Login
+- (BOOL)isLoggedIn;
+
 // Permissions
+- (void)authorizeBasicPermissions;
 - (BOOL)hasPublishStreamPermission;
 - (void)requestPublishStream;
 - (NSArray *)availableExtendedPermissions;

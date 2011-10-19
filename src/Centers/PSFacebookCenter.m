@@ -22,8 +22,11 @@
   self = [super init];
   if (self) {
     _facebook = [[Facebook alloc] initWithAppId:FB_APP_ID andDelegate:self];
-    _facebook.accessToken = [[NSUserDefaults standardUserDefaults] valueForKey:@"facebookAccessToken"];
-    _facebook.expirationDate = [[NSUserDefaults standardUserDefaults] valueForKey:@"facebookExpirationDate"];
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    if ([defaults objectForKey:@"facebookAccessToken"] && [defaults objectForKey:@"facebookExpirationDate"]) {
+      _facebook.accessToken = [[NSUserDefaults standardUserDefaults] valueForKey:@"facebookAccessToken"];
+      _facebook.expirationDate = [[NSUserDefaults standardUserDefaults] valueForKey:@"facebookExpirationDate"];
+    }
   }
   return self;
 }
@@ -37,7 +40,18 @@
   return [_facebook handleOpenURL:url];
 }
 
+- (BOOL)isLoggedIn {
+  return [_facebook isSessionValid];
+}
+
 #pragma mark - Permissions
+- (void)authorizeBasicPermissions {
+  // Check if already authorized
+  if (![_facebook isSessionValid]) {
+    [_facebook authorize:FB_BASIC_PERMISISONS];
+  }
+}
+
 - (BOOL)hasPublishStreamPermission {
   return [[[NSUserDefaults standardUserDefaults] objectForKey:@"facebookExtendedPermissions"] containsObject:FB_PERMISSIONS_PUBLISH];
 }
@@ -90,15 +104,21 @@
 
 #pragma mark - FBSessionDelegate
 - (void)fbDidLogin {
-  [[NSUserDefaults standardUserDefaults] setObject:_newPermissions forKey:@"facebookExtendedPermissions"];
+  if (_newPermissions) {
+    [[NSUserDefaults standardUserDefaults] setObject:_newPermissions forKey:@"facebookExtendedPermissions"];
+    [_newPermissions release], _newPermissions = nil;
+  }
   [[NSUserDefaults standardUserDefaults] setObject:_facebook.accessToken forKey:@"facebookAccessToken"];
   [[NSUserDefaults standardUserDefaults] setObject:_facebook.expirationDate forKey:@"facebookExpirationDate"];
   [[NSUserDefaults standardUserDefaults] synchronize];
-  [_newPermissions release], _newPermissions = nil;
+  
+  [[NSNotificationCenter defaultCenter] postNotificationName:kPSFacebookCenterDialogDidSucceed object:nil];
 }
 
 - (void)fbDidNotLogin:(BOOL)cancelled {
   [_newPermissions release], _newPermissions = nil;
+  
+  [[NSNotificationCenter defaultCenter] postNotificationName:kPSFacebookCenterDialogDidFail object:nil];
 }
 
 - (void)fbDidLogout {
