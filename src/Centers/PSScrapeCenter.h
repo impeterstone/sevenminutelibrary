@@ -17,6 +17,7 @@
 
 - (NSDictionary *)scrapePhotosFromProxyWithHTMLString:(NSString *)htmlString;
 - (NSDictionary *)scrapePhotosWithHTMLString:(NSString *)htmlString;
+- (NSDictionary *)scrapePhotosWithMobileHTMLString:(NSString *)htmlString;
 - (NSDictionary *)scrapePlacesWithHTMLString:(NSString *)htmlString;
 - (NSDictionary *)scrapeBizWithHTMLString:(NSString *)htmlString;
 - (NSDictionary *)scrapeReviewsWithHTMLString:(NSString *)htmlString;

@@ -97,6 +97,38 @@ static NSSet *_categories = nil;
   HTMLParser *parser = [[HTMLParser alloc] initWithString:htmlString error:&parserError];
   HTMLNode *doc = [parser body];
   
+  // Photos
+  NSMutableArray *photos = [NSMutableArray array];
+  NSArray *photoNodes = [doc findChildrenWithAttribute:@"src" matchingName:@"ms.jpg" allowPartial:YES];
+  for (HTMLNode *photoNode in photoNodes) {
+    NSMutableDictionary *photoDict = [[NSMutableDictionary alloc] initWithCapacity:2];
+    
+    NSString *src = [[photoNode getAttributeNamed:@"src"] stringByReplacingOccurrencesOfString:@"ms.jpg" withString:@"l.jpg"];
+    [photoDict setObject:src forKey:@"src"];
+    
+    NSString *caption = [photoNode getAttributeNamed:@"alt"];
+    [photoDict setObject:caption forKey:@"caption"];
+    
+    [photos addObject:photoDict];
+    [photoDict release];
+  }
+  
+  [response setObject:photos forKey:@"photos"];
+  
+  [parser release];
+  
+  return response;
+}
+
+- (NSDictionary *)scrapePhotosWithMobileHTMLString:(NSString *)htmlString {
+  // Prepare response container
+  NSMutableDictionary *response = [NSMutableDictionary dictionary];
+  
+  // HTML Scraping
+  NSError *parserError = nil;
+  HTMLParser *parser = [[HTMLParser alloc] initWithString:htmlString error:&parserError];
+  HTMLNode *doc = [parser body];
+  
 
   // Scrape the scripts
   NSArray *scriptNodes = [doc findChildrenWithAttribute:@"type" matchingName:@"text/javascript" allowPartial:NO];
