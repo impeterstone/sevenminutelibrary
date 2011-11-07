@@ -58,6 +58,9 @@
 - (void)setupSearchDisplayControllerWithScopeButtonTitles:(NSArray *)scopeButtonTitles;
 - (void)setupSearchDisplayControllerWithScopeButtonTitles:(NSArray *)scopeButtonTitles andPlaceholder:(NSString *)placeholder;
 
+// Utility Methods
+- (void)resetPaging;
+
 // Cell Selection State
 - (BOOL)cellIsSelected:(NSIndexPath *)indexPath;
 - (BOOL)cellIsSelected:(NSIndexPath *)indexPath withObject:(id)object;

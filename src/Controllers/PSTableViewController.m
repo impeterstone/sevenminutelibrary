@@ -225,6 +225,12 @@
   [_loadMoreView addSubview:av];
 }
 
+#pragma mark - Utility Methods
+- (void)resetPaging {
+  _pagingStart = 0;
+  _pagingTotal = _pagingCount;
+}
+
 - (void)reloadDataSafely {
   [_cellCache makeObjectsPerformSelector:@selector(setShouldAnimate:) withObject:[NSNumber numberWithBool:NO]];
   [_tableView reloadData];
