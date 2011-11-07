@@ -107,7 +107,7 @@ static NSSet *_categories = nil;
     [photoDict setObject:src forKey:@"src"];
     
     NSString *caption = [photoNode getAttributeNamed:@"alt"];
-    [photoDict setObject:caption forKey:@"caption"];
+    [photoDict setObject:[caption stringByUnescapingHTML] forKey:@"caption"];
     
     [photos addObject:photoDict];
     [photoDict release];
