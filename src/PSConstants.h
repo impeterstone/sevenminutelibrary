@@ -28,7 +28,7 @@
 /**
  SQLite3 File
  */
-#define SQLITE_DB @"sml"
+#define SQLITE_DB @"mealtime_v2"
 
 /**
  Core Data (FILL THIS IN LOCAL CONSTANTS)
